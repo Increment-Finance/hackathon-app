@@ -27,7 +27,8 @@
     "watch": "yarn workspace @project/hardhat watch",
     "accounts": "yarn workspace @project/hardhat accounts",
     "balance": "yarn workspace @project/hardhat balance",
-    "send": "yarn workspace @project/hardhat send"
+    "send": "yarn workspace @project/hardhat send",
+    "coverage": "yarn workspace @project/hardhat coverage"
   },
   "workspaces": {
     "nohoist": [
