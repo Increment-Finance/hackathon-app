@@ -17,15 +17,30 @@
     "react-app:eject": "yarn workspace @project/react-app eject",
     "react-app:ipfs": "yarn workspace @project/react-app ipfs",
     "react-app:start": "yarn workspace @project/react-app start",
-    "react-app:test": "yarn workspace @project/react-app test"
+    "react-app:test": "yarn workspace @project/react-app test",
+    "chain": "yarn workspace @project/hardhat chain",
+    "fork": "yarn workspace @project/hardhat fork",
+    "node": "yarn workspace @project/hardhat chain",
+    "test": "yarn workspace @project/hardhat test",
+    "compile": "yarn workspace @project/hardhat compile",
+    "deploy": "yarn workspace @project/hardhat deploy",
+    "watch": "yarn workspace @project/hardhat watch",
+    "accounts": "yarn workspace @project/hardhat accounts",
+    "balance": "yarn workspace @project/hardhat balance",
+    "send": "yarn workspace @project/hardhat send"
   },
   "workspaces": {
     "nohoist": [
       "**/@graphprotocol/graph-ts",
-      "**/@graphprotocol/graph-ts/**"
+      "**/@graphprotocol/graph-ts/**",
+      "**/hardhat",
+      "**/hardhat/**"
     ],
     "packages": [
       "packages/*"
     ]
+  },
+  "devDependencies": {
+    "hardhat": "^2.3.0"
   }
 }
