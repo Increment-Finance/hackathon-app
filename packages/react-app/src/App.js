@@ -1,26 +1,12 @@
 import React from "react";
-import { Button, Slider, Switch } from "antd";
+import { Button, Slider } from "antd";
 import "./App.css";
 import "antd/dist/antd.css";
-import {
-  Layout,
-  Menu,
-  Breadcrumb,
-  Form,
-  Checkbox,
-  Input,
-  Row,
-  Col,
-  Tooltip,
-} from "antd";
-import { PageHeader } from "antd";
+import { Layout, Menu, Form, Input, Row, Col } from "antd";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
-import { AdvancedChart } from "react-tradingview-widget";
 import { Dropdown, message } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import { Descriptions } from "antd";
-import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
-import { DownloadOutlined } from "@ant-design/icons";
 
 const { Header, Content, Footer } = Layout;
 const onClick = ({ key }) => {
@@ -34,14 +20,6 @@ const menu = (
     <Menu.Item key="3">3rd menu item</Menu.Item>
   </Menu>
 );
-
-const layout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 },
-};
-const tailLayout = {
-  wrapperCol: { offset: 8, span: 16 },
-};
 
 function App() {
   return (
@@ -64,6 +42,7 @@ function App() {
         >
           <Dropdown overlay={menu}>
             <a
+              href="/"
               className="ant-dropdown-link"
               onClick={(e) => e.preventDefault()}
             >
