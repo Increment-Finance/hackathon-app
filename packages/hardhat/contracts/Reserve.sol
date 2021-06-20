@@ -4,7 +4,6 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-//import "@aave/protocol-v2/contracts/interfaces/IAToken.sol";
 import "./PriceConsumerV3.sol";
 import "hardhat/console.sol";
 
@@ -86,5 +85,27 @@ contract Reserve {
         balances[msg.sender].aETHBalance -= _amount;
         aETH.safeTransfer(msg.sender, _amount);
         emit Withdraw(_amount, msg.sender, aETH);
+    }
+
+    /************************* view functions *************************/
+
+    function getUSDBalance(address _address) public view returns (uint256) {
+        return balances[_address].USDCBalance;
+    }
+
+    function getaUSDBalance(address _address) public view returns (uint256) {
+        return balances[_address].aUSDCBalance;
+    }
+
+    function getaETHBalance(address _address) public view returns (uint256) {
+        return balances[_address].aETHBalance;
+    }
+
+    /************************* helper functions *************************/
+
+    /// @notice Returns reserve value of a given trader
+    /// @dev Ignore ETH value for now
+    function getPortfolioValue(address _address) public view returns (uint256) {
+        return balances[_address].USDCBalance + balances[_address].aUSDCBalance;
     }
 }
