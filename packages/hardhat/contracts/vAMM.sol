@@ -6,39 +6,35 @@ import "hardhat/console.sol";
 contract vAMM {
     /************************* state *************************/
 
-    // total liquidity (k)
-    uint256 totalAssetReserve;
+    struct Pool {
+        uint256 vEUR;
+        uint256 vUSD;
+        uint256 totalAssetReserve;
+        uint256 price; // 10 ** 18
+    }
+    Pool pool;
 
-    // vEUR
-    uint256 vEUR;
-
-    // vEURshort
-    uint256 vUSD;
-
-    // leverage
-    uint256 leverage;
-
-    constructor(
-        uint256 _vEUR,
-        uint256 _vUSD,
-        uint256 _leverage
-    ) {
-        vEUR = _vEUR;
-        vUSD = _vUSD;
-        totalAssetReserve = _vEUR * _vUSD;
-        leverage = _leverage;
+    constructor(uint256 _vEUR, uint256 _vUSD) {
+        pool.vEUR = _vEUR;
+        pool.vUSD = _vUSD;
+        pool.totalAssetReserve = _vEUR * _vUSD;
     }
 
     /************************* events *************************/
-    event NewReserves(uint256 vUSD, uint256 vEUR, uint256 blockNumber);
+    event NewReserves(
+        uint256 vUSD,
+        uint256 vEUR,
+        uint256 newPrice,
+        uint256 blockNumber
+    );
 
     /************************* internal *************************/
 
     /* mint VUSD to buy */
     function _mintVUSD(uint256 amount) internal returns (uint256) {
-        uint256 vUSDnew = vUSD + amount;
-        uint256 vEURnew = totalAssetReserve / vUSDnew; // x = k / y
-        uint256 buy = vEUR - vEURnew;
+        uint256 vUSDnew = pool.vUSD + amount;
+        uint256 vEURnew = pool.totalAssetReserve / vUSDnew; // x = k / y
+        uint256 buy = pool.vEUR - vEURnew;
 
         _updateBalances(vUSDnew, vEURnew);
 
@@ -47,9 +43,9 @@ contract vAMM {
 
     /* mint vEUR to buy */
     function _mintVEUR(uint256 amount) internal returns (uint256) {
-        uint256 vEURnew = vUSD + amount;
-        uint256 vUSDnew = totalAssetReserve / vEURnew; // x = k / y
-        uint256 buy = vEUR - vUSDnew;
+        uint256 vEURnew = pool.vUSD + amount;
+        uint256 vUSDnew = pool.totalAssetReserve / vEURnew; // x = k / y
+        uint256 buy = pool.vEUR - vUSDnew;
 
         _updateBalances(vUSDnew, vEURnew);
 
@@ -58,9 +54,9 @@ contract vAMM {
 
     /* burn vUSD to sell */
     function _burnVUSD(uint256 amount) internal returns (uint256) {
-        uint256 vUSDnew = vUSD - amount;
-        uint256 vEURnew = totalAssetReserve / vUSDnew; // x = k / y
-        uint256 sell = vEURnew - vEUR;
+        uint256 vUSDnew = pool.vUSD - amount;
+        uint256 vEURnew = pool.totalAssetReserve / vUSDnew; // x = k / y
+        uint256 sell = vEURnew - pool.vEUR;
 
         _updateBalances(vUSDnew, vEURnew);
 
@@ -69,9 +65,9 @@ contract vAMM {
 
     /* burn vEUR to sell */
     function _burnVEUR(uint256 amount) internal returns (uint256) {
-        uint256 vEURnew = vEUR - amount;
-        uint256 vUSDnew = totalAssetReserve / vEURnew; // x = k / y
-        uint256 sell = vUSDnew - vUSD;
+        uint256 vEURnew = pool.vEUR - amount;
+        uint256 vUSDnew = pool.totalAssetReserve / vEURnew; // x = k / y
+        uint256 sell = vUSDnew - pool.vUSD;
 
         _updateBalances(vUSDnew, vEURnew);
 
@@ -80,9 +76,20 @@ contract vAMM {
 
     /* update reserve balances after buying/selling */
     function _updateBalances(uint256 _vUSDnew, uint256 _vEURnew) internal {
-        vUSD = _vUSDnew;
-        vEUR = _vEURnew;
+        uint256 newPrice = (_vUSDnew * 10**18) / _vEURnew;
 
-        emit NewReserves(_vUSDnew, _vEURnew, block.number);
+        pool.price = newPrice;
+        pool.vUSD = _vUSDnew;
+        pool.vEUR = _vEURnew;
+
+        emit NewReserves(_vUSDnew, _vEURnew, newPrice, block.number);
+    }
+
+    /************************* view functions *************************/
+
+    /// @notice Returns information about the virtual Automated Market Maker (vAMM)
+    /// @return pool struct has properties vEUR, vUSD, totalAssetReserve (x*y=k) and price
+    function getPoolInfo() public view returns (Pool memory) {
+        return pool;
     }
 }
