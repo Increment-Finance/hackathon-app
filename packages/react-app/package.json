@@ -51,5 +51,8 @@
     "ipfs": "yarn build && node scripts/ipfs.js",
     "start": "react-scripts start",
     "test": "react-scripts test"
+  },
+  "devDependencies": {
+    "sass": "^1.35.1"
   }
 }

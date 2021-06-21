@@ -1,7 +1,5 @@
 import React from "react";
 import { Button, Slider } from "antd";
-import "./App.css";
-import "antd/dist/antd.css";
 import { Layout, Menu, Form, Input, Row, Col } from "antd";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
 import { Dropdown, message } from "antd";
@@ -10,11 +8,13 @@ import { Descriptions } from "antd";
 import { Contract } from "@ethersproject/contracts";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { useQuery } from "@apollo/react-hooks";
-
 import useWeb3Modal from "./hooks/useWeb3Modal";
-
 import { addresses, abis } from "@project/contracts";
 import GET_TRANSFERS from "./graphql/subgraph";
+import { Header, WalletButton } from "./components";
+
+import "./App.scss";
+import "antd/dist/antd.css";
 
 async function readOnChainData() {
   // Should replace with the end-user wallet, e.g. Metamask
@@ -32,25 +32,6 @@ async function readOnChainData() {
   );
   console.log({ tokenBalance: tokenBalance.toString() });
 }
-
-function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
-  return (
-    <button
-      onClick={() => {
-        console.log({ provider });
-        if (!provider) {
-          loadWeb3Modal();
-        } else {
-          logoutOfWeb3Modal();
-        }
-      }}
-    >
-      {!provider ? "Connect Wallet" : "Disconnect Wallet"}
-    </button>
-  );
-}
-
-const { Header, Content, Footer } = Layout;
 const onClick = ({ key }) => {
   message.info(`Click on item ${key}`);
 };
@@ -74,15 +55,15 @@ function App() {
   }, [loading, error, data]);
   return (
     <Layout>
-      <Header style={{ position: "fixed", zIndex: 1, width: "100%" }}>
+      <Layout.Header style={{ position: "fixed", zIndex: 1, width: "100%" }}>
         <div className="logo" />
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
           <Menu.Item key="1">Trade</Menu.Item>
           <Menu.Item key="2">Staking</Menu.Item>
           <Menu.Item key="3">Rewards</Menu.Item>
         </Menu>
-      </Header>
-      <Content
+      </Layout.Header>
+      <Layout.Content
         className="site-layout"
         style={{ padding: "0 50px", height: 1000, marginTop: 64 }}
       >
@@ -168,8 +149,8 @@ function App() {
           width={800}
           height={400}
         />
-      </Content>
-      <Footer style={{ textAlign: "center" }}>Hedgit</Footer>
+      </Layout.Content>
+      <Layout.Footer style={{ textAlign: "center" }}>Hedgit</Layout.Footer>
     </Layout>
   );
 }
