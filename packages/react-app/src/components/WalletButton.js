@@ -1,4 +1,5 @@
 import React from "react";
+import "./WalletButton.scss";
 
 export default function WalletButton({
   provider,
@@ -7,6 +8,7 @@ export default function WalletButton({
 }) {
   return (
     <button
+      className="wallet-button"
       onClick={() => {
         console.log({ provider });
         if (!provider) {

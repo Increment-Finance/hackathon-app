@@ -1,4 +1,9 @@
-@import '~antd/dist/antd.css';
+@import "var.scss";
+@import "~antd/dist/antd.css";
+
+* {
+  font-family: $font;
+}
 
 .App {
   text-align: center;
