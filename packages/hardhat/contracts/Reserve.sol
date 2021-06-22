@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./PriceConsumerV3.sol";
+import "./lib/PerpetualTypes.sol";
 import "hardhat/console.sol";
 
 /// @title A perpetual contract w/ aTokens as collateral
@@ -14,6 +15,8 @@ import "hardhat/console.sol";
 contract Reserve {
     using SafeERC20 for IERC20;
     /************************* state *************************/
+
+    PerpetualTypes.CollateralType collateralType;
 
     // reserve assets
     IERC20 public USDC;
@@ -32,8 +35,8 @@ contract Reserve {
 
     /************************* events *************************/
 
-    event Deposit(uint256, address indexed, IERC20);
-    event Withdraw(uint256, address indexed, IERC20);
+    event Deposit(uint256, address indexed, PerpetualTypes.CollateralType);
+    event Withdraw(uint256, address indexed, PerpetualTypes.CollateralType);
 
     /************************* external *************************/
 
@@ -41,19 +44,19 @@ contract Reserve {
     function depositUSDC(uint256 _amount) public {
         USDC.safeTransferFrom(msg.sender, address(this), _amount);
         balances[msg.sender].USDCBalance += _amount;
-        emit Deposit(_amount, msg.sender, USDC);
+        emit Deposit(_amount, msg.sender, PerpetualTypes.CollateralType.USDC);
     }
 
     function depositaUSDC(uint256 _amount) public {
         aUSDC.safeTransferFrom(msg.sender, address(this), _amount);
         balances[msg.sender].USDCBalance += _amount;
-        emit Deposit(_amount, msg.sender, aUSDC);
+        emit Deposit(_amount, msg.sender, PerpetualTypes.CollateralType.aUSDC);
     }
 
     function depositaETH(uint256 _amount) public {
         aETH.safeTransferFrom(msg.sender, address(this), _amount);
         balances[msg.sender].aETHBalance += _amount;
-        emit Deposit(_amount, msg.sender, aETH);
+        emit Deposit(_amount, msg.sender, PerpetualTypes.CollateralType.aUSDC);
     }
 
     /* withdraw */
@@ -64,7 +67,7 @@ contract Reserve {
         );
         balances[msg.sender].USDCBalance -= _amount;
         USDC.safeTransfer(msg.sender, _amount);
-        emit Withdraw(_amount, msg.sender, USDC);
+        emit Withdraw(_amount, msg.sender, PerpetualTypes.CollateralType.USDC);
     }
 
     function withdrawaUSDC(uint256 _amount) public {
@@ -74,7 +77,7 @@ contract Reserve {
         );
         balances[msg.sender].aUSDCBalance -= _amount;
         aUSDC.safeTransfer(msg.sender, _amount);
-        emit Withdraw(_amount, msg.sender, aUSDC);
+        emit Withdraw(_amount, msg.sender, PerpetualTypes.CollateralType.aUSDC);
     }
 
     function withdrawaETH(uint256 _amount) public {
@@ -84,7 +87,7 @@ contract Reserve {
         );
         balances[msg.sender].aETHBalance -= _amount;
         aETH.safeTransfer(msg.sender, _amount);
-        emit Withdraw(_amount, msg.sender, aETH);
+        emit Withdraw(_amount, msg.sender, PerpetualTypes.CollateralType.aETH);
     }
 
     /************************* view functions *************************/

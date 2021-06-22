@@ -30,7 +30,7 @@ contract vAMM {
 
     /************************* internal *************************/
 
-    /* mint VUSD to buy */
+    /* mint VUSD to go long euro */
     function _mintVUSD(uint256 amount) internal returns (uint256) {
         uint256 vUSDnew = pool.vUSD + amount;
         uint256 vEURnew = pool.totalAssetReserve / vUSDnew; // x = k / y
@@ -41,18 +41,7 @@ contract vAMM {
         return buy;
     }
 
-    /* mint vEUR to buy */
-    function _mintVEUR(uint256 amount) internal returns (uint256) {
-        uint256 vEURnew = pool.vUSD + amount;
-        uint256 vUSDnew = pool.totalAssetReserve / vEURnew; // x = k / y
-        uint256 buy = pool.vEUR - vUSDnew;
-
-        _updateBalances(vUSDnew, vEURnew);
-
-        return buy;
-    }
-
-    /* burn vUSD to sell */
+    /* burn vUSD to go short euro */
     function _burnVUSD(uint256 amount) internal returns (uint256) {
         uint256 vUSDnew = pool.vUSD - amount;
         uint256 vEURnew = pool.totalAssetReserve / vUSDnew; // x = k / y
@@ -63,7 +52,18 @@ contract vAMM {
         return sell;
     }
 
-    /* burn vEUR to sell */
+    /* mint vEUR to close long euro */
+    function _mintVEUR(uint256 amount) internal returns (uint256) {
+        uint256 vEURnew = pool.vUSD + amount;
+        uint256 vUSDnew = pool.totalAssetReserve / vEURnew; // x = k / y
+        uint256 buy = pool.vEUR - vUSDnew;
+
+        _updateBalances(vUSDnew, vEURnew);
+
+        return buy;
+    }
+
+    /* burn vEUR to close short euro */
     function _burnVEUR(uint256 amount) internal returns (uint256) {
         uint256 vEURnew = pool.vEUR - amount;
         uint256 vUSDnew = pool.totalAssetReserve / vEURnew; // x = k / y

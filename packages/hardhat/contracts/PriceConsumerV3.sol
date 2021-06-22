@@ -22,12 +22,14 @@ contract PriceConsumerV3 {
     }
 
     /// @notice Returns the latest EURO / USD price with 8 decimals precision
-    function getEURPrice() public view returns (int256) {
+    function getEURPrice() public view returns (uint256) {
         (, int256 price, , uint256 timeStamp, ) =
             priceFeedEurUsd.latestRoundData();
         // If the round is not complete yet, timestamp is 0
         require(timeStamp > 0, "Round not complete");
-        return price;
-        //return 12 * 10**7; // 1.2
+        //return price;
+        int256 fallbackPrice = 12 * 10**7;
+        uint256 returnPrice = uint256(price == 0 ? fallbackPrice : price);
+        return returnPrice; // 1.2
     }
 }
