@@ -26,3 +26,4 @@ packages/subgraph/src/types/
 
 # doc files
 *.pdf
+*.md
