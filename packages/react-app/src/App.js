@@ -7,7 +7,7 @@ import useWeb3Modal from "./hooks/useWeb3Modal";
 // import { addresses, abis } from "@project/contracts";
 import GET_TRANSFERS from "./graphql/subgraph";
 import { Header } from "./components";
-import { Market } from "./pages";
+import { Market, Dashboard } from "./pages";
 
 import "./App.scss";
 import "antd/dist/antd.css";
@@ -66,6 +66,7 @@ function App() {
         <Route path="/" exact>
           <Market />
         </Route>
+        <Dashboard />
         <Route path="/dashboard"></Route>
       </Router>
     </div>

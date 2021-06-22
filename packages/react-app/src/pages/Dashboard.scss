@@ -1,0 +1,84 @@
+@import "../var.scss";
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem;
+
+  .dashboard-content {
+    width: 90%;
+    max-width: $medium;
+    display: flex;
+    flex-direction: column;
+
+    .row {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: row;
+
+      .container {
+        margin-left: 1rem;
+        &:nth-child(1) {
+          margin-left: 0;
+        }
+      }
+
+      .holdings {
+        width: auto;
+
+        h1 {
+          text-align: center;
+          min-width: 200px;
+          margin: 2rem;
+          font-size: 3rem;
+        }
+
+        .details {
+          display: flex;
+          flex-direction: row;
+
+          .legend {
+            flex: 1;
+            text-align: left;
+            color: $grey-dark;
+          }
+
+          .values {
+            flex: 1;
+            text-align: right;
+          }
+        }
+      }
+
+      .positions {
+        table {
+          width: 100%;
+          th {
+            background: $grey-mid;
+            color: white;
+            padding: 0.5rem;
+          }
+
+          tr {
+            text-align: center;
+            padding: 0.5rem;
+
+            &:nth-child(even) {
+              background: $grey-extra-light;
+            }
+          }
+
+          button {
+            border: none;
+            background: $red;
+            border-radius: 10px;
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+}
