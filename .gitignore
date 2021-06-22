@@ -23,3 +23,7 @@ yarn-error.log*
 # subgraph
 packages/subgraph/build/
 packages/subgraph/src/types/
+
+# doc files
+*.pdf
+*.md
