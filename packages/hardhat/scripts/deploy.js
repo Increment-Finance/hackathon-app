@@ -6,6 +6,14 @@ const { config, ethers, tenderly, run } = require("hardhat");
 const { utils } = require("ethers");
 const R = require("ramda");
 
+
+    /* Price feed: EUR/USD
+     * Mainnet Address: 0xb49f677943BC038e9857d61E7d053CaA2C1734C1
+     * Kovan Address: 0x0c15Ab9A0DB086e062194c273CC79f41597Bbf13
+     * Rinkeby Address: 0x78F9e60608bF48a1155b4B2A5e31F32318a1d85F
+     */
+    /// https://docs.chain.link/docs/reference-contracts/
+    
 const main = async () => {
 
   console.log("\n\n 📡 Deploying...\n");
