@@ -22,7 +22,6 @@ function getChainlinkOracles(network) {
     }   else {
         throw `Network ${network} is not supported `
     }
-    console.log(`oracles are ${chainlinkOracle}`);
     return chainlinkOracle;
 }
 
