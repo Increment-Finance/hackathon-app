@@ -6,7 +6,6 @@ import {Storage} from "./Storage.sol";
 
 /// @title Returns chainlink prices for reserve tokens
 /// @notice Requires chainlink contract at address (works for kovan, rinkeby, mainnet (forking))
-/// @dev Change address for deployment
 
 contract Oracle is Storage {
     /// @notice Inititates assets and their price oracles

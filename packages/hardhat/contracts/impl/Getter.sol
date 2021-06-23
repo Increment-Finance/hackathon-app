@@ -8,10 +8,6 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Storage} from "./Storage.sol";
 
-/// @title A perpetual contract w/ aTokens as collateral
-/// @author Markus Schick
-/// @notice You can only buy one type of perpetual and only use USDC as reserve
-
 contract Getter is Storage {
     /// @notice Returns user balance of a given reserve tokens
     /// @param _address user address
@@ -44,5 +40,12 @@ contract Getter is Storage {
     /// @return pool struct has properties vEUR, vUSD, totalAssetReserve (x*y=k) and price
     function getPoolInfo() public view returns (PerpetualTypes.Pool memory) {
         return pool;
+    }
+
+    /// @notice Returns information about the margin ratio of a user
+    /// @param user Address of user
+    /// @return Margin ratio of user w/ 18 decimals
+    function getMarginRatio(address user) public view returns (uint256) {
+        return balances[user].margin;
     }
 }

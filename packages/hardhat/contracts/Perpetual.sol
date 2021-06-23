@@ -15,6 +15,7 @@ import {MinterRedeemer} from "./impl/MinterRedeemer.sol";
 import {Storage} from "./impl/Storage.sol";
 import {vAMM} from "./impl/vAMM.sol";
 import {Getter} from "./impl/Getter.sol";
+import {Margin} from "./impl/Margin.sol";
 
 /// @title A perpetual contract w/ aTokens as collateral
 /// @author Markus Schick
@@ -29,7 +30,7 @@ import {Getter} from "./impl/Getter.sol";
 // add aETH supports
 // add borrow money from Aave
 
-contract Perpetual is Reserve, Oracle, MinterRedeemer, Ownable, Getter {
+contract Perpetual is Reserve, Margin, MinterRedeemer, Ownable, Getter {
     using SafeERC20 for IERC20;
 
     /************************* constructor *************************/
@@ -41,7 +42,7 @@ contract Perpetual is Reserve, Oracle, MinterRedeemer, Ownable, Getter {
         address[] memory _reserveTokens,
         address[] memory _reserveOracles
     )
-        Oracle(_reserveTokens, _reserveOracles, _euroOracleAddress)
+        Margin(_reserveTokens, _reserveOracles, _euroOracleAddress)
         MinterRedeemer(_quoteAssetReserve, _baseAssetReserve)
     {}
 }

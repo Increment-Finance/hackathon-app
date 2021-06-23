@@ -7,6 +7,7 @@ library PerpetualTypes {
         uint256 EURUSDlong;
         uint256 EURUSDshort;
         uint256 usdNotional;
+        uint256 margin;
     }
 
     struct UserIndex {
