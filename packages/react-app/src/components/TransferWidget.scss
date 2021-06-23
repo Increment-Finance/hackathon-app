@@ -1,0 +1,31 @@
+@import "../var.scss";
+
+.deposits {
+  display: flex;
+  flex-direction: column;
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-start;
+
+    button {
+      line-height: 1.1rem;
+      background: $green;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 0.7rem 1rem;
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin: 0 1rem;
+      width: 100%;
+      max-width: 200px;
+
+      &.red {
+        background: $red;
+      }
+    }
+  }
+}

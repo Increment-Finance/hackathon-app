@@ -4,7 +4,6 @@
   display: flex;
   flex-direction: column;
   align-content: flex-start;
-  margin: 1rem 0rem;
 
   .header {
     font-size: 0.8rem;
@@ -27,7 +26,7 @@
     overflow: hidden;
     border: 1px solid $grey-mid;
     width: auto;
-    max-width: 250px;
+    max-width: 300px;
 
     input {
       width: 100%;

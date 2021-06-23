@@ -10,8 +10,6 @@ export default function CoinInput({ title, coins, onChange }) {
     setCoin(newCoin);
   };
 
-  console.log(coin.max);
-
   // Trigger onChange for any value/coin change
   useEffect(() => {
     onChange({
