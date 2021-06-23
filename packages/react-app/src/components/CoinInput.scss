@@ -1,0 +1,55 @@
+@import "../var.scss";
+
+.coin-input {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  margin: 1rem 0rem;
+
+  .header {
+    font-size: 0.8rem;
+    color: black;
+
+    span {
+      color: $grey-mid;
+
+      &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .input-container {
+    display: flex;
+    flex-direction: row;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid $grey-mid;
+    width: auto;
+    max-width: 250px;
+
+    input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border: none;
+      color: $grey-dark;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    select {
+      width: auto;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-left: 1px solid $grey-mid;
+      color: $grey-dark;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}

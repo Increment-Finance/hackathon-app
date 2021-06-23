@@ -1,6 +1,17 @@
 import React from "react";
-import { Container } from "../components";
+import { Container, CoinInput } from "../components";
 import "./Dashboard.scss";
+
+const COINS_LIST = [
+  {
+    name: "aUSDC",
+    max: 1
+  },
+  {
+    name: "USDC",
+    max: 50
+  }
+];
 
 export default function Dashboard() {
   return (
@@ -20,10 +31,14 @@ export default function Dashboard() {
               </div>
             </div>
           </Container>
-          <Container
-            className="deposits"
-            title="Deposits / Withdraws"
-          ></Container>
+          <Container className="deposits" title="Deposits / Withdraws">
+            <CoinInput coins={COINS_LIST} title="Deposit" onChange={() => {}} />
+            <CoinInput
+              coins={COINS_LIST}
+              title="Widthdraw"
+              onChange={() => {}}
+            />
+          </Container>
         </div>
         <div className="row">
           <Container className="positions" title="Positions">
