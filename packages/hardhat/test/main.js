@@ -3,6 +3,12 @@ const { waffle } = require("hardhat");
 const { utils } = require("ethers");
 
 
+    /* Price feed: EUR/USD
+     * Mainnet Address: 0xb49f677943BC038e9857d61E7d053CaA2C1734C1
+     * Kovan Address: 0x0c15Ab9A0DB086e062194c273CC79f41597Bbf13
+     * Rinkeby Address: 0x78F9e60608bF48a1155b4B2A5e31F32318a1d85F
+     */
+
 describe("Perpetual Protocol", function () {
 
   // test data. Use BigNumber to avoid overflow
@@ -11,6 +17,10 @@ describe("Perpetual Protocol", function () {
   const vEURreserve = utils.parseEther("100000"); 
   const investAmount = utils.parseEther("100")
 
+  // price oracle addresses are
+  const euroChainlinkAddress = utils.getAddress("0xb49f677943BC038e9857d61E7d053CaA2C1734C1");
+
+  // initialize contracts
   let usdc;
   let perpetual;
   let ownerAmount;
@@ -19,11 +29,17 @@ describe("Perpetual Protocol", function () {
 
     [owner, user1, user2, ...addrs] = await ethers.getSigners();
 
-    const USDC = await ethers.getContractFactory("USDC");
-    usdc = await USDC.connect(owner).deploy(supply);
+    const USDC = await ethers.getContractFactory("mockERC20");
+    usdc = await USDC.connect(owner).deploy(supply, "USDC", "mockUSDC");
 
     const Perpetual = await ethers.getContractFactory("Perpetual");
-    perpetual = await Perpetual.connect(owner).deploy(usdc.address, vUSDreserve, vEURreserve);
+    perpetual = await Perpetual.connect(owner).deploy(
+      vEURreserve, 
+      vUSDreserve, 
+      euroChainlinkAddress, 
+      [usdc.address], 
+      [euroChainlinkAddress]
+      );
 
   });
 
@@ -32,9 +48,9 @@ describe("Perpetual Protocol", function () {
       ownerAmount = await usdc.balanceOf(owner.address);
       expect(ownerAmount).to.be.equal(supply);
     });
-    it("Should given public variables ", async function () {
-      const USDC = await perpetual.USDC();
-      expect(USDC).to.be.equal(usdc.address);
+    it("Should set USDC as reserve asset", async function () {
+      const tokens = await perpetual.getReserveAssets();
+      expect(tokens[0]).to.be.equal(usdc.address);
     });
     it("Should give owner to deployer address ", async function () {
       const contractOwner = await perpetual.owner();
@@ -53,18 +69,18 @@ describe("Perpetual Protocol", function () {
       const allowance = await usdc.allowance(owner.address, perpetual.address);
       expect(allowance).to.be.equal(investAmount);
 
-      await expect(perpetual.depositUSDC(investAmount))
+      await expect(perpetual.deposit(investAmount, usdc.address))
         .to.emit(perpetual, 'Deposit')
-        .withArgs(investAmount, owner.address, 0);
+        .withArgs(investAmount, owner.address, usdc.address);
 
     });
     it("Should withdraw USDC", async function () {
       await usdc.connect(owner).approve(perpetual.address, investAmount);
-      await perpetual.depositUSDC(investAmount)
+      await perpetual.deposit(investAmount, usdc.address)
 
-      await expect(perpetual.withdrawUSDC(investAmount))
+      await expect(perpetual.withdraw(investAmount, usdc.address))
       .to.emit(perpetual, 'Withdraw')
-      .withArgs(investAmount, owner.address, 0);
+      .withArgs(investAmount, owner.address, usdc.address);
 
       expect(ownerAmount).to.be.equal(supply);
         
@@ -73,11 +89,11 @@ describe("Perpetual Protocol", function () {
   describe("Can buy assets on vAMM", function () {
     it("Should go long EURUSD", async function () {
       await usdc.connect(owner).approve(perpetual.address, investAmount);
-      await perpetual.deposit(investAmount);
+      await perpetual.deposit(investAmount, usdc.address);
 
       await expect(perpetual.MintLongEUR(investAmount))
-      .to.emit(perpetual, 'LongXAUminted')
-      .withArgs(utils.parseEther("0.273631840796019901"), owner.address);
+      .to.emit(perpetual, 'buyEURUSDlong')
+      .withArgs(utils.parseEther("100"), owner.address);
 
     });
   });
