@@ -49,8 +49,9 @@ function App() {
         <Route path="/" exact>
           <Market />
         </Route>
-        <Dashboard />
-        <Route path="/dashboard"></Route>
+        <Route path="/dashboard">
+          <Dashboard />
+        </Route>
       </Router>
     </div>
   );
