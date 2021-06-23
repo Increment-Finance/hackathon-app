@@ -9,5 +9,16 @@
     width: 20vw;
     height: 100%;
     border-right: 1px solid $grey-light;
+    padding: 10px;
   }
+}
+
+.long-short-box {
+  display: flex;
+  justify-content: center;
+}
+
+.submit-box {
+  display: flex;
+  justify-content: center;
 }
