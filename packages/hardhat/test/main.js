@@ -1,15 +1,12 @@
 const { expect } = require("chai");
 const { waffle } = require("hardhat");
 const { utils } = require("ethers");
+const { getChainlinkOracles } = require("./helper/oracles.js")
 
 
-    /* Price feed: EUR/USD
-     * Mainnet Address: 0xb49f677943BC038e9857d61E7d053CaA2C1734C1
-     * Kovan Address: 0x0c15Ab9A0DB086e062194c273CC79f41597Bbf13
-     * Rinkeby Address: 0x78F9e60608bF48a1155b4B2A5e31F32318a1d85F
-     */
 
-describe("Perpetual Protocol", function () {
+describe("Increment App", function () {
+
 
   // test data. Use BigNumber to avoid overflow
   const supply = utils.parseEther("100000000000000000000"); 
@@ -17,8 +14,12 @@ describe("Perpetual Protocol", function () {
   const vEURreserve = utils.parseEther("100000"); 
   const investAmount = utils.parseEther("100")
 
-  // price oracle addresses are
-  const euroChainlinkAddress = utils.getAddress("0xb49f677943BC038e9857d61E7d053CaA2C1734C1");
+  // Get chainlink oracles
+  //console.log("function is", getChainlinkOracles)
+  const chainlinkOracles = getChainlinkOracles("mainnet");
+  const euro_oracle = chainlinkOracles.EUR_USD;
+  const usdc_oracle = chainlinkOracles.USDC_USD;
+
 
   // initialize contracts
   let usdc;
@@ -36,9 +37,9 @@ describe("Perpetual Protocol", function () {
     perpetual = await Perpetual.connect(owner).deploy(
       vEURreserve, 
       vUSDreserve, 
-      euroChainlinkAddress, 
+      euro_oracle, 
       [usdc.address], 
-      [euroChainlinkAddress]
+      [usdc_oracle]
       );
 
   });
@@ -93,6 +94,15 @@ describe("Perpetual Protocol", function () {
 
       await expect(perpetual.MintLongEUR(investAmount))
       .to.emit(perpetual, 'buyEURUSDlong')
+      .withArgs(utils.parseEther("100"), owner.address);
+
+    });
+    it("Should go short EURUSD", async function () {
+      await usdc.connect(owner).approve(perpetual.address, investAmount);
+      await perpetual.deposit(investAmount, usdc.address);
+
+      await expect(perpetual.MintShortEUR(investAmount))
+      .to.emit(perpetual, 'buyEURUSDshort')
       .withArgs(utils.parseEther("100"), owner.address);
 
     });
