@@ -13,7 +13,7 @@ import "hardhat/console.sol";
 
 /// @notice Mints and redeems perpetual tokens
 
-contract MinterRedeemer is Storage, vAMM {
+contract MinterRedeemer is Getter, vAMM {
     using SafeERC20 for IERC20;
 
     constructor(uint256 _quoteAssetReserve, uint256 _baseAssetReserve) {
@@ -32,12 +32,22 @@ contract MinterRedeemer is Storage, vAMM {
 
     /************************* functions *************************/
 
-    /* go long EURUSD */
-
     /// @notice Check if user leverage allows operation
-    function leverageIsFine() public pure returns (bool) {
-        return true;
+    function leverageIsFine(address account, uint256 _amount)
+        public
+        pure
+        returns (bool)
+    {
+        uint256 newMarginRatio = _marginRatio(
+            getAssetPrice(account),
+            getUnrealizedPnL(),
+            getUserNotional(account) + _amount
+        );
+        uint256 maxInitialMargin = 10**17; // 10 %
+        return newMarginRatio <= maxInitialMargin;
     }
+
+    /* go long EURUSD */
 
     /// @notice Buys long EURUSD derivatives
     /// @param _amount Amount of EURUSD tokens to be bought
@@ -47,7 +57,11 @@ contract MinterRedeemer is Storage, vAMM {
             balances[msg.sender].EURUSDshort == 0,
             "User can not go long w/ an open short position"
         );
-        require(leverageIsFine(), "Leverage factor is too high");
+        require(
+            leverageIsFine(msg.sender, _amount),
+            "Leverage factor is too high"
+        );
+
         uint256 EURUSDlongBought = _mintVUSD(_amount, pool);
 
         balances[msg.sender].usdNotional += _amount;
@@ -95,7 +109,10 @@ contract MinterRedeemer is Storage, vAMM {
             balances[msg.sender].EURUSDlong == 0,
             "User can not go long w/ an open short position"
         );
-        require(leverageIsFine(), "Leverage factor is too high");
+        require(
+            leverageIsFine(msg.sender, _amount),
+            "Leverage factor is too high"
+        );
         uint256 EURUSDshortBought = _burnVUSD(_amount, pool);
 
         balances[msg.sender].usdNotional += _amount;

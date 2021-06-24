@@ -15,22 +15,12 @@ import {MinterRedeemer} from "./impl/MinterRedeemer.sol";
 import {Storage} from "./impl/Storage.sol";
 import {vAMM} from "./impl/vAMM.sol";
 import {Getter} from "./impl/Getter.sol";
-import {Margin} from "./impl/Margin.sol";
 
 /// @title A perpetual contract w/ aTokens as collateral
 /// @author Markus Schick
 /// @notice You can only buy one type of perpetual and only use USDC as reserve
 
-/// toDO:
-// aUSDC (as reserve)
-// scale down aTokens (see: https://docs.aave.com/developers/the-core-protocol/atokens#scaledbalanceof
-// add funding rate payments (TWAP, looping, ..) (check PerpetualSwaps/Implementation/decentralized/dYdX/perpetual/contracts/protocol/v1/impl/P1Settlement.sol)
-// add liquidations
-
-// add aETH supports
-// add borrow money from Aave
-
-contract Perpetual is Reserve, Margin, Oracle, MinterRedeemer, Ownable {
+contract Perpetual is Reserve, Oracle, MinterRedeemer, Ownable {
     using SafeERC20 for IERC20;
 
     /************************* constructor *************************/

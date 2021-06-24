@@ -18,9 +18,9 @@ contract Storage {
 
     // reserve assets
     address[] public _TOKENS_;
-    mapping(address => bool) isAaveToken;
+    mapping(address => bool) isAaveToken; /// @dev later: used to scale balances
 
     // oracles
-    AggregatorV3Interface internal euroOracle;
-    mapping(address => AggregatorV3Interface) internal assetOracles;
+    address internal euroOracle;
+    mapping(address => address) internal assetOracles;
 }

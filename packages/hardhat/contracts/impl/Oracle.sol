@@ -10,14 +10,14 @@ contract Oracle is Storage {
     /// @notice Inititates assets and their price oracles
     /// @param assets Address of reserve tokens
     /// @param oracles Price oracle of reserve tokens
-    /// @param _euroOracleAddress EUR/USD oracle address
+    /// @param _euroOracle EUR/USD oracle address
     constructor(
         address[] memory assets,
         address[] memory oracles,
-        address _euroOracleAddress
+        address _euroOracle
     ) {
         _setAssetsOracles(assets, oracles);
-        euroOracle = AggregatorV3Interface(_euroOracleAddress);
+        euroOracle = _euroOracle;
     }
 
     function _setAssetsOracles(
@@ -30,7 +30,7 @@ contract Oracle is Storage {
         );
         for (uint256 i = 0; i < assets.length; i++) {
             _TOKENS_.push(assets[i]);
-            assetOracles[assets[i]] = AggregatorV3Interface(oracles[i]);
+            assetOracles[assets[i]] = oracles[i];
         }
     }
 }
