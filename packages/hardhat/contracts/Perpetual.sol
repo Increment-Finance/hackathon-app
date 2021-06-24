@@ -30,7 +30,7 @@ import {Margin} from "./impl/Margin.sol";
 // add aETH supports
 // add borrow money from Aave
 
-contract Perpetual is Reserve, Margin, MinterRedeemer, Ownable, Getter {
+contract Perpetual is Reserve, Margin, Oracle, MinterRedeemer, Ownable {
     using SafeERC20 for IERC20;
 
     /************************* constructor *************************/
@@ -42,7 +42,7 @@ contract Perpetual is Reserve, Margin, MinterRedeemer, Ownable, Getter {
         address[] memory _reserveTokens,
         address[] memory _reserveOracles
     )
-        Margin(_reserveTokens, _reserveOracles, _euroOracleAddress)
+        Oracle(_reserveTokens, _reserveOracles, _euroOracleAddress)
         MinterRedeemer(_quoteAssetReserve, _baseAssetReserve)
     {}
 }

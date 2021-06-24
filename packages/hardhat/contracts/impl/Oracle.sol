@@ -2,12 +2,12 @@
 pragma solidity 0.8.4;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import {Storage} from "./Storage.sol";
+import {Getter} from "./Getter.sol";
 
 /// @title Returns chainlink prices for reserve tokens
 /// @notice Requires chainlink contract at address (works for kovan, rinkeby, mainnet (forking))
 
-contract Oracle is Storage {
+contract Oracle is Getter {
     /// @notice Inititates assets and their price oracles
     /// @param assets Address of reserve tokens
     /// @param oracles Price oracle of reserve tokens
