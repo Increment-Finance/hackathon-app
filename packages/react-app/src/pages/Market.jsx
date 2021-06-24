@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Descriptions, Form, Input, Row, Col, Button, Slider } from "antd";
+import { Descriptions, Form, Row, Col, Button, List } from "antd";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
 import "./Market.scss";
 import { IFSlider, CoinInput } from "../components";
@@ -8,6 +8,13 @@ import { COINS_LIST } from "../components/TransferWidget";
 export default function Market() {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
+
+  const DetailItems = [
+    "Entry Price",
+    "Price Impact",
+    "Transaction Fee",
+    "Total Cost",
+  ];
 
   return (
     <div className="market-container">
@@ -82,6 +89,21 @@ export default function Market() {
               isLong={isLong}
             />
           </Form.Item>
+          <div>
+            <p>Details</p>
+          </div>
+          <List
+            bordered
+            dataSource={DetailItems}
+            size="small"
+            renderItem={(item) => (
+              <List.Item>
+                <List.Item.Meta title={item}></List.Item.Meta>
+                <div>-</div>
+              </List.Item>
+            )}
+            style={{ borderRadius: "10px", marginBottom: "30px" }}
+          />
           <Form.Item>
             <div className="submit-box">
               <Button
