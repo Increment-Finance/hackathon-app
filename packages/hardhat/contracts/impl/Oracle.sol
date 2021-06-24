@@ -34,25 +34,4 @@ contract Oracle is Storage {
             assetOracles[assets[i]] = AggregatorV3Interface(oracles[i]);
         }
     }
-
-    /// @notice Gets an asset price by address
-    /// @param asset The token address
-    /// @param fallBackPrice Return Fallback if no oracle found
-    /// @dev fallBackPrice can be used for local testing
-    function getAssetPrice(address asset, uint256 fallBackPrice)
-        public
-        view
-        returns (uint256)
-    {
-        AggregatorV3Interface oracle = assetOracles[asset];
-        (, int256 price, , uint256 timeStamp, ) = AggregatorV3Interface(oracle)
-        .latestRoundData();
-        // If the round is not complete yet, timestamp is 0
-        require(timeStamp > 0, "Round not complete");
-        if (price > 0) {
-            return uint256(price);
-        } else {
-            return uint256(fallBackPrice);
-        }
-    }
 }
