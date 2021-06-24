@@ -5,7 +5,7 @@ const chalk = require("chalk");
 const { config, ethers, tenderly, run } = require("hardhat");
 const { utils } = require("ethers");
 const R = require("ramda");
-const { getChainlinkOracles } = require("../test/helper/oracles.js")
+const { getChainlinkOracles } = require("./helper/oracles.js")
 
 const main = async () => {
 

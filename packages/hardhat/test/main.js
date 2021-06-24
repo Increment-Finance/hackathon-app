@@ -1,9 +1,5 @@
 const { expect } = require("chai");
-const { waffle } = require("hardhat");
 const { utils } = require("ethers");
-const { getChainlinkOracles } = require("./helper/oracles.js")
-
-
 
 describe("Increment App", function () {
 
@@ -14,32 +10,30 @@ describe("Increment App", function () {
   const vEURreserve = utils.parseEther("100000"); 
   const investAmount = utils.parseEther("100")
 
-  // Get chainlink oracles
-  //console.log("function is", getChainlinkOracles)
-  const chainlinkOracles = getChainlinkOracles("mainnet");
-  const euro_oracle = chainlinkOracles.EUR_USD;
-  const usdc_oracle = chainlinkOracles.USDC_USD;
-
-
   // initialize contracts
-  let usdc;
-  let perpetual;
-  let ownerAmount;
+  let usdc, perpetual, ownerAmount, euro_oracle, usdc_oracle;
 
   beforeEach('Set up', async () => {
 
     [owner, user1, user2, ...addrs] = await ethers.getSigners();
 
+    // Mock Chainlink Oracles
+    const ChainlinkOracle = await ethers.getContractFactory("MockV3Aggregator");
+    euro_oracle = await ChainlinkOracle.connect(owner).deploy(8, 1);
+    usdc_oracle = await ChainlinkOracle.connect(owner).deploy(8, 1);
+
+    // USDC reserve
     const USDC = await ethers.getContractFactory("mockERC20");
     usdc = await USDC.connect(owner).deploy(supply, "USDC", "mockUSDC");
 
+    // Perpetual 
     const Perpetual = await ethers.getContractFactory("Perpetual");
     perpetual = await Perpetual.connect(owner).deploy(
       vEURreserve, 
       vUSDreserve, 
-      euro_oracle, 
+      euro_oracle.address, 
       [usdc.address], 
-      [usdc_oracle]
+      [usdc_oracle.address]
       );
 
   });
