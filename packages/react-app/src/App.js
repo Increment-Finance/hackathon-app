@@ -7,7 +7,9 @@ import useWeb3Modal from "./hooks/useWeb3Modal";
 // import { addresses, abis } from "@project/contracts";
 import GET_TRANSFERS from "./graphql/subgraph";
 import { Header } from "./components";
-import { Market, Dashboard } from "./pages";
+import { Market, NoWallet, Dashboard} from "./pages";
+import logo from './Images/Vector.png';
+
 
 import "./App.scss";
 import "antd/dist/antd.css";
@@ -17,14 +19,16 @@ function App() {
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
   const [userAddress, setUserAddress] = useState(null);
 
+
   useEffect(() => {
     if (!loading && !error && data && data.transfers) {
       console.log({ transfers: data.transfers });
     }
   }, [loading, error, data]);
 
+var signer = false;
   useEffect(() => {
-    const signer = provider?.getSigner();
+    signer = provider?.getSigner();
     if (signer) {
       signer
         .getAddress()
@@ -34,27 +38,30 @@ function App() {
         .catch((err) => {
           console.log("Couldn't get signer", err);
         });
+    }else{
+      console.log("Couldn't get signer");
     }
   }, [provider]);
 
-  return (
-    <div className="app">
-      <Router>
-        <Header
-          address={userAddress}
-          provider={provider}
-          loadWeb3Modal={loadWeb3Modal}
-          logoutOfWeb3Modal={logoutOfWeb3Modal}
-        />
-        <Route path="/" exact>
-          <Market />
-        </Route>
-        <Route path="/dashboard">
-          <Dashboard />
-        </Route>
-      </Router>
-    </div>
-  );
-}
+        return (
+         <div className="app">
+           <Router>
+             <Header
+               address={userAddress}
+               provider={provider}
+               loadWeb3Modal={loadWeb3Modal}
+               logoutOfWeb3Modal={logoutOfWeb3Modal}
+             />
+             <Route path="/" exact>
+               <Market />
+             </Route>
+             <Route path="/dashboard">
+             <NoWallet />
+             </Route>
+           </Router>
+         </div>
+       );
+  }
+
 
 export default App;
