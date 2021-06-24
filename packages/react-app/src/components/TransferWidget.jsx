@@ -2,15 +2,15 @@ import React from "react";
 import { Container, CoinInput } from "./";
 import "./TransferWidget.scss";
 
-const COINS_LIST = [
+export const COINS_LIST = [
   {
     name: "aUSDC",
-    max: 1
+    max: 1,
   },
   {
     name: "USDC",
-    max: 50
-  }
+    max: 50,
+  },
 ];
 
 export default function TransferWidget() {

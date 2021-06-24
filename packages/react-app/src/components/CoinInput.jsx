@@ -5,8 +5,8 @@ export default function CoinInput({ title, coins, onChange }) {
   const [coin, setCoin] = useState(coins[0]);
   const [value, setValue] = useState("");
 
-  const changeCoin = name => {
-    let newCoin = coins.filter(coin => coin.name === name)[0];
+  const changeCoin = (name) => {
+    let newCoin = coins.filter((coin) => coin.name === name)[0];
     setCoin(newCoin);
   };
 
@@ -14,7 +14,7 @@ export default function CoinInput({ title, coins, onChange }) {
   useEffect(() => {
     onChange({
       name: coin.name,
-      value: value
+      value: value,
     });
   }, [coin, value, onChange]);
 
@@ -42,13 +42,13 @@ export default function CoinInput({ title, coins, onChange }) {
           min={0}
           value={value}
           placeholder={0}
-          onChange={e => {
+          onChange={(e) => {
             setValue(e.nativeEvent.target.value);
           }}
         />
         <select
           id="coin-select"
-          onChange={e => {
+          onChange={(e) => {
             changeCoin(e.nativeEvent.target.value);
           }}
         >
