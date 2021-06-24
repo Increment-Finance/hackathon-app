@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "hardhat/console.sol";
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Storage} from "./Storage.sol";
+
+import "hardhat/console.sol";
+
+/// @notice Implmements underlying vAMM logic
 
 contract vAMM is Storage {
     /************************* events *************************/
@@ -14,7 +17,7 @@ contract vAMM is Storage {
         uint256 blockNumber
     );
 
-    /************************* internal *************************/
+    /************************* functions *************************/
 
     /* mint VUSD to go long euro */
     function _mintVUSD(uint256 amount, PerpetualTypes.Pool memory pool)

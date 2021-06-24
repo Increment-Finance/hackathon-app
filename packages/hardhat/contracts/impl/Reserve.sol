@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "../lib/PerpetualTypes.sol";
-import "hardhat/console.sol";
 
+import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Storage} from "./Storage.sol";
 
-/// @title A perpetual contract w/ aTokens as collateral
-/// @author Markus Schick
-/// @notice You can only buy one type of perpetual and only use USDC as reserve
+import "hardhat/console.sol";
+
+/// @notice Allows Depositing and Withdrawing of reserve tokens
 
 contract Reserve is Storage {
     /************************* events *************************/
@@ -37,7 +35,12 @@ contract Reserve is Storage {
         emit Deposit(_amount, msg.sender, _token);
     }
 
-    /* withdraw */
+    /**
+     * @notice Withdraw ERC20 token from margin of the contract account.
+     * @param  _amount  Amount of USDC deposited
+     * @param _token ERC20 token address
+     * @dev Only allows withdrawing tokens accounted in _TOKENS_ list
+     */
     function withdraw(uint256 _amount, address _token) public {
         require(
             _amount <= balances[msg.sender].userReserve[_token],

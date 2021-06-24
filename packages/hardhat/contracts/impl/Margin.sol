@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {Getter} from "./Getter.sol";
 
-/// @title Returns the margin of an account
-/// @dev Change address for deployment
+/// @dev Calculates the margin ratio of an account. To be depreciated ...
 
 contract Margin is Getter {
-    function setMargin(address user, uint256 amount) public {
-        balances[user].margin = amount;
+    function _MarginRatio(address user) internal returns (uint256) {
+        getPortfolioValue(user);
     }
 }

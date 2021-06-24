@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
+/// @notice Describes all complex types
+
 library PerpetualTypes {
     struct UserPosition {
         mapping(address => uint256) userReserve;
         uint256 EURUSDlong;
         uint256 EURUSDshort;
         uint256 usdNotional;
-        uint256 margin;
     }
 
     struct UserIndex {
