@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Descriptions, Form, Row, Col, Button, List } from "antd";
+import { Form, Row, Col, Button, List } from "antd";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
 import "./Market.scss";
 import { IFSlider, CoinInput } from "../components";
@@ -8,6 +8,10 @@ import { COINS_LIST } from "../components/TransferWidget";
 export default function Market() {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
+  const [symbol, setSymbol] = useState("FX:EURUSD");
+  const [symbolPrice, setSymbolPrice] = useState(1.84);
+
+  const Symbols = { "EUR/USDC": "FX:EURUSD" };
 
   const DetailItems = [
     "Entry Price",
@@ -19,9 +23,23 @@ export default function Market() {
   return (
     <div className="market-container">
       <div className="sidebar">
-        <Descriptions title="">
-          <Descriptions.Item label="My Balance">0.00</Descriptions.Item>
-        </Descriptions>
+        <div className="symbol-select-container">
+          <h1 style={{ marginBottom: 0 }}>{symbolPrice}</h1>
+          <select
+            className="symbol-select"
+            id="symbol-select"
+            onChange={(e) => {
+              setSymbol(e.nativeEvent.target.value);
+            }}
+          >
+            {Object.entries(Symbols).map(([key, value]) => (
+              <option value={value} key={key}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </div>
+        <hr style={{ marginBottom: "30px", backgroundColor: "#E5E5E5" }} />
         <div className="long-short-box">
           <Button
             type="text"
@@ -125,7 +143,7 @@ export default function Market() {
         </Form>
       </div>
       <TradingViewWidget
-        symbol="FX:EURUSD"
+        symbol={symbol}
         theme={Themes.Light}
         locale="en"
         dateRange={12}
