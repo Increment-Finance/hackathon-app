@@ -26,7 +26,7 @@ describe("Mock Chainlink Oracles", function () {
             const newValue = 2;
             await chainlinkOracle.updateAnswer(newValue);
             
-            expect(await chainlinkOracle.latestAnswer()).to.be.equal(initialValue);         
+            expect(await chainlinkOracle.latestAnswer()).to.be.equal(newValue);         
         });
     });
 });
