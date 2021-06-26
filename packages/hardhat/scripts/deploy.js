@@ -17,13 +17,13 @@ const main = async () => {
 
   // test data. Use BigNumber to avoid overflow
   const supply = utils.parseEther("100000000000000000000"); 
-  const vUSDreserve = utils.parseEther("119000"); 
-  const vEURreserve = utils.parseEther("100000"); 
+  const vUSDreserve = utils.parseEther("900000"); // 900 000 
+  const vJPYreserve = utils.parseEther("100000000"); // 100 000 0000
   const investAmount = utils.parseEther("100")
   
   // Get chainlink oracles
-  const chainlinkOracles = getChainlinkOracles("rinkeby");
-  const euro_oracle = chainlinkOracles.EUR_USD;
+  const chainlinkOracles = getChainlinkOracles("kovan");
+  const jpy_oracle = chainlinkOracles.JPY_USD;
   const usdc_oracle = chainlinkOracles.USDC_USD;
   
   // deploy contracts
@@ -37,9 +37,9 @@ const main = async () => {
 
   const perpetual = await deploy("Perpetual", 
   [ 
-    vEURreserve, 
+    vJPYreserve, 
     vUSDreserve, 
-    euro_oracle, 
+    jpy_oracle, 
     [usdc.address], 
     [usdc_oracle]
   ] 
