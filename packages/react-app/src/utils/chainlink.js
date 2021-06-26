@@ -3,7 +3,7 @@ import { getAddress } from "@ethersproject/address";
 function getOracleAddress(network) {
   const chainlinkOracle = {};
 
-  if (network === "mainnet") {
+  if (network === "homestead") {
     chainlinkOracle.EUR_USD = getAddress(
       "0xb49f677943BC038e9857d61E7d053CaA2C1734C1"
     );
@@ -42,7 +42,7 @@ function getOracleAddress(network) {
       "0xF9680D99D6C9589e2a93a78A04A279e509205945"
     );
   } else {
-    throw `Network ${network} is not supported `;
+    return null;
   }
   return chainlinkOracle;
 }

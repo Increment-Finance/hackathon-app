@@ -16,13 +16,30 @@ import "antd/dist/antd.css";
 function App() {
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
   const [userAddress, setUserAddress] = useState(null);
+  const [network, setNetwork] = useState(null);
   const [perpetualContract, setPerpetualContract] = useState();
-  const price = useChainlinkPrice("EUR", provider, "rinkeby");
 
   useEffect(() => {
+    let subscribed = true;
+
     if (provider) {
       setPerpetualContract(new Contract(contractAddress, abi, provider));
+      provider
+        .getNetwork()
+        .then(result => {
+          if (subscribed) {
+            console.log(result);
+            setNetwork(result);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
+
+    return () => {
+      subscribed = false;
+    };
   }, [provider]);
 
   useEffect(() => {
@@ -66,5 +83,13 @@ function App() {
     </div>
   );
 }
+
+// Reload on Network Switch
+window.ethereum &&
+  window.ethereum.on("chainChanged", () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 1);
+  });
 
 export default App;

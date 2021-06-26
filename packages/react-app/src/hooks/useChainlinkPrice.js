@@ -5,21 +5,33 @@ import { getOracleAddress } from "../utils/chainlink.js";
 
 export default function useChainlinkPrice(symbol, provider, network) {
   const [price, setPrice] = useState();
-  const { ETH_USD, USDC_USD, EUR_USD } = getOracleAddress(network);
+  const addresses = getOracleAddress(network);
 
   useEffect(() => {
     let subscribed = true;
 
-    if (provider && symbol) {
+    if (provider && symbol && addresses) {
       let contract;
 
       if (symbol === "EUR") {
         // console.log(EUR_USD, AggregatorV3Interface, provider);
-        contract = new Contract(EUR_USD, AggregatorV3Interface, provider);
+        contract = new Contract(
+          addresses.EUR_USD,
+          AggregatorV3Interface,
+          provider
+        );
       } else if (symbol === "USDC") {
-        contract = new Contract(USDC_USD, AggregatorV3Interface, provider);
+        contract = new Contract(
+          addresses.USDC_USD,
+          AggregatorV3Interface,
+          provider
+        );
       } else if (symbol === "ETH") {
-        contract = new Contract(ETH_USD, AggregatorV3Interface, provider);
+        contract = new Contract(
+          addresses.ETH_USD,
+          AggregatorV3Interface,
+          provider
+        );
       }
 
       contract
