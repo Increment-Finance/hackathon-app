@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import AggregatorV3Interface from "../contracts/AggregatorV3Interface.abi";
 import { Contract } from "@ethersproject/contracts";
-import { getOracleAddress } from "../utils/chainlink.js";
 
-export default function useChainlinkPrice(symbol, provider, network) {
+export default function useChainlinkPrice(symbol, provider, addresses) {
   const [price, setPrice] = useState();
-  const addresses = getOracleAddress(network);
 
   useEffect(() => {
     let subscribed = true;
@@ -14,7 +12,6 @@ export default function useChainlinkPrice(symbol, provider, network) {
       let contract;
 
       if (symbol === "EUR") {
-        // console.log(EUR_USD, AggregatorV3Interface, provider);
         contract = new Contract(
           addresses.EUR_USD,
           AggregatorV3Interface,
@@ -42,13 +39,13 @@ export default function useChainlinkPrice(symbol, provider, network) {
           }
         })
         .catch(err => {
-          console.log(err);
+          console.error(err);
         });
     }
     return () => {
       subscribed = false;
     };
-  }, [symbol, provider, network]);
+  }, [symbol, provider, addresses]);
 
   return price;
 }

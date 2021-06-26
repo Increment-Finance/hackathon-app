@@ -5,6 +5,7 @@ import { Contract } from "@ethersproject/contracts";
 import useWeb3Modal from "./hooks/useWeb3Modal";
 import abi from "./contracts/Perpetual.abi";
 import contractAddress from "./contracts/Perpetual.address";
+import { getAddresses } from "./utils/addresses.js";
 import { Header } from "./components";
 import { Market, Dashboard } from "./pages";
 
@@ -16,6 +17,13 @@ function App() {
   const [userAddress, setUserAddress] = useState(null);
   const [network, setNetwork] = useState(null);
   const [perpetualContract, setPerpetualContract] = useState();
+  const [addresses, setAddresses] = useState(null);
+
+  useEffect(() => {
+    if (network) {
+      setAddresses(getAddresses(network.name));
+    }
+  }, [network]);
 
   useEffect(() => {
     let subscribed = true;
@@ -26,7 +34,6 @@ function App() {
         .getNetwork()
         .then(result => {
           if (subscribed) {
-            console.log(result);
             setNetwork(result);
           }
         })
@@ -68,6 +75,7 @@ function App() {
             provider={provider}
             loadWeb3Modal={loadWeb3Modal}
             logoutOfWeb3Modal={logoutOfWeb3Modal}
+            addresses={addresses}
           />
         </Route>
         <Route path="/dashboard">

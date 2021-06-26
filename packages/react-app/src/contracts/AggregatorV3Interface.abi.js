@@ -60,12 +60,7 @@ module.exports = [
   {
     anonymous: false,
     inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "from",
-        type: "address"
-      },
+      { indexed: true, internalType: "address", name: "from", type: "address" },
       { indexed: true, internalType: "address", name: "to", type: "address" }
     ],
     name: "OwnershipTransferRequested",
@@ -74,12 +69,7 @@ module.exports = [
   {
     anonymous: false,
     inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "from",
-        type: "address"
-      },
+      { indexed: true, internalType: "address", name: "from", type: "address" },
       { indexed: true, internalType: "address", name: "to", type: "address" }
     ],
     name: "OwnershipTransferred",
@@ -197,7 +187,7 @@ module.exports = [
   {
     inputs: [],
     name: "owner",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [{ internalType: "address payable", name: "", type: "address" }],
     stateMutability: "view",
     type: "function"
   },
