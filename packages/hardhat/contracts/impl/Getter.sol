@@ -53,12 +53,24 @@ contract Getter is Storage {
     /// @notice Returns user balance of a given reserve tokens
     /// @param account user address
     /// @param _token token address
-    function getUserBalance(address account, address _token)
+    function getReserveBalance(address account, address _token)
         public
         view
         returns (uint256)
     {
         return balances[account].userReserve[_token];
+    }
+
+    /// @notice Returns user long balance
+    /// @param account user address
+    function getLongBalance(address account) public view returns (uint256) {
+        return balances[account].EURUSDlong;
+    }
+
+    /// @notice Returns user short balance
+    /// @param account user address
+    function getShortBalance(address account) public view returns (uint256) {
+        return balances[account].EURUSDshort;
     }
 
     /// @notice Returns user USD notional
@@ -73,12 +85,21 @@ contract Getter is Storage {
         uint256 portfolioValue;
         for (uint256 i = 0; i < _TOKENS_.length; i++) {
             address tokenAddress = _TOKENS_[i];
-            address oracleAddress = assetOracles[tokenAddress];
-            portfolioValue +=
-                getUserBalance(account, tokenAddress) *
-                getAssetPrice(oracleAddress);
+            portfolioValue += _assetValue(account, tokenAddress);
         }
         return portfolioValue;
+    }
+
+    // @notice Calculates the value of token for user
+    function _assetValue(address account, address token)
+        public
+        view
+        returns (uint256)
+    {
+        address oracleAddress = assetOracles[token];
+        uint256 tokenValue = getReserveBalance(account, token) *
+            getAssetPrice(oracleAddress);
+        return tokenValue;
     }
 
     /// @notice Computes the unrealized PnL
@@ -95,7 +116,7 @@ contract Getter is Storage {
     function getUserMarginRatio(address account) public view returns (uint256) {
         return
             _marginRatio(
-                getAssetPrice(account),
+                getPortfolioValue(account),
                 getUnrealizedPnL(),
                 getUserNotional(account)
             );

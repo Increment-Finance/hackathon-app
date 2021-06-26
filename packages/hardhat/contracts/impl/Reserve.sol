@@ -5,13 +5,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
-import {Storage} from "./Storage.sol";
+import {Getter} from "./Getter.sol";
 
 import "hardhat/console.sol";
 
 /// @notice Allows Depositing and Withdrawing of reserve tokens
 
-contract Reserve is Storage {
+contract Reserve is Getter {
     /************************* events *************************/
 
     event Deposit(uint256 amount, address indexed user, address indexed asset);
@@ -33,6 +33,23 @@ contract Reserve is Storage {
         );
         balances[msg.sender].userReserve[_token] += _amount;
         emit Deposit(_amount, msg.sender, _token);
+    }
+
+    /// @notice Check if user withdrawing funds would exceed margin
+    /// TODO: optimize etPortfolioValue(account) - _amount * _assetValue(account, _token) calculation
+    function _allowWithdrawal(
+        address account,
+        address _token,
+        uint256 _amount
+    ) public view returns (bool) {
+        uint256 newMarginRatio = _marginRatio(
+            getPortfolioValue(account) - _amount * _assetValue(account, _token),
+            getUnrealizedPnL(),
+            getUserNotional(account)
+        );
+        //console.log("newMarginRatio is: ", newMarginRatio);
+        uint256 maxInitialMargin = 10**17; // 10 %
+        return newMarginRatio >= maxInitialMargin;
     }
 
     /**

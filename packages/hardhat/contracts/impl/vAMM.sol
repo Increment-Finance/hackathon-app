@@ -40,11 +40,11 @@ contract vAMM is Storage {
     {
         uint256 vUSDnew = pool.vUSD - amount;
         uint256 vEURnew = pool.totalAssetReserve / vUSDnew; // x = k / y
-        uint256 sell = vEURnew - pool.vEUR;
+        uint256 buy = vEURnew - pool.vEUR;
 
         _updateBalances(vUSDnew, vEURnew, pool);
 
-        return sell;
+        return buy;
     }
 
     /* mint vEUR to close long euro */
@@ -54,11 +54,11 @@ contract vAMM is Storage {
     {
         uint256 vEURnew = pool.vUSD + amount;
         uint256 vUSDnew = pool.totalAssetReserve / vEURnew; // x = k / y
-        uint256 buy = pool.vEUR - vUSDnew;
+        uint256 sell = pool.vEUR - vUSDnew;
 
         _updateBalances(vUSDnew, vEURnew, pool);
 
-        return buy;
+        return sell;
     }
 
     /* burn vEUR to close short euro */

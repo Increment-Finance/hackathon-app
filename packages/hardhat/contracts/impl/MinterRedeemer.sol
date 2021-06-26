@@ -81,23 +81,24 @@ contract MinterRedeemer is Getter, vAMM {
         public
         returns (uint256)
     {
+        //console.log("Amount to be redeemed", _amount);
+        //console.log("Amount currently held", balances[msg.sender].EURUSDlong);
+        require(_amount > 0, "Should redeem amount larger than 0");
         require(
             balances[msg.sender].EURUSDlong >= _amount,
             "USDC balances are too low"
         );
-
         balances[msg.sender].EURUSDlong -= _amount;
 
         uint256 EURUSDlongSold = _mintVEUR(_amount, pool);
         uint256 EURUSDlongBought = balances[msg.sender].usdNotional;
 
         if (EURUSDlongSold >= EURUSDlongBought) {
-            balances[msg.sender].userReserve[_redeemAsset] += (EURUSDlongSold -
-                EURUSDlongBought);
+            uint256 amountOwed = (EURUSDlongSold - EURUSDlongBought);
+            balances[msg.sender].userReserve[_redeemAsset] += amountOwed;
         } else if (EURUSDlongSold < EURUSDlongBought) {
-            balances[msg.sender].userReserve[
-                _redeemAsset
-            ] -= (EURUSDlongBought - EURUSDlongSold);
+            uint256 amountPayed = EURUSDlongSold - EURUSDlongSold;
+            balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
         }
         emit sellEURUSDlong(_amount, msg.sender);
         return EURUSDlongSold;
@@ -118,7 +119,7 @@ contract MinterRedeemer is Getter, vAMM {
         uint256 EURUSDshortBought = _burnVUSD(_amount, pool);
 
         balances[msg.sender].usdNotional += _amount;
-        balances[msg.sender].EURUSDlong += EURUSDshortBought;
+        balances[msg.sender].EURUSDshort += EURUSDshortBought;
 
         emit buyEURUSDshort(_amount, msg.sender);
         return EURUSDshortBought;
@@ -128,10 +129,11 @@ contract MinterRedeemer is Getter, vAMM {
     /// @param _amount Amount of EURUSD tokens to be redeemed
     /// @param _redeemAsset Assets used to settle account
     /// @dev The value of the redeemed tokens is not calculated from price oracles
-    function RedeemshortEUR(uint256 _amount, address _redeemAsset)
+    function RedeemShortEUR(uint256 _amount, address _redeemAsset)
         public
         returns (uint256)
     {
+        require(_amount > 0, "Should redeem amount larger than 0");
         require(
             balances[msg.sender].EURUSDshort >= _amount,
             "USDC balances are too low"
@@ -143,12 +145,11 @@ contract MinterRedeemer is Getter, vAMM {
         uint256 EURUSDshortBought = balances[msg.sender].usdNotional;
 
         if (EURUSDshortSold >= EURUSDshortBought) {
-            balances[msg.sender].userReserve[_redeemAsset] += (EURUSDshortSold -
-                EURUSDshortBought);
+            uint256 amountOwed = (EURUSDshortSold - EURUSDshortBought);
+            balances[msg.sender].userReserve[_redeemAsset] += amountOwed;
         } else if (EURUSDshortSold < EURUSDshortBought) {
-            balances[msg.sender].userReserve[
-                _redeemAsset
-            ] -= (EURUSDshortBought - EURUSDshortSold);
+            uint256 amountPayed = (EURUSDshortBought - EURUSDshortSold);
+            balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
         }
         emit sellEURUSDshort(_amount, msg.sender);
         return EURUSDshortSold;

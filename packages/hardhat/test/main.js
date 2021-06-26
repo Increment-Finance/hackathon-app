@@ -6,12 +6,12 @@ describe("Increment App", function () {
 
   // test data. Use BigNumber to avoid overflow
   const supply = utils.parseEther("100000000000000000000"); 
-  const vUSDreserve = utils.parseEther("119000"); 
-  const vEURreserve = utils.parseEther("100000"); 
+  const vUSDreserve = utils.parseEther("900000"); // 900 000 
+  const vEURreserve = utils.parseEther("100000000"); // 100 000 0000
   const depositAmount = utils.parseEther("100")
 
   // initialize contracts
-  let usdc, perpetual, ownerAmount, euro_oracle, usdc_oracle;
+  let usdc, perpetual, euro_oracle, usdc_oracle;
 
   beforeEach('Set up', async () => {
 
@@ -107,7 +107,7 @@ describe("Increment App", function () {
       await usdc.connect(owner).approve(perpetual.address, depositAmount);
       await perpetual.deposit(depositAmount, usdc.address);
 
-      const mintAmount = utils.parseEther("5")
+      const mintAmount = utils.parseEther("500")
       await expect(perpetual.MintLongEUR(mintAmount))
       .to.emit(perpetual, 'buyEURUSDlong')
       .withArgs(mintAmount, owner.address);
@@ -117,7 +117,7 @@ describe("Increment App", function () {
       await usdc.connect(owner).approve(perpetual.address, depositAmount);
       await perpetual.deposit(depositAmount, usdc.address);
 
-      const mintAmount = utils.parseEther("5")
+      const mintAmount = utils.parseEther("500")
       await expect(perpetual.MintShortEUR(mintAmount))
       .to.emit(perpetual, 'buyEURUSDshort')
       .withArgs(mintAmount, owner.address);
@@ -125,7 +125,50 @@ describe("Increment App", function () {
     });
     
   });
+  describe("Can redeem assets from vAMM", function () {
+    it("Should sell long EURUSD", async function () {
+      await usdc.connect(owner).approve(perpetual.address, depositAmount);
+      await perpetual.connect(owner).deposit(depositAmount, usdc.address);
+      const mintAmount = utils.parseEther("500");
+      await perpetual.connect(owner).MintLongEUR(mintAmount);
+      expect(await perpetual.getUserMarginRatio(owner.address)).to.be.equal(utils.parseEther("0.2")); // 100/500
 
+      const longBalance = await perpetual.getLongBalance(owner.address);
+      await perpetual.RedeemLongEUR(longBalance, usdc.address)
+    });
+    it("Should sell short EURUSD", async function () {
+      await usdc.connect(owner).approve(perpetual.address, depositAmount);
+      await perpetual.connect(owner).deposit(depositAmount, usdc.address);
+      const mintAmount = utils.parseEther("500");
+      await perpetual.connect(owner).MintShortEUR(mintAmount);
+      expect(await perpetual.getUserMarginRatio(owner.address)).to.be.equal(utils.parseEther("0.2")); // 100/500
+      
+      const shortBalance = await perpetual.getShortBalance(owner.address);
+      await perpetual.connect(owner).RedeemShortEUR(shortBalance, usdc.address);
+    });
+    
+  });
 
+  describe("Can handle multiple trader on vAMM", function () {
+    it("Both go long EURUSD", async function () {
+
+      // Fund perpetual account
+      await usdc.connect(owner).approve(perpetual.address, depositAmount);
+      await perpetual.connect(owner).deposit(depositAmount, usdc.address);
+      await usdc.connect(owner).transfer(user1.address, depositAmount);
+
+      await usdc.connect(user1).approve(perpetual.address, depositAmount);
+      await perpetual.connect(user1).deposit(depositAmount, usdc.address);
+
+      // Mint eurlong 
+      const mintAmount = utils.parseEther("5");
+      await perpetual.connect(owner).MintLongEUR(mintAmount);
+      await perpetual.connect(user1).MintLongEUR(mintAmount);
+
+      const longBalance = await perpetual.getLongBalance(owner.address);
+      await perpetual.RedeemLongEUR(longBalance, usdc.address);
+    });
+    
+  });
 
 });        
