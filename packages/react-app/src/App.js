@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Contract } from "@ethersproject/contracts";
 // import { getDefaultProvider } from "@ethersproject/providers";
-import { useQuery } from "@apollo/react-hooks";
-import useChainlinkPrice from "./hooks/useChainlinkPrice";
 import useWeb3Modal from "./hooks/useWeb3Modal";
 import abi from "./contracts/Perpetual.abi";
 import contractAddress from "./contracts/Perpetual.address";

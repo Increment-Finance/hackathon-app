@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { WalletButton } from ".";
 import { useHistory, useLocation } from "react-router-dom";
 import "./Header.scss";
-import logo from '../assets/just logo.png';
-
+import logo from "../assets/just logo.png";
 
 export default function Header({
   address,
@@ -25,11 +24,16 @@ export default function Header({
   useEffect(() => {
     let subscribed = true;
     if (provider && address) {
-      provider.lookupAddress(address).then(result => {
-        if (subscribed) {
-          setEns(result);
-        }
-      });
+      provider
+        .lookupAddress(address)
+        .then(result => {
+          if (subscribed) {
+            setEns(result);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
     return () => {
       subscribed = false;
@@ -38,10 +42,9 @@ export default function Header({
 
   return (
     <div id="header">
-
-    <h2 className="box" >
-      <img src={logo} height={40} width={40}  alt="Logo" />
-    </h2>
+      <h2 className="box">
+        <img src={logo} height={40} width={40} alt="Logo" />
+      </h2>
 
       <h2
         className={`link ${pathname === "/" ? "selected" : ""}`}
