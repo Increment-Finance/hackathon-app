@@ -281,7 +281,7 @@ module.exports = [
         "type": "address"
       }
     ],
-    "name": "RedeemshortEUR",
+    "name": "RedeemShortEUR",
     "outputs": [
       {
         "internalType": "uint256",
@@ -314,6 +314,59 @@ module.exports = [
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "_allowWithdrawal",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "_assetValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
@@ -333,13 +386,8 @@ module.exports = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "asset",
+        "name": "_oracleAddress",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fallBackPrice",
-        "type": "uint256"
       }
     ],
     "name": "getAssetPrice",
@@ -357,11 +405,43 @@ module.exports = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "user",
+        "name": "_asset",
         "type": "address"
       }
     ],
-    "name": "getMarginRatio",
+    "name": "getAssetracle",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getEUROracle",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getLongBalance",
     "outputs": [
       {
         "internalType": "uint256",
@@ -411,7 +491,7 @@ module.exports = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "_address",
+        "name": "account",
         "type": "address"
       }
     ],
@@ -443,7 +523,7 @@ module.exports = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "_address",
+        "name": "account",
         "type": "address"
       },
       {
@@ -452,7 +532,26 @@ module.exports = [
         "type": "address"
       }
     ],
-    "name": "getUserBalance",
+    "name": "getReserveBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getShortBalance",
     "outputs": [
       {
         "internalType": "uint256",
@@ -465,6 +564,68 @@ module.exports = [
   },
   {
     "inputs": [],
+    "name": "getUnrealizedPnL",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getUserMarginRatio",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getUserNotional",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
     "name": "leverageIsFine",
     "outputs": [
       {
@@ -473,7 +634,7 @@ module.exports = [
         "type": "bool"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -492,24 +653,6 @@ module.exports = [
   {
     "inputs": [],
     "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "setMargin",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
