@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-// import { Contract } from "@ethersproject/contracts";
+import { Contract } from "@ethersproject/contracts";
 // import { getDefaultProvider } from "@ethersproject/providers";
 import { useQuery } from "@apollo/react-hooks";
+import useChainlinkPrice from "./hooks/useChainlinkPrice";
 import useWeb3Modal from "./hooks/useWeb3Modal";
-// import { addresses, abis } from "@project/contracts";
-import GET_TRANSFERS from "./graphql/subgraph";
+import abi from "./contracts/Perpetual.abi";
+import contractAddress from "./contracts/Perpetual.address";
 import { Header } from "./components";
 import { Market, Dashboard } from "./pages";
 
@@ -13,25 +14,26 @@ import "./App.scss";
 import "antd/dist/antd.css";
 
 function App() {
-  const { loading, error, data } = useQuery(GET_TRANSFERS);
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
   const [userAddress, setUserAddress] = useState(null);
+  const [perpetualContract, setPerpetualContract] = useState();
+  const price = useChainlinkPrice("EUR", provider, "rinkeby");
 
   useEffect(() => {
-    if (!loading && !error && data && data.transfers) {
-      console.log({ transfers: data.transfers });
+    if (provider) {
+      setPerpetualContract(new Contract(contractAddress, abi, provider));
     }
-  }, [loading, error, data]);
+  }, [provider]);
 
   useEffect(() => {
     const signer = provider?.getSigner();
     if (signer) {
       signer
         .getAddress()
-        .then((address) => {
+        .then(address => {
           setUserAddress(address);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Couldn't get signer", err);
         });
     }
@@ -47,10 +49,18 @@ function App() {
           logoutOfWeb3Modal={logoutOfWeb3Modal}
         />
         <Route path="/" exact>
-          <Market />
+          <Market
+            provider={provider}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+          />
         </Route>
         <Route path="/dashboard">
-          <Dashboard />
+          <Dashboard
+            provider={provider}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+          />
         </Route>
       </Router>
     </div>

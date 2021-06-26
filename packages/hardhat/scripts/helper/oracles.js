@@ -1,7 +1,7 @@
-const { utils } = require("ethers");
+const { utils } = require("@ethersproject/address");
 
 function getChainlinkOracles(network) {
-    const chainlinkOracle = {};
+  const chainlinkOracle = {};
 
     if (network == "mainnet") {
         chainlinkOracle.EUR_USD = utils.getAddress("0xb49f677943BC038e9857d61E7d053CaA2C1734C1");
@@ -34,5 +34,4 @@ function getChainlinkOracles(network) {
     return chainlinkOracle;
 }
 
-module.exports = { getChainlinkOracles }
-
+module.exports = { getChainlinkOracles };
