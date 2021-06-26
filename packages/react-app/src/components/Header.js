@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { WalletButton } from ".";
 import { useHistory, useLocation } from "react-router-dom";
 import "./Header.scss";
+import logo from '../assets/just logo.png';
+
 
 export default function Header({
   address,
@@ -36,6 +38,11 @@ export default function Header({
 
   return (
     <div id="header">
+
+    <h2 className="box" >
+      <img src={logo} height={40} width={40}  alt="Logo" />
+    </h2>
+
       <h2
         className={`link ${pathname === "/" ? "selected" : ""}`}
         onClick={() => {
