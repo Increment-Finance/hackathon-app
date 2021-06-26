@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./IFSlider.scss";
 
-export default function IFSlider({ min, max, defaultValue, onSlide, isLong }) {
+export default function IFSlider({
+  min,
+  max,
+  defaultValue = "",
+  onSlide,
+  isLong
+}) {
   const [value, setValue] = useState(defaultValue);
 
   useEffect(() => {
@@ -9,16 +15,16 @@ export default function IFSlider({ min, max, defaultValue, onSlide, isLong }) {
   });
 
   return (
-    <div class="slidecontainer">
+    <div className="slidecontainer">
       <input
         type="range"
         min={min}
         max={max}
         value={value}
-        onInput={(event) => {
+        onChange={event => {
           setValue(event.target.value);
         }}
-        class={isLong ? "green-slider" : "red-slider"}
+        className={isLong ? "green-slider" : "red-slider"}
         id="myRange"
       />
     </div>
