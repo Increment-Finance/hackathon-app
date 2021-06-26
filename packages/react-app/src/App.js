@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-// import { Contract } from "@ethersproject/contracts";
+import { Contract } from "@ethersproject/contracts";
 // import { getDefaultProvider } from "@ethersproject/providers";
 import { useQuery } from "@apollo/react-hooks";
 import useWeb3Modal from "./hooks/useWeb3Modal";
-// import { addresses, abis } from "@project/contracts";
-import GET_TRANSFERS from "./graphql/subgraph";
+import abi from "./contracts/Perpetual.abi";
+import contractAddress from "./contracts/Perpetual.address";
 import { Header } from "./components";
 import { Market, Dashboard } from "./pages";
 
@@ -13,15 +13,15 @@ import "./App.scss";
 import "antd/dist/antd.css";
 
 function App() {
-  const { loading, error, data } = useQuery(GET_TRANSFERS);
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
   const [userAddress, setUserAddress] = useState(null);
+  const [perpetualContract, setPerpetualContract] = useState();
 
   useEffect(() => {
-    if (!loading && !error && data && data.transfers) {
-      console.log({ transfers: data.transfers });
+    if (provider) {
+      setPerpetualContract(new Contract(contractAddress, abi, provider));
     }
-  }, [loading, error, data]);
+  }, [provider]);
 
   useEffect(() => {
     const signer = provider?.getSigner();
