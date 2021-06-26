@@ -20,6 +20,7 @@ contract MinterRedeemer is Getter, vAMM {
         pool.vEUR = _quoteAssetReserve;
         pool.vUSD = _baseAssetReserve;
         pool.totalAssetReserve = _quoteAssetReserve * _baseAssetReserve;
+        pool.price = (_baseAssetReserve * 10**18) / _quoteAssetReserve;
     }
 
     /************************* events *************************/
@@ -39,12 +40,13 @@ contract MinterRedeemer is Getter, vAMM {
         returns (bool)
     {
         uint256 newMarginRatio = _marginRatio(
-            getAssetPrice(account),
+            getPortfolioValue(account),
             getUnrealizedPnL(),
             getUserNotional(account) + _amount
         );
+        //console.log("newMarginRatio is: ", newMarginRatio);
         uint256 maxInitialMargin = 10**17; // 10 %
-        return newMarginRatio <= maxInitialMargin;
+        return newMarginRatio >= maxInitialMargin;
     }
 
     /* go long EURUSD */

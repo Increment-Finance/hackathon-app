@@ -6,6 +6,8 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Storage} from "./Storage.sol";
 
+import "hardhat/console.sol";
+
 /// @dev Returns information about the market state and user balances
 
 contract Getter is Storage {
@@ -19,6 +21,14 @@ contract Getter is Storage {
     /// @return pool struct has properties vEUR, vUSD, totalAssetReserve (x*y=k) and price
     function getPoolInfo() public view returns (PerpetualTypes.Pool memory) {
         return pool;
+    }
+
+    function getEUROracle() public view returns (address) {
+        return euroOracle;
+    }
+
+    function getAssetracle(address _asset) public view returns (address) {
+        return assetOracles[_asset];
     }
 
     /// @notice Gets an asset price by address
@@ -96,6 +106,9 @@ contract Getter is Storage {
         uint256 unrealizedPnL,
         uint256 notionalValue
     ) internal pure returns (uint256) {
+        //console.log("Margin is", margin);
+        //console.log("unrealizedPnL is", unrealizedPnL);
+        //console.log("notionalValue is", notionalValue);
         return ((margin + unrealizedPnL) * 10**18) / notionalValue;
     }
 }

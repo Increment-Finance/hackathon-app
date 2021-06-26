@@ -8,7 +8,7 @@ describe("Increment App", function () {
   const supply = utils.parseEther("100000000000000000000"); 
   const vUSDreserve = utils.parseEther("119000"); 
   const vEURreserve = utils.parseEther("100000"); 
-  const investAmount = utils.parseEther("100")
+  const depositAmount = utils.parseEther("100")
 
   // initialize contracts
   let usdc, perpetual, ownerAmount, euro_oracle, usdc_oracle;
@@ -40,66 +40,90 @@ describe("Increment App", function () {
 
   describe("Deployment", function () {
     it("Should given tokens with deployment ", async function () {
-      ownerAmount = await usdc.balanceOf(owner.address);
-      expect(ownerAmount).to.be.equal(supply);
+      expect(await usdc.balanceOf(owner.address)).to.be.equal(supply);
     });
-    it("Should set USDC as reserve asset", async function () {
+    it("Should initialize vAMM pool", async function () {
+      const pool = await perpetual.connect(owner).getPoolInfo();
+
+      // correct reserve tokens
+      expect(pool.vEUR).to.be.equal(vEURreserve);
+      expect(pool.vUSD).to.be.equal(vUSDreserve);
+
+      // check pool price
+      const expectPrice = utils.parseEther((vUSDreserve / vEURreserve).toString()); // adjust for normalization by 10**18 in contract code
+      expect(pool.price).to.be.equal(expectPrice);
+
+      // check pool constant
+      const normalizationConstant = 10**38; /// adjust by big number to avoid overflow error from chai library
+      const expectTotalAssetReserve = vEURreserve * vUSDreserve / normalizationConstant;
+      const realizedTotalAssetReserve = pool.totalAssetReserve / normalizationConstant
+      expect(expectTotalAssetReserve).to.be.equal(realizedTotalAssetReserve);
+    });
+    it("Should initialize oracles", async function () {
+      expect(await perpetual.connect(owner).getEUROracle()).to.be.equal(euro_oracle.address);
+      expect(await perpetual.connect(owner).getAssetracle(usdc.address)).to.be.equal(usdc_oracle.address);
+ 
+    });
+    it("Should set reserve asset", async function () {
       const tokens = await perpetual.getReserveAssets();
       expect(tokens[0]).to.be.equal(usdc.address);
     });
-    it("Should give owner to deployer address ", async function () {
-      const contractOwner = await perpetual.owner();
-      expect(contractOwner).to.be.equal(owner.address);
+    it("Should give owner role to deployer address", async function () {
+      expect(await perpetual.owner()).to.be.equal(owner.address);
+
     });
   });
   describe("Can deposit and withdraw USDC", function () {
-    it("Should give allowance to perpetual contrac", async function () {
-      await usdc.connect(owner).approve(perpetual.address, investAmount);
+    it("Should give allowance to perpetual contract", async function () {
+      await usdc.connect(owner).approve(perpetual.address, depositAmount);
       const allowance = await usdc.allowance(owner.address, perpetual.address);
-      expect(allowance).to.be.equal(investAmount);
+      expect(allowance).to.be.equal(depositAmount);
 
     });
     it("Should deposit USDC", async function () {
-      await usdc.connect(owner).approve(perpetual.address, investAmount);
+      await usdc.connect(owner).approve(perpetual.address, depositAmount);
       const allowance = await usdc.allowance(owner.address, perpetual.address);
-      expect(allowance).to.be.equal(investAmount);
-
-      await expect(perpetual.deposit(investAmount, usdc.address))
+      expect(allowance).to.be.equal(depositAmount);
+      await expect(perpetual.deposit(depositAmount, usdc.address))
         .to.emit(perpetual, 'Deposit')
-        .withArgs(investAmount, owner.address, usdc.address);
+        .withArgs(depositAmount, owner.address, usdc.address);
 
     });
     it("Should withdraw USDC", async function () {
-      await usdc.connect(owner).approve(perpetual.address, investAmount);
-      await perpetual.deposit(investAmount, usdc.address)
+      await usdc.connect(owner).approve(perpetual.address, depositAmount);
+      await perpetual.deposit(depositAmount, usdc.address)
 
-      await expect(perpetual.withdraw(investAmount, usdc.address))
+      await expect(perpetual.withdraw(depositAmount, usdc.address))
       .to.emit(perpetual, 'Withdraw')
-      .withArgs(investAmount, owner.address, usdc.address);
+      .withArgs(depositAmount, owner.address, usdc.address);
 
-      expect(ownerAmount).to.be.equal(supply);
+      expect(await usdc.balanceOf(owner.address)).to.be.equal(supply);
         
     });
   });
+
   describe("Can buy assets on vAMM", function () {
     it("Should go long EURUSD", async function () {
-      await usdc.connect(owner).approve(perpetual.address, investAmount);
-      await perpetual.deposit(investAmount, usdc.address);
+      await usdc.connect(owner).approve(perpetual.address, depositAmount);
+      await perpetual.deposit(depositAmount, usdc.address);
 
-      await expect(perpetual.MintLongEUR(investAmount))
+      const mintAmount = utils.parseEther("5")
+      await expect(perpetual.MintLongEUR(mintAmount))
       .to.emit(perpetual, 'buyEURUSDlong')
-      .withArgs(utils.parseEther("100"), owner.address);
+      .withArgs(mintAmount, owner.address);
 
     });
     it("Should go short EURUSD", async function () {
-      await usdc.connect(owner).approve(perpetual.address, investAmount);
-      await perpetual.deposit(investAmount, usdc.address);
+      await usdc.connect(owner).approve(perpetual.address, depositAmount);
+      await perpetual.deposit(depositAmount, usdc.address);
 
-      await expect(perpetual.MintShortEUR(investAmount))
+      const mintAmount = utils.parseEther("5")
+      await expect(perpetual.MintShortEUR(mintAmount))
       .to.emit(perpetual, 'buyEURUSDshort')
-      .withArgs(utils.parseEther("100"), owner.address);
+      .withArgs(mintAmount, owner.address);
 
     });
+    
   });
 
 
