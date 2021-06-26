@@ -28,10 +28,10 @@ function App() {
     if (signer) {
       signer
         .getAddress()
-        .then((address) => {
+        .then(address => {
           setUserAddress(address);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Couldn't get signer", err);
         });
     }
@@ -47,10 +47,18 @@ function App() {
           logoutOfWeb3Modal={logoutOfWeb3Modal}
         />
         <Route path="/" exact>
-          <Market />
+          <Market
+            provider={provider}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+          />
         </Route>
         <Route path="/dashboard">
-          <Dashboard />
+          <Dashboard
+            provider={provider}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+          />
         </Route>
       </Router>
     </div>

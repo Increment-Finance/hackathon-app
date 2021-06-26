@@ -4,3 +4,4 @@ export { default as Container } from "./Container";
 export { default as CoinInput } from "./CoinInput";
 export { default as TransferWidget } from "./TransferWidget";
 export { default as IFSlider } from "./IFSlider";
+export { default as NoWallet } from "./NoWallet";
