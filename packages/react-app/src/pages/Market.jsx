@@ -4,12 +4,13 @@ import TradingViewWidget, { Themes } from "react-tradingview-widget";
 import "./Market.scss";
 import { IFSlider, CoinInput, NoWallet } from "../components";
 import { COINS_LIST } from "../components/TransferWidget";
+import useChainlinkPrice from "../hooks/useChainlinkPrice";
 
 export default function Market({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
   const [symbol, setSymbol] = useState("FX:EURUSD");
-  const [symbolPrice, setSymbolPrice] = useState(1.84);
+  const price = useChainlinkPrice("EUR", provider, "rinkeby");
 
   const Symbols = { "EUR/USDC": "FX:EURUSD" };
 
@@ -26,7 +27,7 @@ export default function Market({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
         {provider ? (
           <>
             <div className="symbol-select-container">
-              <h1 style={{ marginBottom: 0 }}>{symbolPrice}</h1>
+              <h1 style={{ marginBottom: 0 }}>{price}</h1>
               <select
                 className="symbol-select"
                 id="symbol-select"

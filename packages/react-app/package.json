@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
+    "@ethersproject/address": "^5.4.0",
     "@ethersproject/contracts": "^5.0.5",
     "@ethersproject/providers": "^5.0.12",
     "@project/contracts": "^1.0.0",
