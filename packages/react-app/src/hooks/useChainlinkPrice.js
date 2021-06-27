@@ -1,31 +1,33 @@
 import { useState, useEffect } from "react";
 import AggregatorV3Interface from "../contracts/AggregatorV3Interface.abi";
+import addresses from "../utils/addresses";
 import { Contract } from "@ethersproject/contracts";
 
-export default function useChainlinkPrice(symbol, provider, addresses) {
+export default function useChainlinkPrice(symbol, provider) {
   const [price, setPrice] = useState();
+  const [network, setNetwork] = useState();
 
   useEffect(() => {
     let subscribed = true;
 
-    if (provider && symbol && addresses) {
+    if (provider && symbol && network) {
       let contract;
 
       if (symbol === "EUR") {
         contract = new Contract(
-          addresses.EUR_USD,
+          addresses[network].oracles.EUR_USD,
           AggregatorV3Interface,
           provider
         );
       } else if (symbol === "USDC") {
         contract = new Contract(
-          addresses.USDC_USD,
+          addresses[network].oracles.USDC_USD,
           AggregatorV3Interface,
           provider
         );
       } else if (symbol === "ETH") {
         contract = new Contract(
-          addresses.ETH_USD,
+          addresses[network].oracles.ETH_USD,
           AggregatorV3Interface,
           provider
         );
@@ -45,7 +47,20 @@ export default function useChainlinkPrice(symbol, provider, addresses) {
     return () => {
       subscribed = false;
     };
-  }, [symbol, provider, addresses]);
+  }, [symbol, provider, network]);
+
+  useEffect(() => {
+    if (provider) {
+      provider
+        .getNetwork()
+        .then(result => {
+          setNetwork(result);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
+  }, [provider]);
 
   return price;
 }

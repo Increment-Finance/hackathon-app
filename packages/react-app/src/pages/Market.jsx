@@ -6,16 +6,11 @@ import { IFSlider, CoinInput, NoWallet } from "../components";
 import { COINS_LIST } from "../components/TransferWidget";
 import useChainlinkPrice from "../hooks/useChainlinkPrice";
 
-export default function Market({
-  provider,
-  loadWeb3Modal,
-  logoutOfWeb3Modal,
-  addresses
-}) {
+export default function Market({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
   const [symbol, setSymbol] = useState("FX:EURUSD");
-  const price = useChainlinkPrice("EUR", provider, addresses);
+  const price = useChainlinkPrice("EUR", provider);
 
   const Symbols = { "EUR/USDC": "FX:EURUSD" };
 
