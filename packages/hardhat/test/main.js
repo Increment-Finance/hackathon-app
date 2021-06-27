@@ -61,7 +61,7 @@ describe("Increment App", function () {
     });
     it("Should initialize oracles", async function () {
       expect(await perpetual.connect(owner).getEUROracle()).to.be.equal(euro_oracle.address);
-      expect(await perpetual.connect(owner).getAssetracle(usdc.address)).to.be.equal(usdc_oracle.address);
+      expect(await perpetual.connect(owner).getAssetOracle(usdc.address)).to.be.equal(usdc_oracle.address);
  
     });
     it("Should set reserve asset", async function () {

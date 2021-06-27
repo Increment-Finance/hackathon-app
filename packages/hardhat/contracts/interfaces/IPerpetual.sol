@@ -50,6 +50,11 @@ interface IPerpetual {
     function RedeemShortEUR(uint256 _amount, address _redeemAsset)
         external
         returns (uint256);
+
+    // oracle
+
+    function setReserveTokens(address[] memory assets, address[] memory oracles)
+        external;
 }
 
 library PerpetualTypes {

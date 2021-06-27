@@ -42,14 +42,18 @@ contract Reserve is Getter {
         address _token,
         uint256 _amount
     ) internal view returns (bool) {
+        uint256 newPortfolioValue = getPortfolioValue(account) -
+            _amount *
+            getAssetPriceByTokenAddress(_token);
         uint256 newMarginRatio = _marginRatio(
-            getPortfolioValue(account) - _amount * _assetValue(account, _token),
+            newPortfolioValue,
             getUnrealizedPnL(),
             getUserNotional(account)
         );
+
         //console.log("newMarginRatio is: ", newMarginRatio);
         uint256 maxInitialMargin = 10**17; // 10 %
-        return newMarginRatio >= maxInitialMargin;
+        return newMarginRatio <= maxInitialMargin;
     }
 
     /**

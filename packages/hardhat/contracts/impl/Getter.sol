@@ -27,11 +27,11 @@ contract Getter is Storage {
         return euroOracle;
     }
 
-    function getAssetracle(address _asset) public view returns (address) {
+    function getAssetOracle(address _asset) public view returns (address) {
         return assetOracles[_asset];
     }
 
-    /// @notice Gets an asset price by address
+    /// @notice Gets an asset price by oracle address
     /// @param _oracleAddress The address of the chainlink oracle
     /// @dev fallBackPrice
     function getAssetPrice(address _oracleAddress)
@@ -46,6 +46,16 @@ contract Getter is Storage {
         require(timeStamp > 0, "Round not complete");
         require(price > 0, "Integer conversion failed");
         return uint256(price);
+    }
+
+    /// @notice Gets an asset price by token address
+    /// @param _tokenAddress The address of the chainlink oracle
+    function getAssetPriceByTokenAddress(address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return getAssetPrice(getAssetOracle(_tokenAddress));
     }
 
     /************************* USER VIEWS *************************/
@@ -85,18 +95,18 @@ contract Getter is Storage {
         uint256 portfolioValue;
         for (uint256 i = 0; i < _TOKENS_.length; i++) {
             address tokenAddress = _TOKENS_[i];
-            portfolioValue += _assetValue(account, tokenAddress);
+            portfolioValue += getAssetValue(account, tokenAddress);
         }
         return portfolioValue;
     }
 
     // @notice Calculates the value of token for user
-    function _assetValue(address account, address token)
+    function getAssetValue(address account, address token)
         public
         view
         returns (uint256)
     {
-        address oracleAddress = assetOracles[token];
+        address oracleAddress = getAssetOracle(token);
         uint256 tokenValue = getReserveBalance(account, token) *
             getAssetPrice(oracleAddress);
         return tokenValue;
@@ -130,6 +140,8 @@ contract Getter is Storage {
         //console.log("Margin is", margin);
         //console.log("unrealizedPnL is", unrealizedPnL);
         //console.log("notionalValue is", notionalValue);
-        return ((margin + unrealizedPnL) * 10**18) / notionalValue;
+        if (notionalValue == 0) {
+            return 0;
+        } else return ((margin + unrealizedPnL) * 10**18) / notionalValue;
     }
 }
