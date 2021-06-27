@@ -3,8 +3,9 @@ import { Form, Row, Col, Button, List } from "antd";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
 import "./Market.scss";
 import { IFSlider, CoinInput, NoWallet } from "../components";
-import { COINS_LIST } from "../components/TransferWidget";
 import useChainlinkPrice from "../hooks/useChainlinkPrice";
+
+const COINS_LIST = [];
 
 export default function Market({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
   const [isLong, setIsLong] = useState(true);

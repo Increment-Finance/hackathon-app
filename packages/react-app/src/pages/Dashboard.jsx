@@ -8,7 +8,8 @@ export default function Dashboard({
   logoutOfWeb3Modal,
   perpetualContract,
   addresses,
-  userAddress
+  userAddress,
+  network
 }) {
   return (
     <div className="dashboard-container">
@@ -33,6 +34,7 @@ export default function Dashboard({
               provider={provider}
               addresses={addresses}
               userAddress={userAddress}
+              network={network}
             />
           </div>
           <div className="row">

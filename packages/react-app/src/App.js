@@ -21,7 +21,9 @@ function App() {
     let subscribed = true;
 
     if (provider) {
-      setPerpetualContract(new Contract(contractAddress, abi, provider));
+      setPerpetualContract(
+        new Contract(contractAddress, abi, provider.getSigner())
+      );
       provider
         .getNetwork()
         .then(result => {
@@ -42,6 +44,10 @@ function App() {
   useEffect(() => {
     const signer = provider?.getSigner();
     if (signer) {
+      if (perpetualContract) {
+        setPerpetualContract(perpetualContract.connect(signer));
+      }
+
       signer
         .getAddress()
         .then(address => {
@@ -76,6 +82,7 @@ function App() {
             logoutOfWeb3Modal={logoutOfWeb3Modal}
             perpetualContract={perpetualContract}
             userAddress={userAddress}
+            network={network}
           />
         </Route>
       </Router>

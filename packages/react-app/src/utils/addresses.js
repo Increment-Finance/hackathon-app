@@ -12,10 +12,16 @@ export default {
       USDC_USD: "0x9211c6b3BF41A10F78539810Cf5c64e1BB78Ec60",
       ETH_USD: "0x9326BFA02ADD2366b30bacB125260Af641031331"
     },
-    supportedCollateral: {
-      USDC: "0xe22da380ee6b445bb8273c81944adeb6e8450422",
-      aUSDC: "0xe12afec5aa12cf614678f9bfeeb98ca9bb95b5b0"
-    }
+    supportedCollateral: [
+      {
+        name: "USDC",
+        address: "0xe22da380ee6b445bb8273c81944adeb6e8450422"
+      },
+      {
+        name: "aUSDC",
+        address: "0xe12afec5aa12cf614678f9bfeeb98ca9bb95b5b0"
+      }
+    ]
   },
   rinkeby: {
     oracles: {

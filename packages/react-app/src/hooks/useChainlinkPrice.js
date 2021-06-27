@@ -10,24 +10,24 @@ export default function useChainlinkPrice(symbol, provider) {
   useEffect(() => {
     let subscribed = true;
 
-    if (provider && symbol && network) {
+    if (provider && symbol && network && network.name) {
       let contract;
 
       if (symbol === "EUR") {
         contract = new Contract(
-          addresses[network].oracles.EUR_USD,
+          addresses[network.name].oracles.EUR_USD,
           AggregatorV3Interface,
           provider
         );
       } else if (symbol === "USDC") {
         contract = new Contract(
-          addresses[network].oracles.USDC_USD,
+          addresses[network.name].oracles.USDC_USD,
           AggregatorV3Interface,
           provider
         );
       } else if (symbol === "ETH") {
         contract = new Contract(
-          addresses[network].oracles.ETH_USD,
+          addresses[network.name].oracles.ETH_USD,
           AggregatorV3Interface,
           provider
         );

@@ -1,89 +1,62 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { parseUnits } from "@ethersproject/units";
+import useTokenBalances from "../hooks/useTokenBalances";
+import approve from "../utils/approve";
 import { Container, CoinInput } from "./";
-import { Contract } from "@ethersproject/contracts";
-import { formatUnits } from "@ethersproject/units";
-import erc20 from "../contracts/erc20.abi";
 import "./TransferWidget.scss";
-
-export const COINS_LIST = [];
 
 export default function TransferWidget({
   provider,
   addresses,
   perpetualContract,
-  userAddress
+  userAddress,
+  network
 }) {
-  const [aUSDCBalance, setaUSDCBalance] = useState(0);
-  const [USDCBalance, setUSDCBalance] = useState(0);
+  const balances = useTokenBalances(provider, network, userAddress);
+  const [widthdrawalCoin, setWithdrawalCoin] = useState();
+  const [depositCoin, setDepositCoin] = useState();
 
   const withdraw = () => {};
-  const deposit = () => {};
-
-  useEffect(() => {
-    let subscribed = true;
-    if (provider && addresses) {
-      // Get aUSDC Balance
-      new Contract(addresses.aUSDC, erc20, provider)
-        .balanceOf(userAddress)
-        .then(result => {
-          if (subscribed) {
-            setaUSDCBalance(formatUnits(result, 6));
-          }
+  const deposit = () => {
+    if (depositCoin.value <= depositCoin.balance && depositCoin.value > 0) {
+      let amount = parseUnits(depositCoin.value, 6);
+      approve(provider, depositCoin.address, amount)
+        .then(() => {
+          setTimeout(() => {
+            perpetualContract
+              .deposit(amount, depositCoin.address)
+              .then(result => {
+                console.log("Deposit Success!");
+              })
+              .catch(err => {
+                console.error("Deposit Error!", err);
+              });
+          }, 1000);
         })
         .catch(err => {
-          console.error(err);
-        });
-      // Get USDC Balance
-      new Contract(addresses.USDC, erc20, provider)
-        .balanceOf(userAddress)
-        .then(result => {
-          if (subscribed) {
-            setUSDCBalance(formatUnits(result, 6));
-          }
-        })
-        .catch(err => {
-          console.error(err);
+          console.error("Approval Error!", err);
         });
     }
-    return () => {
-      subscribed = false;
-    };
-  }, [provider, addresses, userAddress]);
+  };
 
   return (
     <Container className="deposits" title="Deposits / Withdraws">
       <div className=" row">
-        <CoinInput
-          coins={[
-            {
-              name: "aUSDC",
-              max: aUSDCBalance
-            },
-            {
-              name: "USDC",
-              max: USDCBalance
-            }
-          ]}
-          title="Deposit"
-          onChange={() => {}}
-        />
+        {balances && (
+          <CoinInput
+            coins={balances}
+            title="Deposit"
+            onChange={setDepositCoin}
+          />
+        )}
         <button onClick={deposit}>Deposit</button>
       </div>
       <div className=" row">
-        <CoinInput
-          coins={[
-            {
-              name: "aUSDC",
-              max: aUSDCBalance
-            },
-            {
-              name: "USDC",
-              max: USDCBalance
-            }
-          ]}
-          title="Widthdraw"
-          onChange={() => {}}
-        />
+        {/* <CoinInput */}
+        {/*   coins={} */}
+        {/*   title="Widthdraw" */}
+        {/*   onChange={() => {}} */}
+        {/* /> */}
         <button onClick={withdraw} className="red">
           Widthraw
         </button>
