@@ -83,6 +83,9 @@ function App() {
             provider={provider}
             loadWeb3Modal={loadWeb3Modal}
             logoutOfWeb3Modal={logoutOfWeb3Modal}
+            perpetualContract={perpetualContract}
+            addresses={addresses}
+            userAddress={userAddress}
           />
         </Route>
       </Router>

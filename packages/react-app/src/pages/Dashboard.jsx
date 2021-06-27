@@ -5,7 +5,10 @@ import "./Dashboard.scss";
 export default function Dashboard({
   provider,
   loadWeb3Modal,
-  logoutOfWeb3Modal
+  logoutOfWeb3Modal,
+  perpetualContract,
+  addresses,
+  userAddress
 }) {
   return (
     <div className="dashboard-container">
@@ -25,7 +28,12 @@ export default function Dashboard({
                 </div>
               </div>
             </Container>
-            <TransferWidget />
+            <TransferWidget
+              perpetualContract={perpetualContract}
+              provider={provider}
+              addresses={addresses}
+              userAddress={userAddress}
+            />
           </div>
           <div className="row">
             <Container className="positions" title="Positions">
