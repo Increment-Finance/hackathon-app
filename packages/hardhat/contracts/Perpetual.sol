@@ -15,8 +15,6 @@ import {Getter} from "./impl/Getter.sol";
 /// @notice You can only buy one type of perpetual and only use USDC as reserve
 
 contract Perpetual is Reserve, Oracle, MinterRedeemer {
-    using SafeERC20 for IERC20;
-
     /************************* constructor *************************/
 
     constructor(
