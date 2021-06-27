@@ -7,7 +7,8 @@ export default function Dashboard({
   loadWeb3Modal,
   logoutOfWeb3Modal,
   perpetualContract,
-  addresses
+  addresses,
+  userAddress
 }) {
   return (
     <div className="dashboard-container">
@@ -31,6 +32,7 @@ export default function Dashboard({
               perpetualContract={perpetualContract}
               provider={provider}
               addresses={addresses}
+              userAddress={userAddress}
             />
           </div>
           <div className="row">

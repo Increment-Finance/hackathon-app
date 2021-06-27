@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Container, CoinInput } from "./";
+import { Contract } from "@ethersproject/contracts";
+import { formatUnits } from "@ethersproject/units";
+import erc20 from "../contracts/erc20.abi";
 import "./TransferWidget.scss";
 
 export const COINS_LIST = [];
@@ -7,7 +10,8 @@ export const COINS_LIST = [];
 export default function TransferWidget({
   provider,
   addresses,
-  perpetualContract
+  perpetualContract,
+  userAddress
 }) {
   const [aUSDCBalance, setaUSDCBalance] = useState(0);
   const [USDCBalance, setUSDCBalance] = useState(0);
@@ -19,22 +23,22 @@ export default function TransferWidget({
     let subscribed = true;
     if (provider && addresses) {
       // Get aUSDC Balance
-      provider
-        .getBalance(addresses.aUSDC)
+      new Contract(addresses.aUSDC, erc20, provider)
+        .balanceOf(userAddress)
         .then(result => {
           if (subscribed) {
-            setaUSDCBalance(result.toNumber());
+            setaUSDCBalance(formatUnits(result, 6));
           }
         })
         .catch(err => {
           console.error(err);
         });
       // Get USDC Balance
-      provider
-        .getBalance(addresses.USDC)
+      new Contract(addresses.USDC, erc20, provider)
+        .balanceOf(userAddress)
         .then(result => {
           if (subscribed) {
-            setUSDCBalance(result.toNumber());
+            setUSDCBalance(formatUnits(result, 6));
           }
         })
         .catch(err => {
@@ -44,7 +48,7 @@ export default function TransferWidget({
     return () => {
       subscribed = false;
     };
-  }, [provider, addresses]);
+  }, [provider, addresses, userAddress]);
 
   return (
     <Container className="deposits" title="Deposits / Withdraws">

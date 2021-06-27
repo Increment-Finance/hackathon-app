@@ -19,6 +19,7 @@
     "@ethersproject/address": "^5.4.0",
     "@ethersproject/contracts": "^5.0.5",
     "@ethersproject/providers": "^5.0.12",
+    "@ethersproject/units": "^5.4.0",
     "@project/contracts": "^1.0.0",
     "@testing-library/dom": "^6.16.0",
     "@testing-library/jest-dom": "^4.2.4",
