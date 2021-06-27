@@ -41,7 +41,7 @@ contract Reserve is Getter {
         address account,
         address _token,
         uint256 _amount
-    ) public view returns (bool) {
+    ) internal view returns (bool) {
         uint256 newMarginRatio = _marginRatio(
             getPortfolioValue(account) - _amount * _assetValue(account, _token),
             getUnrealizedPnL(),
