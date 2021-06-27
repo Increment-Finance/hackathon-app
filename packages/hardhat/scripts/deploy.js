@@ -2,10 +2,11 @@
 /* eslint no-use-before-define: "warn" */
 const fs = require("fs");
 const chalk = require("chalk");
-const { config, ethers, tenderly, run } = require("hardhat");
+const { ethers } = require("hardhat");
 const { utils } = require("ethers");
-const R = require("ramda");
 const { getChainlinkOracles } = require("./helper/oracles.js")
+const { getTokenAddresses } = require("./helper/assets.js")
+
 
 const main = async () => {
 
@@ -15,40 +16,26 @@ const main = async () => {
   /************* DEPLOY CONTRACTS ******************/
 
 
-  // test data. Use BigNumber to avoid overflow
-  const supply = utils.parseEther("100000000000000000000"); 
+  // vAMM parameters
   const vUSDreserve = utils.parseEther("900000"); // 900 000 
   const vJPYreserve = utils.parseEther("100000000"); // 100 000 0000
-  const investAmount = utils.parseEther("100")
-  
+
   // Get chainlink oracles
   const chainlinkOracles = getChainlinkOracles("kovan");
-  const jpy_oracle = chainlinkOracles.JPY_USD;
-  const usdc_oracle = chainlinkOracles.USDC_USD;
   
-  // deploy contracts
-  const usdc = await deploy("mockERC20",
-  [  
-    supply, 
-    "USDC", 
-    "mockUSDC"
-  ]
-  );
+  // Get reserve assets 
+  const reserveAssets = getTokenAddresses("kovan");
 
-  const perpetual = await deploy("Perpetual", 
+  // deploy
+  await deploy("Perpetual", 
   [ 
     vJPYreserve, 
     vUSDreserve, 
-    jpy_oracle, 
-    [usdc.address], 
-    [usdc_oracle]
+    chainlinkOracles.JPY_USD, 
+    [reserveAssets.USDC], 
+    [chainlinkOracles.USDC_USD]
   ] 
   );
-
-  // approve spending
-  const deployerWallet = ethers.provider.getSigner()
-  await usdc.connect(deployerWallet).approve(perpetual.address, investAmount);
-
 
   console.log(
     " 💾  Artifacts (address, abi, and args) saved to: ",

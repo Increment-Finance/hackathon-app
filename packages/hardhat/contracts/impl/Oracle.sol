@@ -2,11 +2,13 @@
 pragma solidity 0.8.4;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
 import {Storage} from "./Storage.sol";
 
 /// @notice Initiates address of chainlink price oracles
 
-contract Oracle is Storage {
+contract Oracle is Storage, Ownable {
     /// @notice Inititates assets and their price oracles
     /// @param assets Address of reserve tokens
     /// @param oracles Price oracle of reserve tokens
@@ -32,5 +34,12 @@ contract Oracle is Storage {
             _TOKENS_.push(assets[i]);
             assetOracles[assets[i]] = oracles[i];
         }
+    }
+
+    function setReserveTokens(address[] memory assets, address[] memory oracles)
+        public
+        onlyOwner
+    {
+        _setAssetsOracles(assets, oracles);
     }
 }
