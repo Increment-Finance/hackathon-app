@@ -36,7 +36,7 @@ contract Reserve is Getter {
     }
 
     /// @notice Check if user withdrawing funds would exceed margin
-    /// TODO: optimize etPortfolioValue(account) - _amount * _assetValue(account, _token) calculation
+    /// TODO: optimize getPortfolioValue(account) - _amount * _assetValue(account, _token) calculation
     function _allowWithdrawal(
         address account,
         address _token,
@@ -54,14 +54,18 @@ contract Reserve is Getter {
 
     /**
      * @notice Withdraw ERC20 token from margin of the contract account.
-     * @param  _amount  Amount of USDC deposited
      * @param _token ERC20 token address
+     * @param  _amount  Amount of USDC deposited
      * @dev Only allows withdrawing tokens accounted in _TOKENS_ list
      */
     function withdraw(uint256 _amount, address _token) public {
         require(
             _amount <= balances[msg.sender].userReserve[_token],
             "Can not require more than in balance"
+        );
+        require(
+            _allowWithdrawal(msg.sender, _token, _amount),
+            "Withdrawal would result in Liquidation"
         );
         balances[msg.sender].userReserve[_token] -= _amount;
         SafeERC20.safeTransfer(IERC20(_token), msg.sender, _amount);
