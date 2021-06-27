@@ -1,5 +1,7 @@
 import React from "react";
+import { formatUnits } from "@ethersproject/units";
 import { Container, TransferWidget, NoWallet } from "../components";
+import useContractBalances from "../hooks/useContractBalances";
 import "./Dashboard.scss";
 
 export default function Dashboard({
@@ -11,21 +13,27 @@ export default function Dashboard({
   userAddress,
   network
 }) {
+  const { shorts, longs, portfolio } = useContractBalances(
+    perpetualContract,
+    userAddress,
+    network
+  );
+
   return (
     <div className="dashboard-container">
       {provider ? (
         <div className="dashboard-content">
           <div className="row">
             <Container className="holdings" title="Holdings">
-              <h1>$0</h1>
+              <h1>${portfolio / Math.pow(10, 14)}</h1>
               <div className="details">
                 <div className="legend">
                   <p>Total Available</p>
                   <p>Total Locked</p>
                 </div>
                 <div className="values">
-                  <p>$0</p>
-                  <p>$0</p>
+                  <p>$ -</p>
+                  <p>$ -</p>
                 </div>
               </div>
             </Container>
