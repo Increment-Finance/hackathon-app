@@ -35,7 +35,7 @@ contract MinterRedeemer is Getter, vAMM {
 
     /// @notice Check if user leverage allows operation
     function leverageIsFine(address account, uint256 _amount)
-        public
+        internal
         view
         returns (bool)
     {
