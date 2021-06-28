@@ -37,11 +37,11 @@ contract Reserve is Getter {
 
     /// @notice Check if user withdrawing funds would exceed margin
     /// TODO: optimize getPortfolioValue(account) - _amount * _assetValue(account, _token) calculation
-    function _allowWithdrawal(
+    function allowWithdrawal(
         address account,
         address _token,
         uint256 _amount
-    ) internal view returns (bool) {
+    ) public view returns (bool) {
         uint256 newPortfolioValue = getPortfolioValue(account) -
             _amount *
             getAssetPriceByTokenAddress(_token);
@@ -68,7 +68,7 @@ contract Reserve is Getter {
             "Can not require more than in balance"
         );
         require(
-            _allowWithdrawal(msg.sender, _token, _amount),
+            allowWithdrawal(msg.sender, _token, _amount),
             "Withdrawal would result in Liquidation"
         );
         balances[msg.sender].userReserve[_token] -= _amount;

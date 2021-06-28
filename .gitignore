@@ -28,3 +28,4 @@ packages/subgraph/src/types/
 *.pdf
 *.md
 *.drawio
+*.png

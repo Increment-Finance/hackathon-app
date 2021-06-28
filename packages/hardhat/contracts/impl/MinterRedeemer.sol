@@ -25,11 +25,27 @@ contract MinterRedeemer is Getter, vAMM {
 
     /************************* events *************************/
 
-    event buyEURUSDlong(uint256, address indexed);
-    event buyEURUSDshort(uint256, address indexed);
+    event buyEURUSDlong(
+        uint256 notional,
+        address indexed user,
+        uint256 eurlong
+    );
+    event buyEURUSDshort(
+        uint256 notional,
+        address indexed user,
+        uint256 eurshort
+    );
 
-    event sellEURUSDlong(uint256, address indexed);
-    event sellEURUSDshort(uint256, address indexed);
+    event sellEURUSDlong(
+        uint256 eurlong,
+        address indexed user,
+        address indexed reserve
+    );
+    event sellEURUSDshort(
+        uint256 eurshort,
+        address indexed user,
+        address indexed reserve
+    );
 
     /************************* functions *************************/
 
@@ -50,6 +66,13 @@ contract MinterRedeemer is Getter, vAMM {
     }
 
     /* go long EURUSD */
+    /// @notice Wrapper around MintLongEUR to simplifiy interaction with front-end
+    /// @param _leverage Initial Leverage factor of position
+    function MintLongWithLeverage(uint8 _leverage) public returns (uint256) {
+        require(_leverage <= 10, "Maximum initial leverage is 10");
+        uint256 notionalAmount = getPortfolioValue(msg.sender) * _leverage;
+        return MintLongEUR(notionalAmount);
+    }
 
     /// @notice Buys long EURUSD derivatives
     /// @param _amount Amount of EURUSD tokens to be bought
@@ -64,12 +87,12 @@ contract MinterRedeemer is Getter, vAMM {
             "Leverage factor is too high"
         );
 
-        uint256 EURUSDlongBought = _mintVUSD(_amount, pool);
+        uint256 EURUSDlongBought = _mintVUSD(_amount);
 
         balances[msg.sender].usdNotional += _amount;
         balances[msg.sender].EURUSDlong += EURUSDlongBought;
 
-        emit buyEURUSDlong(_amount, msg.sender);
+        emit buyEURUSDlong(_amount, msg.sender, EURUSDlongBought);
         return EURUSDlongBought;
     }
 
@@ -90,18 +113,28 @@ contract MinterRedeemer is Getter, vAMM {
         );
         balances[msg.sender].EURUSDlong -= _amount;
 
-        uint256 EURUSDlongSold = _mintVEUR(_amount, pool);
+        uint256 EURUSDlongSold = _mintVEUR(_amount);
         uint256 EURUSDlongBought = balances[msg.sender].usdNotional;
+        //console.log("EURUSDlongBought is", EURUSDlongBought);
+        //console.log("EURUSDlongSold is", EURUSDlongSold);
 
         if (EURUSDlongSold >= EURUSDlongBought) {
             uint256 amountOwed = (EURUSDlongSold - EURUSDlongBought);
             balances[msg.sender].userReserve[_redeemAsset] += amountOwed;
         } else if (EURUSDlongSold < EURUSDlongBought) {
-            uint256 amountPayed = EURUSDlongSold - EURUSDlongSold;
+            uint256 amountPayed = EURUSDlongBought - EURUSDlongSold;
             balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
         }
-        emit sellEURUSDlong(_amount, msg.sender);
+        emit sellEURUSDlong(_amount, msg.sender, _redeemAsset);
         return EURUSDlongSold;
+    }
+
+    /// @notice Wrapper around MintShortEUR to simplifiy interaction with front-end
+    /// @param _leverage Initial Leverage factor of position
+    function MintShortWithLeverage(uint8 _leverage) public returns (uint256) {
+        require(_leverage <= 10, "Maximum initial leverage is 10");
+        uint256 notionalAmount = getPortfolioValue(msg.sender) * _leverage;
+        return MintShortEUR(notionalAmount);
     }
 
     /// @notice Buys short EURUSD derivatives
@@ -116,12 +149,12 @@ contract MinterRedeemer is Getter, vAMM {
             leverageIsFine(msg.sender, _amount),
             "Leverage factor is too high"
         );
-        uint256 EURUSDshortBought = _burnVUSD(_amount, pool);
+        uint256 EURUSDshortBought = _burnVUSD(_amount);
 
         balances[msg.sender].usdNotional += _amount;
         balances[msg.sender].EURUSDshort += EURUSDshortBought;
-
-        emit buyEURUSDshort(_amount, msg.sender);
+        //console.log("EURUSDshortBought is", EURUSDshortBought);
+        emit buyEURUSDshort(_amount, msg.sender, EURUSDshortBought);
         return EURUSDshortBought;
     }
 
@@ -141,7 +174,7 @@ contract MinterRedeemer is Getter, vAMM {
 
         balances[msg.sender].EURUSDshort -= _amount;
 
-        uint256 EURUSDshortSold = _burnVEUR(_amount, pool);
+        uint256 EURUSDshortSold = _burnVEUR(_amount);
         uint256 EURUSDshortBought = balances[msg.sender].usdNotional;
 
         if (EURUSDshortSold >= EURUSDshortBought) {
@@ -151,7 +184,7 @@ contract MinterRedeemer is Getter, vAMM {
             uint256 amountPayed = (EURUSDshortBought - EURUSDshortSold);
             balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
         }
-        emit sellEURUSDshort(_amount, msg.sender);
+        emit sellEURUSDshort(_amount, msg.sender, _redeemAsset);
         return EURUSDshortSold;
     }
 }
