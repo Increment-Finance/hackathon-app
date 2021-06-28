@@ -113,35 +113,61 @@ contract Getter is Storage {
     }
 
     /// @notice Computes the unrealized PnL
+    /// @param account Address of user
     /// @return unrealized PnL
-    /// @dev to be implemented
-    function getUnrealizedPnL() public pure returns (uint256) {
-        return uint256(0);
+    function getUnrealizedPnL(address account)
+        public
+        view
+        returns (PerpetualTypes.UnrealizedPnL memory)
+    {
+        uint256 notionalAmount = getUserNotional(account);
+        uint256 boughtAmount = getLongBalance(account) +
+            getShortBalance(account);
+        uint256 simplifiedSellAmount = (boughtAmount * pool.price) / 10**18;
+
+        PerpetualTypes.UnrealizedPnL memory unrealizedPnL;
+        if (simplifiedSellAmount >= notionalAmount) {
+            unrealizedPnL.isPositive = true;
+            unrealizedPnL.amount = simplifiedSellAmount - notionalAmount;
+        } else {
+            unrealizedPnL.isPositive = false;
+            unrealizedPnL.amount = notionalAmount - simplifiedSellAmount;
+        }
+        return unrealizedPnL;
     }
 
     /// @notice Returns information about the margin ratio of a account
     /// @param account Address of account
     /// @return Margin ratio of account w/ 18 decimals
-
     function getUserMarginRatio(address account) public view returns (uint256) {
         return
             _marginRatio(
                 getPortfolioValue(account),
-                getUnrealizedPnL(),
+                getUnrealizedPnL(account),
                 getUserNotional(account)
             );
     }
 
     function _marginRatio(
         uint256 margin,
-        uint256 unrealizedPnL,
+        PerpetualTypes.UnrealizedPnL memory unrealizedPnL,
         uint256 notionalValue
     ) internal pure returns (uint256) {
         //console.log("Margin is", margin);
         //console.log("unrealizedPnL is", unrealizedPnL);
         //console.log("notionalValue is", notionalValue);
-        if (notionalValue == 0) {
-            return 0;
-        } else return ((margin + unrealizedPnL) * 10**18) / notionalValue;
+        uint256 marginRatio;
+        if (notionalValue > 0) {
+            if (unrealizedPnL.isPositive) {
+                marginRatio =
+                    ((margin + unrealizedPnL.amount) * 10**18) /
+                    notionalValue;
+            } else {
+                marginRatio =
+                    ((margin + unrealizedPnL.amount) * 10**18) /
+                    notionalValue;
+            }
+        }
+        return marginRatio;
     }
 }

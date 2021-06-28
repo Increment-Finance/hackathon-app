@@ -17,6 +17,10 @@ library PerpetualTypes {
         bool isPositive;
     }
 
+    struct UnrealizedPnL {
+        uint256 amount;
+        bool isPositive;
+    }
     struct Pool {
         uint256 vEUR;
         uint256 vUSD;

@@ -47,7 +47,7 @@ contract Reserve is Getter {
             getAssetPriceByTokenAddress(_token);
         uint256 newMarginRatio = _marginRatio(
             newPortfolioValue,
-            getUnrealizedPnL(),
+            getUnrealizedPnL(account),
             getUserNotional(account)
         );
 

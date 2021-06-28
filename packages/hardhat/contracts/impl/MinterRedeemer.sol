@@ -57,7 +57,7 @@ contract MinterRedeemer is Getter, vAMM {
     {
         uint256 newMarginRatio = _marginRatio(
             getPortfolioValue(account),
-            getUnrealizedPnL(),
+            getUnrealizedPnL(account),
             getUserNotional(account) + _amount
         );
         //console.log("newMarginRatio is: ", newMarginRatio);
