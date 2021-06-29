@@ -50,33 +50,67 @@ export default function Market({
     }
   }, [perpetualContract]);
 
-  useEffect(() => {
-    let subscribed = true;
-    if (leverage && perpetualContract) {
+  const openPosition = () => {
+    if (perpetualContract && leverage && portfolio && portfolio > 0) {
       if (isLong) {
-        perpetualContract.estimateGas
-          .MintLongWithLeverage(1)
-          .then(result => {
-            console.log(result);
+        perpetualContract
+          .MintLongWithLeverage(leverage)
+          .then(() => {
+            console.log("Successfully Minted Long!");
           })
           .catch(err => {
             console.error(err);
           });
       } else {
-        perpetualContract.estimateGas
+        perpetualContract
           .MintShortWithLeverage(leverage)
-          .then(result => {
-            console.log(result);
+          .then(() => {
+            console.log("Successfully Minted Short!");
           })
           .catch(err => {
             console.error(err);
           });
       }
     }
-    return () => {
-      subscribed = false;
-    };
-  }, [leverage, perpetualContract, isLong]);
+  };
+
+  // Calculate Gas Price
+  // useEffect(() => {
+  //   let subscribed = true;
+  //   if ((leverage && perpetualContract, portfolio)) {
+  //     if (isLong) {
+  //       perpetualContract.estimateGas
+  //         .MintLongEUR(portfolio)
+  //         .then(gas => {
+  //           if (subscribed) {
+  //             provider
+  //               .getGasPrice()
+  //               .then(result => {
+  //                 console.log(result.toNumber());
+  //               })
+  //               .catch(err => {
+  //                 console.error(err);
+  //               });
+  //           }
+  //         })
+  //         .catch(err => {
+  //           console.error(err);
+  //         });
+  //     } else {
+  //       perpetualContract.estimateGas
+  //         .MintShortWithLeverage(leverage)
+  //         .then(result => {
+  //           console.log(result);
+  //         })
+  //         .catch(err => {
+  //           console.error(err);
+  //         });
+  //     }
+  //   }
+  //   return () => {
+  //     subscribed = false;
+  //   };
+  // }, [leverage, perpetualContract, isLong, portfolio]);
 
   return (
     <div className="market-container">
@@ -187,14 +221,14 @@ export default function Market({
                   <List.Item.Meta title={"Entry Price"}></List.Item.Meta>
                   <div>{poolPrice / Math.pow(10, 14) || "-"}</div>
                 </List.Item>
-                <List.Item>
-                  <List.Item.Meta title={"Transaction Fee"}></List.Item.Meta>
-                  <div>-</div>
-                </List.Item>
-                <List.Item>
-                  <List.Item.Meta title={"Total Cost"}></List.Item.Meta>
-                  <div>-</div>
-                </List.Item>
+                {/* <List.Item> */}
+                {/*   <List.Item.Meta title={"Transaction Fee"}></List.Item.Meta> */}
+                {/*   <div>-</div> */}
+                {/* </List.Item> */}
+                {/* <List.Item> */}
+                {/*   <List.Item.Meta title={"Total Cost"}></List.Item.Meta> */}
+                {/*   <div>-</div> */}
+                {/* </List.Item> */}
               </List>
               <Form.Item>
                 <div className="submit-box">
@@ -209,6 +243,7 @@ export default function Market({
                       flexGrow: 1,
                       borderRadius: "10px"
                     }}
+                    onClick={openPosition}
                   >
                     Submit
                   </Button>

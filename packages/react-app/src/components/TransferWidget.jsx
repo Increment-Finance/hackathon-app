@@ -23,7 +23,7 @@ export default function TransferWidget({
       approve(provider, depositCoin.address, amount)
         .then(() => {
           setTimeout(() => {
-            perpetualContract.estimateGas
+            perpetualContract
               .deposit(amount, depositCoin.address)
               .then(result => {
                 console.log(result);
