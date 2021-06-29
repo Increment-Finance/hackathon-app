@@ -1,26 +1,82 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { formatUnits } from "@ethersproject/units";
+import { BigNumber } from "@ethersproject/bignumber";
 import { Form, Row, Col, Button, List } from "antd";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
 import "./Market.scss";
 import { IFSlider, CoinInput, NoWallet } from "../components";
 import useChainlinkPrice from "../hooks/useChainlinkPrice";
+import useContractBalances from "../hooks/useContractBalances";
 
-const COINS_LIST = [];
-
-export default function Market({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
+export default function Market({
+  provider,
+  loadWeb3Modal,
+  logoutOfWeb3Modal,
+  perpetualContract,
+  userAddress,
+  network
+}) {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
   const [symbol, setSymbol] = useState("FX:EURUSD");
+  const [poolPrice, setPoolPrice] = useState();
+  const [gasCost, setGasCost] = useState();
   const price = useChainlinkPrice("EUR", provider);
+  const { portfolio } = useContractBalances(
+    perpetualContract,
+    userAddress,
+    network
+  );
 
   const Symbols = { "EUR/USDC": "FX:EURUSD" };
 
-  const DetailItems = [
+  const detailItems = [
     "Entry Price",
     "Price Impact",
     "Transaction Fee",
     "Total Cost"
   ];
+
+  useEffect(() => {
+    if (perpetualContract) {
+      perpetualContract
+        .getPoolInfo()
+        .then(result => {
+          setPoolPrice(result.price.toNumber());
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
+  }, [perpetualContract]);
+
+  useEffect(() => {
+    let subscribed = true;
+    if (leverage && perpetualContract) {
+      if (isLong) {
+        perpetualContract.estimateGas
+          .MintLongWithLeverage(1)
+          .then(result => {
+            console.log(result);
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } else {
+        perpetualContract.estimateGas
+          .MintShortWithLeverage(leverage)
+          .then(result => {
+            console.log(result);
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      }
+    }
+    return () => {
+      subscribed = false;
+    };
+  }, [leverage, perpetualContract, isLong]);
 
   return (
     <div className="market-container">
@@ -91,8 +147,15 @@ export default function Market({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
             <Form>
               <Form.Item>
                 <CoinInput
-                  coins={COINS_LIST}
+                  coins={[
+                    {
+                      name: "USD",
+                      balance: 0
+                    }
+                  ]}
+                  disabled
                   title="Collateral"
+                  fixedValue={portfolio / Math.pow(10, 14)}
                   onChange={() => {}}
                 />
               </Form.Item>
@@ -117,16 +180,22 @@ export default function Market({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
               </div>
               <List
                 bordered
-                dataSource={DetailItems}
                 size="small"
-                renderItem={item => (
-                  <List.Item>
-                    <List.Item.Meta title={item}></List.Item.Meta>
-                    <div>-</div>
-                  </List.Item>
-                )}
                 style={{ borderRadius: "10px", marginBottom: "30px" }}
-              />
+              >
+                <List.Item>
+                  <List.Item.Meta title={"Entry Price"}></List.Item.Meta>
+                  <div>{poolPrice / Math.pow(10, 14) || "-"}</div>
+                </List.Item>
+                <List.Item>
+                  <List.Item.Meta title={"Transaction Fee"}></List.Item.Meta>
+                  <div>-</div>
+                </List.Item>
+                <List.Item>
+                  <List.Item.Meta title={"Total Cost"}></List.Item.Meta>
+                  <div>-</div>
+                </List.Item>
+              </List>
               <Form.Item>
                 <div className="submit-box">
                   <Button

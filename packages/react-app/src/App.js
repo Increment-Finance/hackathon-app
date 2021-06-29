@@ -73,6 +73,9 @@ function App() {
             provider={provider}
             loadWeb3Modal={loadWeb3Modal}
             logoutOfWeb3Modal={logoutOfWeb3Modal}
+            perpetualContract={perpetualContract}
+            userAddress={userAddress}
+            network={network}
           />
         </Route>
         <Route path="/dashboard">

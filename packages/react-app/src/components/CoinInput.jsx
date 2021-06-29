@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./CoinInput.scss";
 
-export default function CoinInput({ title, coins, onChange }) {
+export default function CoinInput({ title, coins, onChange, fixedValue }) {
   const [coin, setCoin] = useState(coins[0]);
   const [value, setValue] = useState("");
 
@@ -33,7 +33,9 @@ export default function CoinInput({ title, coins, onChange }) {
             {title}{" "}
             <span
               onClick={() => {
-                setValue(coin.balance);
+                if (!fixedValue) {
+                  setValue(coin.balance);
+                }
               }}
             >
               (Max {coin.balance})
@@ -41,10 +43,11 @@ export default function CoinInput({ title, coins, onChange }) {
           </p>
           <div className="input-container">
             <input
+              disabled={!!fixedValue}
               type="number"
               max={coin.balance}
               min={0}
-              value={value}
+              value={fixedValue || value}
               placeholder={0}
               onChange={e => {
                 setValue(e.nativeEvent.target.value);
@@ -52,6 +55,7 @@ export default function CoinInput({ title, coins, onChange }) {
             />
             <select
               id="coin-select"
+              disabled={!!fixedValue}
               onChange={e => {
                 changeCoin(e.nativeEvent.target.value);
               }}

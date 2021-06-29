@@ -136,14 +136,20 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "",
+        "name": "notional",
         "type": "uint256"
       },
       {
         "indexed": true,
         "internalType": "address",
-        "name": "",
+        "name": "user",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "eurlong",
+        "type": "uint256"
       }
     ],
     "name": "buyEURUSDlong",
@@ -155,14 +161,20 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "",
+        "name": "notional",
         "type": "uint256"
       },
       {
         "indexed": true,
         "internalType": "address",
-        "name": "",
+        "name": "user",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "eurshort",
+        "type": "uint256"
       }
     ],
     "name": "buyEURUSDshort",
@@ -174,13 +186,19 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "",
+        "name": "eurlong",
         "type": "uint256"
       },
       {
         "indexed": true,
         "internalType": "address",
-        "name": "",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "reserve",
         "type": "address"
       }
     ],
@@ -193,13 +211,19 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "",
+        "name": "eurshort",
         "type": "uint256"
       },
       {
         "indexed": true,
         "internalType": "address",
-        "name": "",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "reserve",
         "type": "address"
       }
     ],
@@ -228,12 +252,50 @@ module.exports = [
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "_leverage",
+        "type": "uint8"
+      }
+    ],
+    "name": "MintLongWithLeverage",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
       }
     ],
     "name": "MintShortEUR",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "_leverage",
+        "type": "uint8"
+      }
+    ],
+    "name": "MintShortWithLeverage",
     "outputs": [
       {
         "internalType": "uint256",
@@ -306,6 +368,35 @@ module.exports = [
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "allowWithdrawal",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -553,16 +644,34 @@ module.exports = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
     "name": "getUnrealizedPnL",
     "outputs": [
       {
-        "internalType": "uint256",
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "isPositive",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct PerpetualTypes.UnrealizedPnL",
         "name": "",
-        "type": "uint256"
+        "type": "tuple"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
