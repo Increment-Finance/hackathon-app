@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { formatUnits } from "@ethersproject/units";
+import { formatEther } from "@ethersproject/units";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Form, Row, Col, Button, List } from "antd";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
@@ -14,7 +14,7 @@ export default function Market({
   logoutOfWeb3Modal,
   perpetualContract,
   userAddress,
-  network
+  network,
 }) {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
@@ -34,17 +34,24 @@ export default function Market({
     "Entry Price",
     "Price Impact",
     "Transaction Fee",
-    "Total Cost"
+    "Total Cost",
   ];
 
+  const formatPoolPrice = (price) => {
+    if (price) {
+      let etherBalance = formatEther(price.toString());
+      let floatBalance = parseFloat(etherBalance);
+      return floatBalance.toFixed(4);
+    }
+  };
   useEffect(() => {
     if (perpetualContract) {
       perpetualContract
         .getPoolInfo()
-        .then(result => {
+        .then((result) => {
           setPoolPrice(result.price.toNumber());
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
     }
@@ -58,7 +65,7 @@ export default function Market({
           .then(() => {
             console.log("Successfully Minted Long!");
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err);
           });
       } else {
@@ -67,7 +74,7 @@ export default function Market({
           .then(() => {
             console.log("Successfully Minted Short!");
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err);
           });
       }
@@ -122,7 +129,7 @@ export default function Market({
               <select
                 className="symbol-select"
                 id="symbol-select"
-                onChange={e => {
+                onChange={(e) => {
                   setSymbol(e.nativeEvent.target.value);
                 }}
               >
@@ -145,7 +152,7 @@ export default function Market({
                   border: "1px solid #E5E5E5",
                   borderRight: "none",
                   boxShadow: "none",
-                  flexGrow: 1
+                  flexGrow: 1,
                 }}
                 onClick={() => setIsLong(true)}
               >
@@ -161,7 +168,7 @@ export default function Market({
                   border: "1px solid #E5E5E5",
                   borderLeft: "none",
                   boxShadow: "none",
-                  flexGrow: 1
+                  flexGrow: 1,
                 }}
                 onClick={() => setIsLong(false)}
               >
@@ -184,8 +191,8 @@ export default function Market({
                   coins={[
                     {
                       name: "USD",
-                      balance: 0
-                    }
+                      balance: 0,
+                    },
                   ]}
                   disabled
                   title="Collateral"
@@ -205,7 +212,7 @@ export default function Market({
                   min={1}
                   max={10}
                   defaultValue={leverage}
-                  onSlide={value => setLeverage(value)}
+                  onSlide={(value) => setLeverage(value)}
                   isLong={isLong}
                 />
               </Form.Item>
@@ -219,7 +226,7 @@ export default function Market({
               >
                 <List.Item>
                   <List.Item.Meta title={"Entry Price"}></List.Item.Meta>
-                  <div>{poolPrice / Math.pow(10, 14) || "-"}</div>
+                  <div>{formatPoolPrice(poolPrice) || "-"}</div>
                 </List.Item>
                 {/* <List.Item> */}
                 {/*   <List.Item.Meta title={"Transaction Fee"}></List.Item.Meta> */}
@@ -241,7 +248,7 @@ export default function Market({
                       border: "1px solid #E5E5E5",
                       boxShadow: "none",
                       flexGrow: 1,
-                      borderRadius: "10px"
+                      borderRadius: "10px",
                     }}
                     onClick={openPosition}
                   >
