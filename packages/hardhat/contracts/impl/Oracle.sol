@@ -10,36 +10,41 @@ import {Storage} from "./Storage.sol";
 
 contract Oracle is Storage, Ownable {
     /// @notice Inititates assets and their price oracles
-    /// @param assets Address of reserve tokens
-    /// @param oracles Price oracle of reserve tokens
+    /// @param _assets Address of reserve tokens
+    /// @param _oracles Price oracle of reserve tokens
+    /// @param _isAaveToken Reserve token is aToken
     /// @param _euroOracle EUR/USD oracle address
     constructor(
-        address[] memory assets,
-        address[] memory oracles,
+        address[] memory _assets,
+        address[] memory _oracles,
+        bool[] memory _isAaveToken,
         address _euroOracle
     ) {
-        _setAssetsOracles(assets, oracles);
+        _setAssetsOracles(_assets, _oracles, _isAaveToken);
         euroOracle = _euroOracle;
     }
 
     function _setAssetsOracles(
-        address[] memory assets,
-        address[] memory oracles
+        address[] memory _assets,
+        address[] memory _oracles,
+        bool[] memory _isAaveToken
     ) internal {
         require(
-            assets.length == oracles.length,
+            _assets.length == _oracles.length,
             "Number of assets and oracles not equal"
         );
-        for (uint256 i = 0; i < assets.length; i++) {
-            _TOKENS_.push(assets[i]);
-            assetOracles[assets[i]] = oracles[i];
+        for (uint256 i = 0; i < _assets.length; i++) {
+            _TOKENS_.push(_assets[i]);
+            assetOracles[_assets[i]] = _oracles[i];
+            isAaveToken[_assets[i]] = _isAaveToken[i];
         }
     }
 
-    function setReserveTokens(address[] memory assets, address[] memory oracles)
-        public
-        onlyOwner
-    {
-        _setAssetsOracles(assets, oracles);
+    function setReserveTokens(
+        address[] memory _assets,
+        address[] memory _oracles,
+        bool[] memory _isAaveToken
+    ) public onlyOwner {
+        _setAssetsOracles(_assets, _oracles, _isAaveToken);
     }
 }

@@ -108,7 +108,7 @@ contract Getter is Storage {
     {
         address oracleAddress = getAssetOracle(token);
         uint256 tokenValue = getReserveBalance(account, token) *
-            getAssetPrice(oracleAddress);
+            getAssetPrice(oracleAddress) / 10 ** 8;
         return tokenValue;
     }
 

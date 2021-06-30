@@ -22,9 +22,15 @@ contract Perpetual is Reserve, Oracle, MinterRedeemer {
         uint256 _baseAssetReserve,
         address _euroOracleAddress,
         address[] memory _reserveTokens,
-        address[] memory _reserveOracles
+        address[] memory _reserveOracles,
+        bool[] memory _isAaveToken
     )
-        Oracle(_reserveTokens, _reserveOracles, _euroOracleAddress)
+        Oracle(
+            _reserveTokens,
+            _reserveOracles,
+            _isAaveToken,
+            _euroOracleAddress
+        )
         MinterRedeemer(_quoteAssetReserve, _baseAssetReserve)
     {}
 }

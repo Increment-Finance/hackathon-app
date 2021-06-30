@@ -1,4 +1,5 @@
 {
   "solidity.packageDefaultDependenciesContractsDirectory": "",
-  "solidity.packageDefaultDependenciesDirectory": "packages/hardhat/node_modules"
+  "solidity.packageDefaultDependenciesDirectory": "packages/hardhat/node_modules",
+  "git.terminalAuthentication": false
 }

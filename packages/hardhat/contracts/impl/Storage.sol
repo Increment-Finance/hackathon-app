@@ -18,6 +18,9 @@ contract Storage {
 
     // reserve assets
     address[] public _TOKENS_;
+
+    // Aave integration
+    mapping(address => address) LendingPool; /// @dev later: used to scale balances
     mapping(address => bool) isAaveToken; /// @dev later: used to scale balances
 
     // oracles

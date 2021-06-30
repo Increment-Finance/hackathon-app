@@ -27,6 +27,9 @@ describe("Increment App", function () {
           owner.address,
           utils.parseEther("55524.708495280399777902")
         );
+      expect(
+        await contracts.perpetual.getPortfolioValue(owner.address)
+      ).to.be.equal(data.depositAmount);
     });
     it("Can go short EURUSD ", async function () {
       await contracts.usdc

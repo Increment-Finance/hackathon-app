@@ -5,12 +5,18 @@ const deployContracts = async (data) => {
 
   [owner, bob, alice, ...addrs] = await ethers.getSigners();
 
-  // initialize contracts
-  let usdc, perpetual, euro_oracle, usdc_oracle;
-
+  // Chainlink oracles
+  const decimals = 8;
+  const initialPrice = utils.parseUnits("1", decimals);
   const ChainlinkOracle = await ethers.getContractFactory("MockV3Aggregator");
-  contracts.euro_oracle = await ChainlinkOracle.connect(owner).deploy(8, 1);
-  contracts.usdc_oracle = await ChainlinkOracle.connect(owner).deploy(8, 1);
+  contracts.euro_oracle = await ChainlinkOracle.connect(owner).deploy(
+    8,
+    initialPrice
+  );
+  contracts.usdc_oracle = await ChainlinkOracle.connect(owner).deploy(
+    8,
+    initialPrice
+  );
 
   // USDC reserve
   const USDC = await ethers.getContractFactory("mockERC20");
@@ -27,7 +33,8 @@ const deployContracts = async (data) => {
     data.vUSDreserve,
     contracts.euro_oracle.address,
     [contracts.usdc.address],
-    [contracts.usdc_oracle.address]
+    [contracts.usdc_oracle.address],
+    [false]
   );
   return contracts;
 };
