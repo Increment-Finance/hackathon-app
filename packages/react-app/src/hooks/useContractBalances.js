@@ -47,8 +47,8 @@ export default function useContractBalances(
       longs,
       portfolio,
       coins,
-      marginRatio,
-      pnl: isPositive ? pnlAmount.toNumber() : -pnlAmount.toNumber()
+      marginRatio
+      // pnl: isPositive ? pnlAmount.toNumber() : -pnlAmount.toNumber()
     };
   };
 

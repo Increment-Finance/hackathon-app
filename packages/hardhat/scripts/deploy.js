@@ -4,38 +4,33 @@ const fs = require("fs");
 const chalk = require("chalk");
 const { ethers } = require("hardhat");
 const { utils } = require("ethers");
-const { getChainlinkOracles } = require("./helper/oracles.js")
-const { getTokenAddresses } = require("./helper/assets.js")
-
+const { getChainlinkOracles } = require("./helper/oracles.js");
+const { getTokenAddresses } = require("./helper/assets.js");
 
 const main = async () => {
-
   console.log("\n\n 📡 Deploying...\n");
-
 
   /************* DEPLOY CONTRACTS ******************/
 
-
   // vAMM parameters
-  const vUSDreserve = utils.parseEther("900000"); // 900 000 
+  const vUSDreserve = utils.parseEther("900000"); // 900 000
   const vJPYreserve = utils.parseEther("100000000"); // 100 000 0000
 
   // Get chainlink oracles
   const chainlinkOracles = getChainlinkOracles("kovan");
-  
-  // Get reserve assets 
+
+  // Get reserve assets
   const reserveAssets = getTokenAddresses("kovan");
 
   // deploy
-  await deploy("Perpetual", 
-  [ 
-    vJPYreserve, 
-    vUSDreserve, 
-    chainlinkOracles.JPY_USD, 
-    [reserveAssets.USDC], 
-    [chainlinkOracles.USDC_USD]
-  ] 
-  );
+  await deploy("Perpetual", [
+    vJPYreserve,
+    vUSDreserve,
+    chainlinkOracles.JPY_USD,
+    [reserveAssets.USDC],
+    [chainlinkOracles.USDC_USD],
+    [false],
+  ]);
 
   console.log(
     " 💾  Artifacts (address, abi, and args) saved to: ",
@@ -44,19 +39,30 @@ const main = async () => {
   );
 };
 
-const deploy = async (contractName, _args = [], overrides = {}, libraries = {}) => {
+const deploy = async (
+  contractName,
+  _args = [],
+  overrides = {},
+  libraries = {}
+) => {
   console.log(` 🛰  Deploying: ${contractName}`);
 
   const contractArgs = _args || [];
-  const contractArtifacts = await ethers.getContractFactory(contractName,{libraries: libraries});
+  const contractArtifacts = await ethers.getContractFactory(contractName, {
+    libraries: libraries,
+  });
   const deployed = await contractArtifacts.deploy(...contractArgs, overrides);
 
   fs.writeFileSync(`artifacts/${contractName}.address`, deployed.address);
-  
-  let extraGasInfo = ""
-  if(deployed&&deployed.deployTransaction){
-    const gasUsed = deployed.deployTransaction.gasLimit.mul(deployed.deployTransaction.gasPrice)
-    extraGasInfo = `${utils.formatEther(gasUsed)} ETH, tx hash ${deployed.deployTransaction.hash}`
+
+  let extraGasInfo = "";
+  if (deployed && deployed.deployTransaction) {
+    const gasUsed = deployed.deployTransaction.gasLimit.mul(
+      deployed.deployTransaction.gasPrice
+    );
+    extraGasInfo = `${utils.formatEther(gasUsed)} ETH, tx hash ${
+      deployed.deployTransaction.hash
+    }`;
   }
 
   console.log(
@@ -65,14 +71,10 @@ const deploy = async (contractName, _args = [], overrides = {}, libraries = {}) 
     "deployed to:",
     chalk.magenta(deployed.address)
   );
-  console.log(
-    " ⛽",
-    chalk.grey(extraGasInfo)
-  );
+  console.log(" ⛽", chalk.grey(extraGasInfo));
 
   return deployed;
 };
-
 
 // ------ utils -------
 

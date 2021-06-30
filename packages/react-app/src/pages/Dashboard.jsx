@@ -1,5 +1,6 @@
 import React from "react";
-import { formatUnits } from "@ethersproject/units";
+import { formatUnits, parseEther } from "@ethersproject/units";
+import addresses from "../utils/addresses";
 import { Container, TransferWidget, NoWallet } from "../components";
 import useContractBalances from "../hooks/useContractBalances";
 import "./Dashboard.scss";
@@ -9,7 +10,6 @@ export default function Dashboard({
   loadWeb3Modal,
   logoutOfWeb3Modal,
   perpetualContract,
-  addresses,
   userAddress,
   network
 }) {
@@ -19,8 +19,32 @@ export default function Dashboard({
     network
   );
 
-  const redeemLong = () => {};
-  const redeemShort = () => {};
+  const redeemLong = () => {
+    perpetualContract
+      .RedeemLongEUR(
+        parseEther(longs.toString()),
+        addresses[network.name].supportedCollateral[0].address
+      )
+      .then(result => {
+        console.log("Closed Position Successfully", result);
+      })
+      .catch(err => {
+        console.err("Couldn't Close Position", err);
+      });
+  };
+  const redeemShort = () => {
+    perpetualContract
+      .RedeemShortEUR(
+        parseEther(shorts.toString()),
+        addresses[network.name].supportedCollateral[0].address
+      )
+      .then(result => {
+        console.log("Closed Position Successfully", result);
+      })
+      .catch(err => {
+        console.err("Couldn't Close Position", err);
+      });
+  };
 
   return (
     <div className="dashboard-container">

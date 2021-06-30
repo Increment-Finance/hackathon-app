@@ -25,6 +25,11 @@ module.exports = [
         "internalType": "address[]",
         "name": "_reserveOracles",
         "type": "address[]"
+      },
+      {
+        "internalType": "bool[]",
+        "name": "_isAaveToken",
+        "type": "bool[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -736,13 +741,18 @@ module.exports = [
     "inputs": [
       {
         "internalType": "address[]",
-        "name": "assets",
+        "name": "_assets",
         "type": "address[]"
       },
       {
         "internalType": "address[]",
-        "name": "oracles",
+        "name": "_oracles",
         "type": "address[]"
+      },
+      {
+        "internalType": "bool[]",
+        "name": "_isAaveToken",
+        "type": "bool[]"
       }
     ],
     "name": "setReserveTokens",
