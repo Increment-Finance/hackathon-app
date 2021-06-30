@@ -14,30 +14,21 @@ export default function Market({
   logoutOfWeb3Modal,
   perpetualContract,
   userAddress,
-  network,
+  network
 }) {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
   const [symbol, setSymbol] = useState("FX:EURUSD");
   const [poolPrice, setPoolPrice] = useState();
-  const [gasCost, setGasCost] = useState();
   const price = useChainlinkPrice("EUR", provider);
-  const { portfolio } = useContractBalances(
+  const { shorts, longs, portfolio } = useContractBalances(
     perpetualContract,
     userAddress,
     network
   );
 
   const Symbols = { "EUR/USDC": "FX:EURUSD" };
-
-  const detailItems = [
-    "Entry Price",
-    "Price Impact",
-    "Transaction Fee",
-    "Total Cost",
-  ];
-
-  const formatPoolPrice = (price) => {
+  const formatPoolPrice = price => {
     if (price) {
       let etherBalance = formatEther(price.toString());
       let floatBalance = parseFloat(etherBalance);
@@ -48,10 +39,10 @@ export default function Market({
     if (perpetualContract) {
       perpetualContract
         .getPoolInfo()
-        .then((result) => {
+        .then(result => {
           setPoolPrice(result.price.toNumber());
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
         });
     }
@@ -65,7 +56,7 @@ export default function Market({
           .then(() => {
             console.log("Successfully Minted Long!");
           })
-          .catch((err) => {
+          .catch(err => {
             console.error(err);
           });
       } else {
@@ -74,50 +65,12 @@ export default function Market({
           .then(() => {
             console.log("Successfully Minted Short!");
           })
-          .catch((err) => {
+          .catch(err => {
             console.error(err);
           });
       }
     }
   };
-
-  // Calculate Gas Price
-  // useEffect(() => {
-  //   let subscribed = true;
-  //   if ((leverage && perpetualContract, portfolio)) {
-  //     if (isLong) {
-  //       perpetualContract.estimateGas
-  //         .MintLongEUR(portfolio)
-  //         .then(gas => {
-  //           if (subscribed) {
-  //             provider
-  //               .getGasPrice()
-  //               .then(result => {
-  //                 console.log(result.toNumber());
-  //               })
-  //               .catch(err => {
-  //                 console.error(err);
-  //               });
-  //           }
-  //         })
-  //         .catch(err => {
-  //           console.error(err);
-  //         });
-  //     } else {
-  //       perpetualContract.estimateGas
-  //         .MintShortWithLeverage(leverage)
-  //         .then(result => {
-  //           console.log(result);
-  //         })
-  //         .catch(err => {
-  //           console.error(err);
-  //         });
-  //     }
-  //   }
-  //   return () => {
-  //     subscribed = false;
-  //   };
-  // }, [leverage, perpetualContract, isLong, portfolio]);
 
   return (
     <div className="market-container">
@@ -129,7 +82,7 @@ export default function Market({
               <select
                 className="symbol-select"
                 id="symbol-select"
-                onChange={(e) => {
+                onChange={e => {
                   setSymbol(e.nativeEvent.target.value);
                 }}
               >
@@ -152,7 +105,7 @@ export default function Market({
                   border: "1px solid #E5E5E5",
                   borderRight: "none",
                   boxShadow: "none",
-                  flexGrow: 1,
+                  flexGrow: 1
                 }}
                 onClick={() => setIsLong(true)}
               >
@@ -168,7 +121,7 @@ export default function Market({
                   border: "1px solid #E5E5E5",
                   borderLeft: "none",
                   boxShadow: "none",
-                  flexGrow: 1,
+                  flexGrow: 1
                 }}
                 onClick={() => setIsLong(false)}
               >
@@ -191,12 +144,12 @@ export default function Market({
                   coins={[
                     {
                       name: "USD",
-                      balance: 0,
-                    },
+                      balance: 0
+                    }
                   ]}
                   disabled
                   title="Collateral"
-                  fixedValue={portfolio / Math.pow(10, 14)}
+                  fixedValue={portfolio}
                   onChange={() => {}}
                 />
               </Form.Item>
@@ -212,7 +165,7 @@ export default function Market({
                   min={1}
                   max={10}
                   defaultValue={leverage}
-                  onSlide={(value) => setLeverage(value)}
+                  onSlide={value => setLeverage(value)}
                   isLong={isLong}
                 />
               </Form.Item>
@@ -239,21 +192,25 @@ export default function Market({
               </List>
               <Form.Item>
                 <div className="submit-box">
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    size="large"
-                    style={{
-                      background: isLong ? "#28A644" : "#E54848",
-                      border: "1px solid #E5E5E5",
-                      boxShadow: "none",
-                      flexGrow: 1,
-                      borderRadius: "10px",
-                    }}
-                    onClick={openPosition}
-                  >
-                    Submit
-                  </Button>
+                  {shorts === 0 && longs === 0 ? (
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      size="large"
+                      style={{
+                        background: isLong ? "#28A644" : "#E54848",
+                        border: "1px solid #E5E5E5",
+                        boxShadow: "none",
+                        flexGrow: 1,
+                        borderRadius: "10px"
+                      }}
+                      onClick={openPosition}
+                    >
+                      Submit
+                    </Button>
+                  ) : (
+                    <p>Must have no open positions.</p>
+                  )}
                 </div>
               </Form.Item>
             </Form>

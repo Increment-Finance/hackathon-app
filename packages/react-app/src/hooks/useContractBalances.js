@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatUnits, formatEther } from "@ethersproject/units";
 import addresses from "../utils/addresses";
 
 export default function useContractBalances(
@@ -10,17 +11,26 @@ export default function useContractBalances(
   const [longs, setLongs] = useState();
   const [portfolio, setPortfolio] = useState();
   const [coins, setCoins] = useState();
+  const [marginRatio, setMarginRatio] = useState();
+  const [pnl, setPnl] = useState();
 
   const getContractInfo = async () => {
-    const shorts = (
-      await perpetualContract.getShortBalance(userAddress)
-    ).toNumber();
-    const longs = (
-      await perpetualContract.getLongBalance(userAddress)
-    ).toNumber();
-    const portfolio = (
-      await perpetualContract.getPortfolioValue(userAddress)
-    ).toNumber();
+    const shorts = Number(
+      formatEther(await perpetualContract.getShortBalance(userAddress))
+    );
+    const longs = Number(
+      formatEther(await perpetualContract.getLongBalance(userAddress))
+    );
+    const portfolio = Number(
+      formatUnits(await perpetualContract.getPortfolioValue(userAddress), 14)
+    );
+    const marginRatio = Number(
+      formatEther(await perpetualContract.getUserMarginRatio(userAddress))
+    );
+    const [pnlAmount, isPositive] = await perpetualContract.getUnrealizedPnL(
+      userAddress
+    );
+
     let coins = [];
     for (let i in addresses[network.name].supportedCollateral) {
       let coin = addresses[network.name].supportedCollateral[i];
@@ -36,7 +46,9 @@ export default function useContractBalances(
       shorts,
       longs,
       portfolio,
-      coins
+      coins,
+      marginRatio,
+      pnl: isPositive ? pnlAmount.toNumber() : -pnlAmount.toNumber()
     };
   };
 
@@ -56,6 +68,8 @@ export default function useContractBalances(
             setLongs(result.longs);
             setPortfolio(result.portfolio);
             setCoins(result.coins);
+            setMarginRatio(result.marginRatio);
+            setPnl(result.pnl);
           }
         })
         .catch(err => {
@@ -68,5 +82,5 @@ export default function useContractBalances(
     };
   }, [perpetualContract, userAddress, network]);
 
-  return { shorts, longs, portfolio, coins };
+  return { shorts, longs, portfolio, coins, pnl, marginRatio };
 }

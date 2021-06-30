@@ -13,11 +13,14 @@ export default function Dashboard({
   userAddress,
   network
 }) {
-  const { shorts, longs, portfolio } = useContractBalances(
+  const { shorts, longs, pnl, marginRatio, portfolio } = useContractBalances(
     perpetualContract,
     userAddress,
     network
   );
+
+  const redeemLong = () => {};
+  const redeemShort = () => {};
 
   return (
     <div className="dashboard-container">
@@ -25,7 +28,7 @@ export default function Dashboard({
         <div className="dashboard-content">
           <div className="row">
             <Container className="holdings" title="Holdings">
-              <h1>${portfolio / Math.pow(10, 14)}</h1>
+              <h1>${portfolio?.toFixed(5)}</h1>
               <div className="details">
                 <div className="legend">
                   <p>Total Available</p>
@@ -46,7 +49,7 @@ export default function Dashboard({
             />
           </div>
           <div className="row">
-            <Container className="positions" title="Positions">
+            <Container className="positions" title="Open Positions">
               <table>
                 <thead>
                   <tr>
@@ -60,28 +63,21 @@ export default function Dashboard({
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>EUR/USD</td>
-                    <td>$23</td>
-                    <td>1.24</td>
-                    <td>1.87</td>
-                    <td>0.43%</td>
-                    <td>23%</td>
-                    <td>
-                      <button>Close</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>EUR/USD</td>
-                    <td>$23</td>
-                    <td>1.24</td>
-                    <td>1.87</td>
-                    <td>0.43%</td>
-                    <td>23%</td>
-                    <td>
-                      <button>Close</button>
-                    </td>
-                  </tr>
+                  {(shorts > 0 || longs > 0) && (
+                    <tr>
+                      <td>EUR/USD</td>
+                      <td>{shorts > 0 ? shorts : longs}</td>
+                      <td>???</td>
+                      <td>???</td>
+                      <td>{marginRatio}</td>
+                      <td>{pnl}</td>
+                      <td>
+                        <button onClick={shorts > 0 ? redeemShort : redeemLong}>
+                          Close
+                        </button>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Container>
