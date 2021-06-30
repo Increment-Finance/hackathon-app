@@ -4,6 +4,8 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+import {IAToken} from "./InterfaceAave/iaToken/IAToken.sol";
+import {ILendingPool} from "./InterfaceAave/lendingPool/ILendingPool.sol";
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Getter} from "./Getter.sol";
 
@@ -25,13 +27,27 @@ contract Reserve is Getter {
      * @param _token ERC20 token address
      */
     function deposit(uint256 _amount, address _token) public {
-        SafeERC20.safeTransferFrom(
-            IERC20(_token),
-            msg.sender,
-            address(this),
-            _amount
-        );
-        balances[msg.sender].userReserve[_token] += _amount;
+        if (isAaveToken[_token]) {
+            SafeERC20.safeTransferFrom(
+                IERC20(_token),
+                msg.sender,
+                address(this),
+                _amount
+            );
+            ILendingPool lendingpool = ILendingPool(LendingPool[_token]);
+            uint256 scaledAmount = _amount /
+                lendingpool.getReserveNormalizedIncome(_token);
+            balances[msg.sender].userReserve[_token] += scaledAmount;
+        } else {
+            SafeERC20.safeTransferFrom(
+                IERC20(_token),
+                msg.sender,
+                address(this),
+                _amount
+            );
+            balances[msg.sender].userReserve[_token] += _amount;
+        }
+
         emit Deposit(_amount, msg.sender, _token);
     }
 
@@ -43,8 +59,9 @@ contract Reserve is Getter {
         uint256 _amount
     ) public view returns (bool) {
         uint256 newPortfolioValue = getPortfolioValue(account) -
-            _amount *
-            getAssetPriceByTokenAddress(_token);
+            (_amount * getAssetPriceByTokenAddress(_token)) /
+            10**8;
+
         uint256 newMarginRatio = _marginRatio(
             newPortfolioValue,
             getUnrealizedPnL(account),
@@ -72,7 +89,15 @@ contract Reserve is Getter {
             "Withdrawal would result in Liquidation"
         );
         balances[msg.sender].userReserve[_token] -= _amount;
-        SafeERC20.safeTransfer(IERC20(_token), msg.sender, _amount);
+        if (isAaveToken[_token]) {
+            ILendingPool lendingpool = ILendingPool(LendingPool[_token]);
+            uint256 unscaledAmount = _amount *
+                lendingpool.getReserveNormalizedIncome(_token);
+            SafeERC20.safeTransfer(IERC20(_token), msg.sender, unscaledAmount);
+        } else {
+            SafeERC20.safeTransfer(IERC20(_token), msg.sender, _amount);
+        }
+
         emit Withdraw(_amount, msg.sender, _token);
     }
 }

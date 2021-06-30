@@ -35,6 +35,23 @@ describe("Increment App", function () {
       )
         .to.emit(contracts.perpetual, "Deposit")
         .withArgs(data.depositAmount, owner.address, contracts.usdc.address);
+
+      expect(
+        await contracts.perpetual.getAssetValue(
+          owner.address,
+          contracts.usdc.address
+        )
+      ).to.be.equal(data.depositAmount);
+
+      expect(
+        await contracts.perpetual.getPortfolioValue(owner.address)
+      ).to.be.equal(data.depositAmount);
+      console.log(
+        "Portfolio value is",
+        utils.formatEther(
+          await contracts.perpetual.getPortfolioValue(owner.address)
+        )
+      );
     });
     it("Should withdraw USDC", async function () {
       await contracts.usdc
