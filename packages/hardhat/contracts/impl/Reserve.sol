@@ -4,8 +4,8 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import {IAToken} from "./InterfaceAave/iaToken/IAToken.sol";
-import {ILendingPool} from "./InterfaceAave/lendingPool/ILendingPool.sol";
+import {IAToken} from "../interfaces/InterfaceAave/iaToken/IAToken.sol";
+import {ILendingPool} from "../interfaces/InterfaceAave/lendingPool/ILendingPool.sol";
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Getter} from "./Getter.sol";
 
@@ -28,6 +28,10 @@ contract Reserve is Getter {
      */
     function deposit(uint256 _amount, address _token) public {
         if (isAaveToken[_token]) {
+            require(
+                LendingPool[_token] != address(0),
+                "Lending pool address required"
+            );
             SafeERC20.safeTransferFrom(
                 IERC20(_token),
                 msg.sender,

@@ -47,4 +47,13 @@ contract Oracle is Storage, Ownable {
     ) public onlyOwner {
         _setAssetsOracles(_assets, _oracles, _isAaveToken);
     }
+
+    function setLendingPool(
+        address[] memory _aTokens,
+        address[] memory _lendingpools
+    ) public onlyOwner {
+        for (uint256 i = 0; i < _aTokens.length; i++) {
+            LendingPool[_aTokens[i]] = _lendingpools[i];
+        }
+    }
 }

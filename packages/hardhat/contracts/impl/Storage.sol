@@ -20,8 +20,8 @@ contract Storage {
     address[] public _TOKENS_;
 
     // Aave integration
-    mapping(address => address) LendingPool; /// @dev later: used to scale balances
-    mapping(address => bool) isAaveToken; /// @dev later: used to scale balances
+    mapping(address => address) LendingPool;
+    mapping(address => bool) isAaveToken;
 
     // oracles
     address internal euroOracle;
