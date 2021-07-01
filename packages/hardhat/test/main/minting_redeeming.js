@@ -73,7 +73,6 @@ describe("Increment App: Minting / Redeeming", function () {
         owner.address
       );
       await contracts.perpetual.RedeemLongEUR(
-        longBalance,
         contracts.usdc.address
       );
     });
@@ -90,12 +89,17 @@ describe("Increment App: Minting / Redeeming", function () {
       //  await contracts.perpetual.getUserMarginRatio(owner.address)
       //).to.be.equal(utils.parseEther("0.2")); // 100/500
 
-      const shortBalance = await contracts.perpetual.getShortBalance(
+      const shortBalanceBefore = await contracts.perpetual.getShortBalance(
         owner.address
       );
       await contracts.perpetual
         .connect(owner)
-        .RedeemShortEUR(shortBalance, contracts.usdc.address);
+        .RedeemShortEUR(contracts.usdc.address);
+      
+      const shortBalanceAfter = await contracts.perpetual.getLongBalance(
+        owner.address
+      );
+      console.log("shortBalanceAfter is", shortBalanceAfter.toString());
     });
   });
 

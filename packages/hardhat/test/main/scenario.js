@@ -62,7 +62,6 @@ describe("Increment App: Scenario", function () {
         contracts.perpetual
           .connect(bob)
           .RedeemLongEUR(
-            utils.parseEther("55524.708495280399777902"),
             contracts.usdc.address
           )
       )
@@ -84,7 +83,6 @@ describe("Increment App: Scenario", function () {
         contracts.perpetual
           .connect(alice)
           .RedeemLongEUR(
-            utils.parseEther("110864.642586250382252049"),
             contracts.usdc.address
           )
       )
