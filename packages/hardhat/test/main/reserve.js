@@ -1,8 +1,12 @@
 const { expect } = require("chai");
 const { utils } = require("ethers");
-const { deployContracts, testData } = require("./helper/init.js");
+const {
+  deployContracts,
+  testData,
+  convertUSDCtoEther,
+} = require("./helper/init.js");
 
-describe("Increment App", function () {
+describe("Increment App: Reserve", function () {
   let contracts, data;
   beforeEach("Set up", async () => {
     [owner, bob, alice, ...addrs] = await ethers.getSigners();
@@ -41,17 +45,11 @@ describe("Increment App", function () {
           owner.address,
           contracts.usdc.address
         )
-      ).to.be.equal(data.depositAmount);
+      ).to.be.equal(convertUSDCtoEther(data.depositAmount));
 
       expect(
         await contracts.perpetual.getPortfolioValue(owner.address)
-      ).to.be.equal(data.depositAmount);
-      console.log(
-        "Portfolio value is",
-        utils.formatEther(
-          await contracts.perpetual.getPortfolioValue(owner.address)
-        )
-      );
+      ).to.be.equal(convertUSDCtoEther(data.depositAmount));
     });
     it("Should withdraw USDC", async function () {
       await contracts.usdc
@@ -63,10 +61,17 @@ describe("Increment App", function () {
       );
 
       await expect(
-        contracts.perpetual.withdraw(data.depositAmount, contracts.usdc.address)
+        contracts.perpetual.withdraw(
+          convertUSDCtoEther(data.depositAmount),
+          contracts.usdc.address
+        )
       )
         .to.emit(contracts.perpetual, "Withdraw")
-        .withArgs(data.depositAmount, owner.address, contracts.usdc.address);
+        .withArgs(
+          convertUSDCtoEther(data.depositAmount),
+          owner.address,
+          contracts.usdc.address
+        );
 
       expect(await contracts.usdc.balanceOf(owner.address)).to.be.equal(
         data.supply

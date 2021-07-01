@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { utils } = require("ethers");
 const { deployContracts, testData } = require("./helper/init.js");
 
-describe("Increment App", function () {
+describe("Increment App: Deployment", function () {
   let contracts, data;
   beforeEach("Set up", async () => {
     [owner, bob, alice, ...addrs] = await ethers.getSigners();
@@ -11,11 +11,13 @@ describe("Increment App", function () {
   });
 
   describe("Deployment", function () {
-    it("Should given tokens with deployment ", async function () {
+    it("Should correctly deploy usdc ", async function () {
       expect(await contracts.usdc.balanceOf(owner.address)).to.be.equal(
         data.supply
       );
+      expect(await contracts.usdc.decimals()).to.be.equal(6);
     });
+
     it("Should initialize vAMM pool", async function () {
       const pool = await contracts.perpetual.connect(owner).getPoolInfo();
 

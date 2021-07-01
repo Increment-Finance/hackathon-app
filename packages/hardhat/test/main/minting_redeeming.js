@@ -1,8 +1,12 @@
 const { expect } = require("chai");
 const { utils } = require("ethers");
-const { deployContracts, testData } = require("./helper/init.js");
+const {
+  deployContracts,
+  testData,
+  convertUSDCtoEther,
+} = require("./helper/init.js");
 
-describe("Increment App", function () {
+describe("Increment App: Minting / Redeeming", function () {
   let contracts, data;
   beforeEach("Set up", async () => {
     [owner, bob, alice, ...addrs] = await ethers.getSigners();
@@ -29,7 +33,7 @@ describe("Increment App", function () {
         );
       expect(
         await contracts.perpetual.getPortfolioValue(owner.address)
-      ).to.be.equal(data.depositAmount);
+      ).to.be.equal(convertUSDCtoEther(data.depositAmount));
     });
     it("Can go short EURUSD ", async function () {
       await contracts.usdc

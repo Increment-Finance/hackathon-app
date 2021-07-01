@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import {IAToken} from "./InterfaceAave/iaToken/IAToken.sol";
@@ -37,15 +37,23 @@ contract Reserve is Getter {
             ILendingPool lendingpool = ILendingPool(LendingPool[_token]);
             uint256 scaledAmount = _amount /
                 lendingpool.getReserveNormalizedIncome(_token);
-            balances[msg.sender].userReserve[_token] += scaledAmount;
+            uint256 decimalsScaled = (scaledAmount * 10**18) /
+                10**IERC20Metadata(_token).decimals();
+            balances[msg.sender].userReserve[_token] += decimalsScaled;
         } else {
+            //console.log("Is not Aave Token");
             SafeERC20.safeTransferFrom(
                 IERC20(_token),
                 msg.sender,
                 address(this),
                 _amount
             );
-            balances[msg.sender].userReserve[_token] += _amount;
+
+            uint256 decimalsScaled = (_amount * 10**18) /
+                10**IERC20Metadata(_token).decimals();
+            //console.log("decimals are", IERC20Metadata(_token).decimals());
+            //console.log("decimalsScaled is", decimalsScaled);
+            balances[msg.sender].userReserve[_token] += decimalsScaled;
         }
 
         emit Deposit(_amount, msg.sender, _token);
@@ -93,9 +101,21 @@ contract Reserve is Getter {
             ILendingPool lendingpool = ILendingPool(LendingPool[_token]);
             uint256 unscaledAmount = _amount *
                 lendingpool.getReserveNormalizedIncome(_token);
-            SafeERC20.safeTransfer(IERC20(_token), msg.sender, unscaledAmount);
+            uint256 decimalsUnscaled = (unscaledAmount *
+                10**IERC20Metadata(_token).decimals()) / 10**18;
+            SafeERC20.safeTransfer(
+                IERC20(_token),
+                msg.sender,
+                decimalsUnscaled
+            );
         } else {
-            SafeERC20.safeTransfer(IERC20(_token), msg.sender, _amount);
+            uint256 decimalsUnscaled = (_amount *
+                10**IERC20Metadata(_token).decimals()) / 10**18;
+            SafeERC20.safeTransfer(
+                IERC20(_token),
+                msg.sender,
+                decimalsUnscaled
+            );
         }
 
         emit Withdraw(_amount, msg.sender, _token);

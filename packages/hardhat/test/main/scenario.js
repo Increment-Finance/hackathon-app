@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { utils } = require("ethers");
 const { deployContracts, testData } = require("./helper/init.js");
 
-describe("Increment App", function () {
+describe("Increment App: Scenario", function () {
   let contracts, data;
   beforeEach("Set up", async () => {
     [owner, bob, alice, ...addrs] = await ethers.getSigners();
@@ -34,7 +34,7 @@ describe("Increment App", function () {
         );
 
       // Alice
-      const shortCollateral = utils.parseEther("500");
+      const shortCollateral = utils.parseUnits("500", 6);
       await contracts.usdc
         .connect(owner)
         .transfer(alice.address, shortCollateral);

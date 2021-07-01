@@ -23,7 +23,8 @@ const deployContracts = async (data) => {
   contracts.usdc = await USDC.connect(owner).deploy(
     data.supply,
     "USDC",
-    "mockUSDC"
+    "mockUSDC",
+    6
   );
 
   // Perpetual
@@ -44,8 +45,13 @@ const testData = () => {
   testData.supply = utils.parseEther("100000000000000000000");
   testData.vUSDreserve = utils.parseEther("900000"); // 900 000
   testData.vEURreserve = utils.parseEther("100000000"); // 100 000 0000
-  testData.depositAmount = utils.parseEther("100");
+  testData.depositAmount = utils.parseUnits("100", 6); // USDC has 6 decimals
   return testData;
 };
 
-module.exports = { deployContracts, testData };
+const convertUSDCtoEther = (number) => {
+  const numString = utils.formatUnits(number, 6);
+  return utils.parseEther(numString);
+};
+
+module.exports = { deployContracts, testData, convertUSDCtoEther };
