@@ -15,17 +15,17 @@ export default function useContractBalances(
   const [pnl, setPnl] = useState();
 
   const getContractInfo = async () => {
-    const shorts = Number(
-      formatEther(await perpetualContract.getShortBalance(userAddress))
+    const shorts = formatEther(
+      await perpetualContract.getShortBalance(userAddress)
     );
-    const longs = Number(
-      formatEther(await perpetualContract.getLongBalance(userAddress))
+    const longs = formatEther(
+      await perpetualContract.getLongBalance(userAddress)
     );
-    const portfolio = Number(
-      formatEther(await perpetualContract.getPortfolioValue(userAddress))
+    const portfolio = formatEther(
+      await perpetualContract.getPortfolioValue(userAddress)
     );
-    const marginRatio = Number(
-      formatEther(await perpetualContract.getUserMarginRatio(userAddress))
+    const marginRatio = formatEther(
+      await perpetualContract.getUserMarginRatio(userAddress)
     );
     const [pnlAmount, isPositive] = await perpetualContract.getUnrealizedPnL(
       userAddress

@@ -149,7 +149,7 @@ export default function Market({
                   ]}
                   disabled
                   title="Collateral"
-                  fixedValue={portfolio}
+                  fixedValue={Number(portfolio)}
                   onChange={() => {}}
                 />
               </Form.Item>
@@ -192,7 +192,7 @@ export default function Market({
               </List>
               <Form.Item>
                 <div className="submit-box">
-                  {shorts === 0 && longs === 0 ? (
+                  {Number(shorts) === 0 && Number(longs) === 0 ? (
                     <Button
                       type="primary"
                       htmlType="submit"

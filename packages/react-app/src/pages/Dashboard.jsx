@@ -22,27 +22,27 @@ export default function Dashboard({
   const redeemLong = () => {
     perpetualContract
       .RedeemLongEUR(
-        parseEther(longs.toString()),
+        parseEther(longs),
         addresses[network.name].supportedCollateral[0].address
       )
       .then(result => {
         console.log("Closed Position Successfully", result);
       })
       .catch(err => {
-        console.err("Couldn't Close Position", err);
+        console.error("Couldn't Close Position", err);
       });
   };
   const redeemShort = () => {
     perpetualContract
       .RedeemShortEUR(
-        parseEther(shorts.toString()),
+        parseEther(shorts),
         addresses[network.name].supportedCollateral[0].address
       )
       .then(result => {
         console.log("Closed Position Successfully", result);
       })
       .catch(err => {
-        console.err("Couldn't Close Position", err);
+        console.error("Couldn't Close Position", err);
       });
   };
 
@@ -52,7 +52,7 @@ export default function Dashboard({
         <div className="dashboard-content">
           <div className="row">
             <Container className="holdings" title="Holdings">
-              <h1>${portfolio?.toFixed(5)}</h1>
+              <h1>${Number(portfolio)?.toFixed(5)}</h1>
               <div className="details">
                 <div className="legend">
                   <p>Total Available</p>
@@ -87,16 +87,20 @@ export default function Dashboard({
                   </tr>
                 </thead>
                 <tbody>
-                  {(shorts > 0 || longs > 0) && (
+                  {(Number(shorts) > 0 || Number(longs) > 0) && (
                     <tr>
                       <td>EUR/USD</td>
-                      <td>{shorts > 0 ? shorts : longs}</td>
+                      <td>{Number(shorts) > 0 ? shorts : longs}</td>
                       <td>???</td>
                       <td>???</td>
                       <td>{marginRatio}</td>
                       <td>{pnl}</td>
                       <td>
-                        <button onClick={shorts > 0 ? redeemShort : redeemLong}>
+                        <button
+                          onClick={
+                            Number(shorts) > 0 ? redeemShort : redeemLong
+                          }
+                        >
                           Close
                         </button>
                       </td>
