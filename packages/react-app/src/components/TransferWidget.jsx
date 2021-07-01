@@ -15,18 +15,20 @@ export default function TransferWidget({
   const balances = useTokenBalances(provider, network, userAddress);
   const [widthdrawalCoin, setWithdrawalCoin] = useState();
   const [depositCoin, setDepositCoin] = useState();
+  const [depositing, setDepositing] = useState(false);
 
   const withdraw = () => {};
   const deposit = () => {
     if (depositCoin.value <= depositCoin.balance && depositCoin.value > 0) {
+      setDepositing(true);
       let amount = parseUnits(depositCoin.value, 6);
-      approve(provider, depositCoin.address, amount)
-        .then(() => {
+      approve(provider, depositCoin.address, amount, userAddress)
+        .then(info => {
           setTimeout(() => {
             perpetualContract
               .deposit(amount, depositCoin.address)
               .then(result => {
-                console.log(result);
+                setDepositing(false);
                 console.log("Deposit Success!");
               })
               .catch(err => {
@@ -43,13 +45,16 @@ export default function TransferWidget({
   return (
     <Container className="deposits" title="Deposits / Withdraws">
       <div className=" row">
-        {balances && (
-          <CoinInput
-            coins={balances}
-            title="Deposit"
-            onChange={setDepositCoin}
-          />
-        )}
+        {balances &&
+          (depositing ? (
+            <div className="loader" />
+          ) : (
+            <CoinInput
+              coins={balances}
+              title="Deposit"
+              onChange={setDepositCoin}
+            />
+          ))}
         <button onClick={deposit}>Deposit</button>
       </div>
       <div className=" row">

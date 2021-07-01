@@ -22,7 +22,7 @@ export default function useContractBalances(
       formatEther(await perpetualContract.getLongBalance(userAddress))
     );
     const portfolio = Number(
-      formatUnits(await perpetualContract.getPortfolioValue(userAddress), 14)
+      formatEther(await perpetualContract.getPortfolioValue(userAddress))
     );
     const marginRatio = Number(
       formatEther(await perpetualContract.getUserMarginRatio(userAddress))
@@ -36,9 +36,9 @@ export default function useContractBalances(
       let coin = addresses[network.name].supportedCollateral[i];
       coins.push({
         ...coin,
-        inContract: (
+        inContract: formatEther(
           await perpetualContract.getReserveBalance(userAddress, coin.address)
-        ).toNumber()
+        )
       });
     }
 
