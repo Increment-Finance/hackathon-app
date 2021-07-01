@@ -97,13 +97,10 @@ contract MinterRedeemer is Getter, vAMM {
     }
 
     /// @notice Redeems long EURUSD derivatives
-    /// @param _amount Amount of EURUSD tokens to be redeemed
     /// @param _redeemAsset Assets used to settle account
     /// @dev The value of the redeemed tokens is not calculated from price oracles
-    function RedeemLongEUR(uint256 _amount, address _redeemAsset)
-        public
-        returns (uint256)
-    {
+    function RedeemLongEUR(address _redeemAsset) public returns (uint256) {
+        uint256 _amount = balances[msg.sender].EURUSDlong;
         //console.log("Amount to be redeemed", _amount);
         //console.log("Amount currently held", balances[msg.sender].EURUSDlong);
         require(_amount > 0, "Should redeem amount larger than 0");
@@ -111,7 +108,7 @@ contract MinterRedeemer is Getter, vAMM {
             balances[msg.sender].EURUSDlong >= _amount,
             "USDC balances are too low"
         );
-        balances[msg.sender].EURUSDlong -= _amount;
+        balances[msg.sender].EURUSDlong = 0;
 
         uint256 EURUSDlongSold = _mintVEUR(_amount);
         uint256 EURUSDlongBought = balances[msg.sender].usdNotional;
@@ -159,13 +156,10 @@ contract MinterRedeemer is Getter, vAMM {
     }
 
     /// @notice Redeems short EURUSD derivatives
-    /// @param _amount Amount of EURUSD tokens to be redeemed
     /// @param _redeemAsset Assets used to settle account
     /// @dev The value of the redeemed tokens is not calculated from price oracles
-    function RedeemShortEUR(uint256 _amount, address _redeemAsset)
-        public
-        returns (uint256)
-    {
+    function RedeemShortEUR(address _redeemAsset) public returns (uint256) {
+        uint256 _amount = balances[msg.sender].EURUSDshort;
         require(_amount > 0, "Should redeem amount larger than 0");
         require(
             balances[msg.sender].EURUSDshort >= _amount,
@@ -184,6 +178,7 @@ contract MinterRedeemer is Getter, vAMM {
             uint256 amountPayed = (EURUSDshortBought - EURUSDshortSold);
             balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
         }
+        balances[msg.sender].usdNotional -= EURUSDshortSold;
         emit sellEURUSDshort(_amount, msg.sender, _redeemAsset);
         return EURUSDshortSold;
     }
