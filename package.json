@@ -18,6 +18,7 @@
     "react-app:ipfs": "yarn workspace @project/react-app ipfs",
     "react-app:start": "yarn workspace @project/react-app start",
     "react-app:test": "yarn workspace @project/react-app test",
+    "react-app:deploy": "aws s3 sync packages/react-app/build/ s3://increment.finance && aws cloudfront create-invalidation --distribution-id E1FCCYAXAMLN36 --paths '/*'",
     "chain": "yarn workspace @project/hardhat chain",
     "fork": "yarn workspace @project/hardhat fork",
     "node": "yarn workspace @project/hardhat chain",
