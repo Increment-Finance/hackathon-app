@@ -1,26 +1,44 @@
 specVersion: 0.0.2
-description: Subgraph that indexes the blockchain data
-repository: https://github.com/sablierhq/sablier-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: CeaErc20
-    network: mainnet
+    name: Contract
+    network: kovan
     source:
-      abi: erc20
-      address: "0xc1C0472c0C80bCcDC7F5D01A376Bd97a734B8815"
+      address: "0x005B0E933B203725ea4257466e308d1A79894B80"
+      abi: Contract
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
-      abis:
-        - name: erc20
-          file: ../contracts/src/abis/erc20.json
-      entities:
-        - Token
-        - Transfer
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-      file: ./src/mappings/transfers.ts
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
+      abis:
+        - name: Contract
+          file: ./abis/Contract.json
+      entities:
+        - Deposit
+        - NewReserves
+        - OwnershipTransferred
+        - Withdraw
+        - buyEURUSDlong
+        - buyEURUSDshort
+        - sellEURUSDlong
+        - sellEURUSDshort
+      eventHandlers:
+        - event: Deposit(uint256,indexed address,indexed address)
+          handler: handleDeposit
+        - event: NewReserves(uint256,uint256,uint256,uint256)
+          handler: handleNewReserves
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Withdraw(uint256,indexed address,indexed address)
+          handler: handleWithdraw
+        - event: buyEURUSDlong(uint256,indexed address,uint256)
+          handler: handlebuyEURUSDlong
+        - event: buyEURUSDshort(uint256,indexed address,uint256)
+          handler: handlebuyEURUSDshort
+        - event: sellEURUSDlong(uint256,indexed address,indexed address)
+          handler: handlesellEURUSDlong
+        - event: sellEURUSDshort(uint256,indexed address,indexed address)
+          handler: handlesellEURUSDshort
+      file: ./src/mapping.ts
