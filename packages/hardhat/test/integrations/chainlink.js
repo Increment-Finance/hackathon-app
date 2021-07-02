@@ -19,10 +19,10 @@ describe("Mock Chainlink Oracles", function () {
     it("Should set some initial values with deployment ", async function () {
       expect(await chainlinkOracle.decimals()).to.be.equal(decimals);
 
-      console.log(
-        "The latest answer is ",
-        (await chainlinkOracle.latestAnswer()).toString()
-      );
+      //console.log(
+      //  "The latest answer is ",
+      //  (await chainlinkOracle.latestAnswer()).toString()
+      //);
       expect(await chainlinkOracle.latestAnswer()).to.be.equal(initialValue);
     });
   });

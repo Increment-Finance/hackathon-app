@@ -17,32 +17,33 @@ contract MinterRedeemer is Getter, vAMM {
     using SafeERC20 for IERC20;
 
     constructor(uint256 _quoteAssetReserve, uint256 _baseAssetReserve) {
-        pool.vEUR = _quoteAssetReserve;
-        pool.vUSD = _baseAssetReserve;
+        pool.vQuote = _quoteAssetReserve;
+        pool.vBase = _baseAssetReserve;
         pool.totalAssetReserve = _quoteAssetReserve * _baseAssetReserve;
         pool.price = (_baseAssetReserve * 10**18) / _quoteAssetReserve;
     }
 
     /************************* events *************************/
 
-    event buyEURUSDlong(
+    event buyQuoteLong(
         uint256 notional,
         address indexed user,
-        uint256 eurlong
-    );
-    event buyEURUSDshort(
-        uint256 notional,
-        address indexed user,
-        uint256 eurshort
+        uint256 QuoteLong
     );
 
-    event sellEURUSDlong(
-        uint256 eurlong,
+    event buyQuoteShort(
+        uint256 notional,
+        address indexed user,
+        uint256 QuoteShort
+    );
+
+    event sellQuoteLong(
+        uint256 quoteLong,
         address indexed user,
         address indexed reserve
     );
-    event sellEURUSDshort(
-        uint256 eurshort,
+    event sellQuoteShort(
+        uint256 quoteshort,
         address indexed user,
         address indexed reserve
     );
@@ -65,21 +66,21 @@ contract MinterRedeemer is Getter, vAMM {
         return newMarginRatio >= maxInitialMargin;
     }
 
-    /* go long EURUSD */
-    /// @notice Wrapper around MintLongEUR to simplifiy interaction with front-end
+    /* go long Quote */
+    /// @notice Wrapper around MintLongQuote to simplifiy interaction with front-end
     /// @param _leverage Initial Leverage factor of position
     function MintLongWithLeverage(uint8 _leverage) public returns (uint256) {
         require(_leverage <= 10, "Maximum initial leverage is 10");
         uint256 notionalAmount = getPortfolioValue(msg.sender) * _leverage;
-        return MintLongEUR(notionalAmount);
+        return MintLongQuote(notionalAmount);
     }
 
-    /// @notice Buys long EURUSD derivatives
-    /// @param _amount Amount of EURUSD tokens to be bought
+    /// @notice Buys long Quote derivatives
+    /// @param _amount Amount of Quote tokens to be bought
     /// @dev No checks are done if bought amount exceeds allowance
-    function MintLongEUR(uint256 _amount) public returns (uint256) {
+    function MintLongQuote(uint256 _amount) public returns (uint256) {
         require(
-            balances[msg.sender].EURUSDshort == 0,
+            balances[msg.sender].QuoteShort == 0,
             "User can not go long w/ an open short position"
         );
         require(
@@ -87,99 +88,100 @@ contract MinterRedeemer is Getter, vAMM {
             "Leverage factor is too high"
         );
 
-        uint256 EURUSDlongBought = _mintVUSD(_amount);
+        uint256 QuoteLongBought = _mintVBase(_amount);
 
         balances[msg.sender].usdNotional += _amount;
-        balances[msg.sender].EURUSDlong += EURUSDlongBought;
+        balances[msg.sender].QuoteLong += QuoteLongBought;
 
-        emit buyEURUSDlong(_amount, msg.sender, EURUSDlongBought);
-        return EURUSDlongBought;
+        emit buyQuoteLong(_amount, msg.sender, QuoteLongBought);
+        return QuoteLongBought;
     }
 
-    /// @notice Redeems long EURUSD derivatives
+    /// @notice Redeems long Quote derivatives
     /// @param _redeemAsset Assets used to settle account
     /// @dev The value of the redeemed tokens is not calculated from price oracles
-    function RedeemLongEUR(address _redeemAsset) public returns (uint256) {
-        uint256 _amount = balances[msg.sender].EURUSDlong;
+    function RedeemLongQuote(address _redeemAsset) public returns (uint256) {
+        uint256 _amount = balances[msg.sender].QuoteLong;
         //console.log("Amount to be redeemed", _amount);
-        //console.log("Amount currently held", balances[msg.sender].EURUSDlong);
+        //console.log("Amount currently held", balances[msg.sender].QuoteLong);
         require(_amount > 0, "Should redeem amount larger than 0");
         require(
-            balances[msg.sender].EURUSDlong >= _amount,
+            balances[msg.sender].QuoteLong >= _amount,
             "USDC balances are too low"
         );
-        balances[msg.sender].EURUSDlong = 0;
+        balances[msg.sender].QuoteLong = 0;
 
-        uint256 EURUSDlongSold = _mintVEUR(_amount);
-        uint256 EURUSDlongBought = balances[msg.sender].usdNotional;
-        //console.log("EURUSDlongBought is", EURUSDlongBought);
-        //console.log("EURUSDlongSold is", EURUSDlongSold);
+        uint256 QuoteLongSold = _mintVQuote(_amount);
+        uint256 QuoteLongBought = balances[msg.sender].usdNotional;
+        //console.log("QuoteLongBought is", QuoteLongBought);
+        //console.log("QuoteLongSold is", QuoteLongSold);
 
-        if (EURUSDlongSold >= EURUSDlongBought) {
-            uint256 amountOwed = (EURUSDlongSold - EURUSDlongBought);
+        if (QuoteLongSold >= QuoteLongBought) {
+            uint256 amountOwed = (QuoteLongSold - QuoteLongBought);
             balances[msg.sender].userReserve[_redeemAsset] += amountOwed;
-        } else if (EURUSDlongSold < EURUSDlongBought) {
-            uint256 amountPayed = EURUSDlongBought - EURUSDlongSold;
+        } else if (QuoteLongSold < QuoteLongBought) {
+            uint256 amountPayed = QuoteLongBought - QuoteLongSold;
             balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
         }
-        emit sellEURUSDlong(_amount, msg.sender, _redeemAsset);
-        return EURUSDlongSold;
+        balances[msg.sender].usdNotional = 0;
+        emit sellQuoteLong(_amount, msg.sender, _redeemAsset);
+        return QuoteLongSold;
     }
 
-    /// @notice Wrapper around MintShortEUR to simplifiy interaction with front-end
+    /// @notice Wrapper around MintShortQuote to simplifiy interaction with front-end
     /// @param _leverage Initial Leverage factor of position
     function MintShortWithLeverage(uint8 _leverage) public returns (uint256) {
         require(_leverage <= 10, "Maximum initial leverage is 10");
         uint256 notionalAmount = getPortfolioValue(msg.sender) * _leverage;
-        return MintShortEUR(notionalAmount);
+        return MintShortQuote(notionalAmount);
     }
 
-    /// @notice Buys short EURUSD derivatives
-    /// @param _amount Amount of EURUSD tokens to be bought
+    /// @notice Buys short Quote derivatives
+    /// @param _amount Amount of Quote tokens to be bought
     /// @dev No checks are done if bought amount exceeds allowance
-    function MintShortEUR(uint256 _amount) public returns (uint256) {
+    function MintShortQuote(uint256 _amount) public returns (uint256) {
         require(
-            balances[msg.sender].EURUSDlong == 0,
+            balances[msg.sender].QuoteLong == 0,
             "User can not go long w/ an open short position"
         );
         require(
             leverageIsFine(msg.sender, _amount),
             "Leverage factor is too high"
         );
-        uint256 EURUSDshortBought = _burnVUSD(_amount);
+        uint256 QuoteShortBought = _burnVBase(_amount);
 
         balances[msg.sender].usdNotional += _amount;
-        balances[msg.sender].EURUSDshort += EURUSDshortBought;
-        //console.log("EURUSDshortBought is", EURUSDshortBought);
-        emit buyEURUSDshort(_amount, msg.sender, EURUSDshortBought);
-        return EURUSDshortBought;
+        balances[msg.sender].QuoteShort += QuoteShortBought;
+        //console.log("QuoteShortBought is", QuoteShortBought);
+        emit buyQuoteShort(_amount, msg.sender, QuoteShortBought);
+        return QuoteShortBought;
     }
 
-    /// @notice Redeems short EURUSD derivatives
+    /// @notice Redeems short Quote derivatives
     /// @param _redeemAsset Assets used to settle account
     /// @dev The value of the redeemed tokens is not calculated from price oracles
-    function RedeemShortEUR(address _redeemAsset) public returns (uint256) {
-        uint256 _amount = balances[msg.sender].EURUSDshort;
+    function RedeemShortQuote(address _redeemAsset) public returns (uint256) {
+        uint256 _amount = balances[msg.sender].QuoteShort;
         require(_amount > 0, "Should redeem amount larger than 0");
         require(
-            balances[msg.sender].EURUSDshort >= _amount,
+            balances[msg.sender].QuoteShort >= _amount,
             "USDC balances are too low"
         );
 
-        balances[msg.sender].EURUSDshort -= _amount;
+        balances[msg.sender].QuoteShort -= _amount;
 
-        uint256 EURUSDshortSold = _burnVEUR(_amount);
-        uint256 EURUSDshortBought = balances[msg.sender].usdNotional;
+        uint256 QuoteShortSold = _burnVQuote(_amount);
+        uint256 QuoteShortBought = balances[msg.sender].usdNotional;
 
-        if (EURUSDshortSold >= EURUSDshortBought) {
-            uint256 amountOwed = (EURUSDshortSold - EURUSDshortBought);
+        if (QuoteShortSold >= QuoteShortBought) {
+            uint256 amountOwed = (QuoteShortSold - QuoteShortBought);
             balances[msg.sender].userReserve[_redeemAsset] += amountOwed;
-        } else if (EURUSDshortSold < EURUSDshortBought) {
-            uint256 amountPayed = (EURUSDshortBought - EURUSDshortSold);
+        } else if (QuoteShortSold < QuoteShortBought) {
+            uint256 amountPayed = (QuoteShortBought - QuoteShortSold);
             balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
         }
-        balances[msg.sender].usdNotional -= EURUSDshortSold;
-        emit sellEURUSDshort(_amount, msg.sender, _redeemAsset);
-        return EURUSDshortSold;
+        balances[msg.sender].usdNotional = 0;
+        emit sellQuoteShort(_amount, msg.sender, _redeemAsset);
+        return QuoteShortSold;
     }
 }

@@ -4,8 +4,8 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import {IAToken} from "./InterfaceAave/iaToken/IAToken.sol";
-import {ILendingPool} from "./InterfaceAave/lendingPool/ILendingPool.sol";
+import {IAToken} from "../interfaces/InterfaceAave/iaToken/IAToken.sol";
+import {ILendingPool} from "../interfaces/InterfaceAave/lendingPool/ILendingPool.sol";
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Getter} from "./Getter.sol";
 
@@ -34,14 +34,11 @@ contract Reserve is Getter {
                 address(this),
                 _amount
             );
-            ILendingPool lendingpool = ILendingPool(LendingPool[_token]);
-            uint256 scaledAmount = _amount /
-                lendingpool.getReserveNormalizedIncome(_token);
+            uint256 scaledAmount = scaledBalanceToBalance(_amount, _token);
             uint256 decimalsScaled = (scaledAmount * 10**18) /
                 10**IERC20Metadata(_token).decimals();
             balances[msg.sender].userReserve[_token] += decimalsScaled;
         } else {
-            //console.log("Is not Aave Token");
             SafeERC20.safeTransferFrom(
                 IERC20(_token),
                 msg.sender,
@@ -98,9 +95,7 @@ contract Reserve is Getter {
         );
         balances[msg.sender].userReserve[_token] -= _amount;
         if (isAaveToken[_token]) {
-            ILendingPool lendingpool = ILendingPool(LendingPool[_token]);
-            uint256 unscaledAmount = _amount *
-                lendingpool.getReserveNormalizedIncome(_token);
+            uint256 unscaledAmount = balanceToScaledBalance(_amount, _token);
             uint256 decimalsUnscaled = (unscaledAmount *
                 10**IERC20Metadata(_token).decimals()) / 10**18;
             SafeERC20.safeTransfer(

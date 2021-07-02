@@ -1,13 +1,18 @@
 const { expect } = require("chai");
 const { utils } = require("ethers");
-const { deployContracts, testData } = require("./helper/init.js");
+const {
+  deployContracts,
+  forkContracts,
+  testData,
+} = require("../helper/init.js");
 
 describe("Increment App: Deployment", function () {
   let contracts, data;
   beforeEach("Set up", async () => {
     [owner, bob, alice, ...addrs] = await ethers.getSigners();
     data = testData();
-    contracts = await deployContracts(data);
+    //contracts = await deployContracts(data);
+    contracts = await forkContracts(data);
   });
 
   describe("Deployment", function () {
@@ -22,27 +27,27 @@ describe("Increment App: Deployment", function () {
       const pool = await contracts.perpetual.connect(owner).getPoolInfo();
 
       // correct reserve tokens
-      expect(pool.vEUR).to.be.equal(data.vEURreserve);
-      expect(pool.vUSD).to.be.equal(data.vUSDreserve);
+      expect(pool.vQuote).to.be.equal(data.vJPYreserve);
+      expect(pool.vBase).to.be.equal(data.vUSDreserve);
 
       // check pool price
       const expectPrice = utils.parseEther(
-        (data.vUSDreserve / data.vEURreserve).toString()
+        (data.vUSDreserve / data.vJPYreserve).toString()
       ); // adjust for normalization by 10**18 in contract code
       expect(pool.price).to.be.equal(expectPrice);
 
       // check pool constant
       const normalizationConstant = 10 ** 38; /// adjust by big number to avoid overflow error from chai library
       const expectTotalAssetReserve =
-        (data.vEURreserve * data.vUSDreserve) / normalizationConstant;
+        (data.vJPYreserve * data.vUSDreserve) / normalizationConstant;
       const realizedTotalAssetReserve =
         pool.totalAssetReserve / normalizationConstant;
       expect(expectTotalAssetReserve).to.be.equal(realizedTotalAssetReserve);
     });
     it("Should initialize oracles", async function () {
       expect(
-        await contracts.perpetual.connect(owner).getEUROracle()
-      ).to.be.equal(contracts.euro_oracle.address);
+        await contracts.perpetual.connect(owner).getQuoteAssetOracle()
+      ).to.be.equal(contracts.jpy_oracle.address);
       expect(
         await contracts.perpetual
           .connect(owner)

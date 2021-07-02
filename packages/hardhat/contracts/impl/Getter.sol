@@ -5,6 +5,7 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Storage} from "./Storage.sol";
+import {ILendingPool} from "../interfaces/InterfaceAave/lendingPool/ILendingPool.sol";
 
 import "hardhat/console.sol";
 
@@ -23,8 +24,8 @@ contract Getter is Storage {
         return pool;
     }
 
-    function getEUROracle() public view returns (address) {
-        return euroOracle;
+    function getQuoteAssetOracle() public view returns (address) {
+        return quoteAssetOracle;
     }
 
     function getAssetOracle(address _asset) public view returns (address) {
@@ -74,13 +75,13 @@ contract Getter is Storage {
     /// @notice Returns user long balance
     /// @param account user address
     function getLongBalance(address account) public view returns (uint256) {
-        return balances[account].EURUSDlong;
+        return balances[account].QuoteLong;
     }
 
     /// @notice Returns user short balance
     /// @param account user address
     function getShortBalance(address account) public view returns (uint256) {
-        return balances[account].EURUSDshort;
+        return balances[account].QuoteShort;
     }
 
     /// @notice Returns user USD notional
@@ -107,8 +108,22 @@ contract Getter is Storage {
         returns (uint256)
     {
         address oracleAddress = getAssetOracle(token);
-        uint256 tokenValue = getReserveBalance(account, token) *
-            getAssetPrice(oracleAddress) / 10 ** 8;
+
+        uint256 tokenValue;
+        if (isAaveToken[token]) {
+            tokenValue =
+                (scaledBalanceToBalance(
+                    getReserveBalance(account, token),
+                    token
+                ) * getAssetPrice(oracleAddress)) /
+                10**8;
+        } else {
+            tokenValue =
+                (getReserveBalance(account, token) *
+                    getAssetPrice(oracleAddress)) /
+                10**8;
+        }
+
         return tokenValue;
     }
 
@@ -169,5 +184,34 @@ contract Getter is Storage {
             }
         }
         return marginRatio;
+    }
+
+    /************************* Aave helpers *************************/
+    function scaledBalanceToBalance(uint256 amount, address token)
+        internal
+        view
+        returns (uint256)
+    {
+        ILendingPool lendingpool = ILendingPool(
+            lendingPoolAddressesProvider.getLendingPool()
+        );
+        uint256 currentIndex = lendingpool.getReserveNormalizedIncome(
+            aaveReserve[token]
+        );
+        return (amount * currentIndex) / (10**27);
+    }
+
+    function balanceToScaledBalance(uint256 amount, address token)
+        internal
+        view
+        returns (uint256)
+    {
+        ILendingPool lendingpool = ILendingPool(
+            lendingPoolAddressesProvider.getLendingPool()
+        );
+        uint256 currentIndex = lendingpool.getReserveNormalizedIncome(
+            aaveReserve[token]
+        );
+        return (amount * (10**27)) / currentIndex;
     }
 }

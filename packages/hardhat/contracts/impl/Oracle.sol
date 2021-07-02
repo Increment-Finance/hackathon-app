@@ -4,47 +4,43 @@ pragma solidity 0.8.4;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import {ILendingPoolAddressesProvider} from "../interfaces/InterfaceAave/lendingPool/ILendingPoolAddressesProvider.sol";
 import {Storage} from "./Storage.sol";
 
 /// @notice Initiates address of chainlink price oracles
 
 contract Oracle is Storage, Ownable {
     /// @notice Inititates assets and their price oracles
-    /// @param _assets Address of reserve tokens
-    /// @param _oracles Price oracle of reserve tokens
-    /// @param _isAaveToken Reserve token is aToken
-    /// @param _euroOracle EUR/USD oracle address
+    /// @param _quoteAssetOracleAddress JPY/USD oracle address
+    /// @param _lendingPoolAddressProvider Aave lending pool provide
     constructor(
-        address[] memory _assets,
-        address[] memory _oracles,
-        bool[] memory _isAaveToken,
-        address _euroOracle
+        address _quoteAssetOracleAddress,
+        address _lendingPoolAddressProvider
     ) {
-        _setAssetsOracles(_assets, _oracles, _isAaveToken);
-        euroOracle = _euroOracle;
-    }
-
-    function _setAssetsOracles(
-        address[] memory _assets,
-        address[] memory _oracles,
-        bool[] memory _isAaveToken
-    ) internal {
-        require(
-            _assets.length == _oracles.length,
-            "Number of assets and oracles not equal"
+        lendingPoolAddressesProvider = ILendingPoolAddressesProvider(
+            _lendingPoolAddressProvider
         );
-        for (uint256 i = 0; i < _assets.length; i++) {
-            _TOKENS_.push(_assets[i]);
-            assetOracles[_assets[i]] = _oracles[i];
-            isAaveToken[_assets[i]] = _isAaveToken[i];
-        }
+        quoteAssetOracle = _quoteAssetOracleAddress;
     }
 
-    function setReserveTokens(
-        address[] memory _assets,
-        address[] memory _oracles,
-        bool[] memory _isAaveToken
+    /// @notice Set a new asset eligible as reserve
+    /// @param  _asset Address of ERC20
+    /// @param  _priceOracle Chainlink Oracle
+    /// @param  _isAToken bool for aTokens
+    /// @param  _aaveReserve underlying Aave token (aUSDC =>USDC)
+
+    function setReserveToken(
+        address _asset,
+        address _priceOracle,
+        bool _isAToken,
+        address _aaveReserve
     ) public onlyOwner {
-        _setAssetsOracles(_assets, _oracles, _isAaveToken);
+        _TOKENS_.push(_asset);
+        assetOracles[_asset] = _priceOracle;
+        isAaveToken[_asset] = _isAToken;
+        if (_isAToken) {
+            require(_aaveReserve != address(0), "Set underlying asset");
+            aaveReserve[_asset] = _aaveReserve;
+        }
     }
 }

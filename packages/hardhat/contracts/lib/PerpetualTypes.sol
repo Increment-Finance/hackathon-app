@@ -6,8 +6,8 @@ pragma solidity 0.8.4;
 library PerpetualTypes {
     struct UserPosition {
         mapping(address => uint256) userReserve;
-        uint256 EURUSDlong;
-        uint256 EURUSDshort;
+        uint256 QuoteLong;
+        uint256 QuoteShort;
         uint256 usdNotional;
     }
 
@@ -22,8 +22,8 @@ library PerpetualTypes {
         bool isPositive;
     }
     struct Pool {
-        uint256 vEUR;
-        uint256 vUSD;
+        uint256 vQuote;
+        uint256 vBase;
         uint256 totalAssetReserve;
         uint256 price; // 10 ** 18
     }
