@@ -11,77 +11,77 @@ import "hardhat/console.sol";
 contract vAMM is Storage {
     /************************* events *************************/
     event NewReserves(
-        uint256 vUSD,
-        uint256 vEUR,
+        uint256 vBase,
+        uint256 vQuote,
         uint256 newPrice,
         uint256 blockNumber
     );
 
     /************************* functions *************************/
 
-    /* mint VUSD to go long euro */
-    function _mintVUSD(uint256 amount) internal returns (uint256) {
-        uint256 vUSDnew = pool.vUSD + amount;
-        uint256 vEURnew = pool.totalAssetReserve / vUSDnew; // x = k / y
-        uint256 buy = pool.vEUR - vEURnew;
+    /* mint vBase to go long euro */
+    function _mintVBase(uint256 amount) internal returns (uint256) {
+        uint256 vBasenew = pool.vBase + amount;
+        uint256 vQuoteNew = pool.totalAssetReserve / vBasenew; // x = k / y
+        uint256 buy = pool.vQuote - vQuoteNew;
 
-        _updateBalances(vUSDnew, vEURnew);
+        _updateBalances(vBasenew, vQuoteNew);
 
         return buy;
     }
 
-    /* burn vUSD to go short euro */
-    function _burnVUSD(uint256 amount) internal returns (uint256) {
-        uint256 vUSDnew = pool.vUSD - amount;
-        uint256 vEURnew = pool.totalAssetReserve / vUSDnew; // x = k / y
-        uint256 buy = vEURnew - pool.vEUR;
+    /* burn vBase to go short euro */
+    function _burnVBase(uint256 amount) internal returns (uint256) {
+        uint256 vBasenew = pool.vBase - amount;
+        uint256 vQuoteNew = pool.totalAssetReserve / vBasenew; // x = k / y
+        uint256 buy = vQuoteNew - pool.vQuote;
 
         //console.log("pool.totalAssetReserve is", pool.totalAssetReserve);
-        //console.log("vEURnew is", vEURnew);
-        //console.log("vUSDnew is", vUSDnew);
+        //console.log("vQuoteNew is", vQuoteNew);
+        //console.log("vBasenew is", vBasenew);
         //console.log("buy is", buy);
 
-        _updateBalances(vUSDnew, vEURnew);
+        _updateBalances(vBasenew, vQuoteNew);
 
         return buy;
     }
 
-    /* mint vEUR to close long euro */
-    function _mintVEUR(uint256 amount) internal returns (uint256) {
-        uint256 vEURnew = pool.vEUR + amount;
-        uint256 vUSDnew = pool.totalAssetReserve / vEURnew; // x = k / y
-        uint256 sell = pool.vUSD - vUSDnew;
+    /* mint vQuote to close long euro */
+    function _mintVQuote(uint256 amount) internal returns (uint256) {
+        uint256 vQuoteNew = pool.vQuote + amount;
+        uint256 vBasenew = pool.totalAssetReserve / vQuoteNew; // x = k / y
+        uint256 sell = pool.vBase - vBasenew;
 
         //console.log("pool.totalAssetReserve is", pool.totalAssetReserve);
-        //console.log("vEURnew is", vEURnew);
-        //console.log("vUSDnew is", vUSDnew);
+        //console.log("vQuoteNew is", vQuoteNew);
+        //console.log("vBasenew is", vBasenew);
         //console.log("sell is", sell);
-        _updateBalances(vUSDnew, vEURnew);
+        _updateBalances(vBasenew, vQuoteNew);
 
         return sell;
     }
 
-    /* burn vEUR to close short euro */
-    function _burnVEUR(uint256 amount) internal returns (uint256) {
-        uint256 vEURnew = pool.vEUR - amount;
-        uint256 vUSDnew = pool.totalAssetReserve / vEURnew; // x = k / y
-        uint256 sell = vUSDnew - pool.vUSD;
+    /* burn vQuote to close short euro */
+    function _burnVQuote(uint256 amount) internal returns (uint256) {
+        uint256 vQuoteNew = pool.vBase - amount;
+        uint256 vBasenew = pool.totalAssetReserve / vQuoteNew; // x = k / y
+        uint256 sell = vBasenew - pool.vBase;
 
-        _updateBalances(vUSDnew, vEURnew);
+        _updateBalances(vBasenew, vQuoteNew);
 
         return sell;
     }
 
     /* update reserve balances after buying/selling */
-    function _updateBalances(uint256 _vUSDnew, uint256 _vEURnew) internal {
-        uint256 newPrice = (_vUSDnew * 10**18) / _vEURnew;
+    function _updateBalances(uint256 _vBaseNew, uint256 _vQuoteNew) internal {
+        uint256 newPrice = (_vBaseNew * 10**18) / _vQuoteNew;
 
-        //console.log("vamm state before is", pool.price, pool.vUSD, pool.vEUR);
+        //console.log("vamm state before is", pool.price, pool.vBase, pool.vEUR);
         pool.price = newPrice;
-        pool.vUSD = _vUSDnew;
-        pool.vEUR = _vEURnew;
+        pool.vBase = _vBaseNew;
+        pool.vQuote = _vQuoteNew;
 
-        //console.log("vamm state after is", pool.price, pool.vUSD, pool.vEUR);
-        emit NewReserves(_vUSDnew, _vEURnew, newPrice, block.number);
+        //console.log("vamm state after is", pool.price, pool.vBase, pool.vEUR);
+        emit NewReserves(_vBaseNew, _vQuoteNew, newPrice, block.number);
     }
 }

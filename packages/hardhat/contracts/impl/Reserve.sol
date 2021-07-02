@@ -28,24 +28,17 @@ contract Reserve is Getter {
      */
     function deposit(uint256 _amount, address _token) public {
         if (isAaveToken[_token]) {
-            require(
-                LendingPool[_token] != address(0),
-                "Lending pool address required"
-            );
             SafeERC20.safeTransferFrom(
                 IERC20(_token),
                 msg.sender,
                 address(this),
                 _amount
             );
-            ILendingPool lendingpool = ILendingPool(LendingPool[_token]);
-            uint256 scaledAmount = _amount /
-                lendingpool.getReserveNormalizedIncome(_token);
+            uint256 scaledAmount = scaledBalanceToBalance(_amount, _token);
             uint256 decimalsScaled = (scaledAmount * 10**18) /
                 10**IERC20Metadata(_token).decimals();
             balances[msg.sender].userReserve[_token] += decimalsScaled;
         } else {
-            //console.log("Is not Aave Token");
             SafeERC20.safeTransferFrom(
                 IERC20(_token),
                 msg.sender,
@@ -102,9 +95,7 @@ contract Reserve is Getter {
         );
         balances[msg.sender].userReserve[_token] -= _amount;
         if (isAaveToken[_token]) {
-            ILendingPool lendingpool = ILendingPool(LendingPool[_token]);
-            uint256 unscaledAmount = _amount *
-                lendingpool.getReserveNormalizedIncome(_token);
+            uint256 unscaledAmount = balanceToScaledBalance(_amount, _token);
             uint256 decimalsUnscaled = (unscaledAmount *
                 10**IERC20Metadata(_token).decimals()) / 10**18;
             SafeERC20.safeTransfer(

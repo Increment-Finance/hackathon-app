@@ -20,17 +20,10 @@ contract Perpetual is Reserve, Oracle, MinterRedeemer {
     constructor(
         uint256 _quoteAssetReserve,
         uint256 _baseAssetReserve,
-        address _euroOracleAddress,
-        address[] memory _reserveTokens,
-        address[] memory _reserveOracles,
-        bool[] memory _isAaveToken
+        address _quoteAssetOracleAddress,
+        address _lendingPoolAddressProvider
     )
-        Oracle(
-            _reserveTokens,
-            _reserveOracles,
-            _isAaveToken,
-            _euroOracleAddress
-        )
+        Oracle(_quoteAssetOracleAddress, _lendingPoolAddressProvider)
         MinterRedeemer(_quoteAssetReserve, _baseAssetReserve)
     {}
 }

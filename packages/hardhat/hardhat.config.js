@@ -31,7 +31,7 @@ module.exports = {
       forking: {
         // fix block number to speed up forkings
         url: `https://eth-mainnet.alchemyapi.io/v2/${alchemyAPI}`,
-        blockNumber: 12660846,
+        blockNumber: 12748115,
       },
     },
     rinkeby: {

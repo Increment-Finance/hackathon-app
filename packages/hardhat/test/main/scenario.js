@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 const { utils } = require("ethers");
-const { deployContracts, testData } = require("./helper/init.js");
+const { deployContracts, testData } = require("../helper/init.js");
 
 describe("Increment App: Scenario", function () {
   let contracts, data;
@@ -25,8 +25,10 @@ describe("Increment App: Scenario", function () {
         .deposit(data.depositAmount, contracts.usdc.address);
 
       const mintAmountBob = utils.parseEther("500");
-      await expect(contracts.perpetual.connect(bob).MintLongEUR(mintAmountBob))
-        .to.emit(contracts.perpetual, "buyEURUSDlong")
+      await expect(
+        contracts.perpetual.connect(bob).MintLongQuote(mintAmountBob)
+      )
+        .to.emit(contracts.perpetual, "buyQuoteLong")
         .withArgs(
           mintAmountBob,
           bob.address,
@@ -47,9 +49,9 @@ describe("Increment App: Scenario", function () {
 
       const mintAmountAlice = utils.parseEther("1000");
       await expect(
-        contracts.perpetual.connect(alice).MintLongEUR(mintAmountAlice)
+        contracts.perpetual.connect(alice).MintLongQuote(mintAmountAlice)
       )
-        .to.emit(contracts.perpetual, "buyEURUSDlong")
+        .to.emit(contracts.perpetual, "buyQuoteLong")
         .withArgs(
           mintAmountAlice,
           alice.address,
@@ -59,13 +61,9 @@ describe("Increment App: Scenario", function () {
       /********** redeem assets *************/
       // Bob
       await expect(
-        contracts.perpetual
-          .connect(bob)
-          .RedeemLongEUR(
-            contracts.usdc.address
-          )
+        contracts.perpetual.connect(bob).RedeemLongQuote(contracts.usdc.address)
       )
-        .to.emit(contracts.perpetual, "sellEURUSDlong")
+        .to.emit(contracts.perpetual, "sellQuoteLong")
         .withArgs(
           utils.parseEther("55524.708495280399777902"),
           bob.address,
@@ -82,11 +80,9 @@ describe("Increment App: Scenario", function () {
       await expect(
         contracts.perpetual
           .connect(alice)
-          .RedeemLongEUR(
-            contracts.usdc.address
-          )
+          .RedeemLongQuote(contracts.usdc.address)
       )
-        .to.emit(contracts.perpetual, "sellEURUSDlong")
+        .to.emit(contracts.perpetual, "sellQuoteLong")
         .withArgs(
           utils.parseEther("110864.642586250382252049"),
           alice.address,

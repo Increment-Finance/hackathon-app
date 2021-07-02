@@ -4,8 +4,9 @@ const fs = require("fs");
 const chalk = require("chalk");
 const { ethers } = require("hardhat");
 const { utils } = require("ethers");
-const { getChainlinkOracles } = require("./helper/oracles.js");
-const { getTokenAddresses } = require("./helper/assets.js");
+const { getChainlinkOracles } = require("../integrationAddresses/oracles.js");
+const { getTokenAddresses } = require("../integrationAddresses/assets.js");
+const { getAaveContracts } = require("../integrationAddresses/lendingPools.js");
 
 const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
