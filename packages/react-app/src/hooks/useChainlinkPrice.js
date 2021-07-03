@@ -31,6 +31,12 @@ export default function useChainlinkPrice(symbol, provider) {
           AggregatorV3Interface,
           provider
         );
+      } else if (symbol === "JPY") {
+        contract = new Contract(
+          addresses[network.name].oracles.JPY_USD,
+          AggregatorV3Interface,
+          provider
+        );
       }
 
       contract

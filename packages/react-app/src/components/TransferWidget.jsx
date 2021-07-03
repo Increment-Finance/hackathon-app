@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { parseUnits } from "@ethersproject/units";
 import useTokenBalances from "../hooks/useTokenBalances";
+import useContractBalances from "../hooks/useContractBalances";
 import approve from "../utils/approve";
 import { Container, CoinInput } from "./";
 import "./TransferWidget.scss";
@@ -13,11 +14,17 @@ export default function TransferWidget({
   network
 }) {
   const balances = useTokenBalances(provider, network, userAddress);
-  const [widthdrawalCoin, setWithdrawalCoin] = useState();
+  const { coins, shorts, longs } = useContractBalances(
+    perpetualContract,
+    userAddress,
+    network
+  );
+  const [withdrawalCoin, setWithdrawalCoin] = useState();
   const [depositCoin, setDepositCoin] = useState();
   const [depositing, setDepositing] = useState(false);
 
   const withdraw = () => {};
+
   const deposit = () => {
     if (depositCoin.value <= depositCoin.balance && depositCoin.value > 0) {
       setDepositing(true);
@@ -58,11 +65,14 @@ export default function TransferWidget({
         <button onClick={deposit}>Deposit</button>
       </div>
       <div className=" row">
-        {/* <CoinInput */}
-        {/*   coins={} */}
-        {/*   title="Widthdraw" */}
-        {/*   onChange={() => {}} */}
-        {/* /> */}
+        {shorts && longs && coins && (
+          <CoinInput
+            fixedValue={Number(shorts) > 0 || Number(longs) > 0 ? 0 : false}
+            coins={coins}
+            title="Withdraw"
+            onChange={() => {}}
+          />
+        )}
         <button onClick={withdraw} className="red">
           Widthraw
         </button>

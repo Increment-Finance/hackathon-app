@@ -89,7 +89,7 @@ export default function Dashboard({
                 <tbody>
                   {(Number(shorts) > 0 || Number(longs) > 0) && (
                     <tr>
-                      <td>EUR/USD</td>
+                      <td>JPY/USD</td>
                       <td>{Number(shorts) > 0 ? shorts : longs}</td>
                       <td>???</td>
                       <td>???</td>

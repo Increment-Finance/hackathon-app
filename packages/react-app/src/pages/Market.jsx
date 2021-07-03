@@ -18,16 +18,16 @@ export default function Market({
 }) {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
-  const [symbol, setSymbol] = useState("FX:EURUSD");
+  const [symbol, setSymbol] = useState("JPYUSD");
   const [poolPrice, setPoolPrice] = useState();
-  const price = useChainlinkPrice("EUR", provider);
+  const price = useChainlinkPrice("JPY", provider);
   const { shorts, longs, portfolio } = useContractBalances(
     perpetualContract,
     userAddress,
     network
   );
 
-  const Symbols = { "EUR/USDC": "FX:EURUSD" };
+  const Symbols = { "JPY/USDC": "JPYUSD" };
   const formatPoolPrice = price => {
     if (price) {
       let etherBalance = formatEther(price.toString());

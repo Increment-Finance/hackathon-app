@@ -33,7 +33,7 @@ export default function CoinInput({ title, coins, onChange, fixedValue }) {
             {title}{" "}
             <span
               onClick={() => {
-                if (!fixedValue) {
+                if (!(fixedValue + 1)) {
                   setValue(coin.balance);
                 }
               }}
@@ -43,7 +43,7 @@ export default function CoinInput({ title, coins, onChange, fixedValue }) {
           </p>
           <div className="input-container">
             <input
-              disabled={!!fixedValue}
+              disabled={!!(fixedValue + 1)}
               type="number"
               max={coin.balance}
               min={0}
