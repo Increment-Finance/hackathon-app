@@ -24,14 +24,27 @@ const main = async () => {
   const reserveAssets = getTokenAddresses("kovan");
 
   // deploy
-  await deploy("Perpetual", [
+  const perpetual = await deploy("Perpetual", [
     vJPYreserve,
     vUSDreserve,
     chainlinkOracles.JPY_USD,
-    [reserveAssets.USDC],
-    [chainlinkOracles.USDC_USD],
-    [false],
+    getAaveContracts("kovan").LendingPoolAddressesProvider,
   ]);
+  console.log("perpetual.address is", perpetual.address);
+
+  // set reserve tokens
+  await perpetual.setReserveToken(
+    reserveAssets.USDC,
+    chainlinkOracles.USDC_USD,
+    false,
+    reserveAssets.USDC
+  );
+  await perpetual.setReserveToken(
+    reserveAssets.aUSDC,
+    chainlinkOracles.USDC_USD,
+    true,
+    reserveAssets.USDC
+  );
 
   console.log(
     " 💾  Artifacts (address, abi, and args) saved to: ",

@@ -13,23 +13,13 @@ module.exports = [
       },
       {
         "internalType": "address",
-        "name": "_euroOracleAddress",
+        "name": "_quoteAssetOracleAddress",
         "type": "address"
       },
       {
-        "internalType": "address[]",
-        "name": "_reserveTokens",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_reserveOracles",
-        "type": "address[]"
-      },
-      {
-        "internalType": "bool[]",
-        "name": "_isAaveToken",
-        "type": "bool[]"
+        "internalType": "address",
+        "name": "_lendingPoolAddressProvider",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -66,13 +56,13 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "vUSD",
+        "name": "vBase",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "vEUR",
+        "name": "vQuote",
         "type": "uint256"
       },
       {
@@ -153,11 +143,11 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "eurlong",
+        "name": "QuoteLong",
         "type": "uint256"
       }
     ],
-    "name": "buyEURUSDlong",
+    "name": "buyQuoteLong",
     "type": "event"
   },
   {
@@ -178,11 +168,11 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "eurshort",
+        "name": "QuoteShort",
         "type": "uint256"
       }
     ],
-    "name": "buyEURUSDshort",
+    "name": "buyQuoteShort",
     "type": "event"
   },
   {
@@ -191,7 +181,7 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "eurlong",
+        "name": "quoteLong",
         "type": "uint256"
       },
       {
@@ -207,7 +197,7 @@ module.exports = [
         "type": "address"
       }
     ],
-    "name": "sellEURUSDlong",
+    "name": "sellQuoteLong",
     "type": "event"
   },
   {
@@ -216,7 +206,7 @@ module.exports = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "eurshort",
+        "name": "quoteshort",
         "type": "uint256"
       },
       {
@@ -232,7 +222,7 @@ module.exports = [
         "type": "address"
       }
     ],
-    "name": "sellEURUSDshort",
+    "name": "sellQuoteShort",
     "type": "event"
   },
   {
@@ -243,7 +233,7 @@ module.exports = [
         "type": "uint256"
       }
     ],
-    "name": "MintLongEUR",
+    "name": "MintLongQuote",
     "outputs": [
       {
         "internalType": "uint256",
@@ -281,7 +271,7 @@ module.exports = [
         "type": "uint256"
       }
     ],
-    "name": "MintShortEUR",
+    "name": "MintShortQuote",
     "outputs": [
       {
         "internalType": "uint256",
@@ -314,17 +304,12 @@ module.exports = [
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "_redeemAsset",
         "type": "address"
       }
     ],
-    "name": "RedeemLongEUR",
+    "name": "RedeemLongQuote",
     "outputs": [
       {
         "internalType": "uint256",
@@ -338,17 +323,12 @@ module.exports = [
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "_redeemAsset",
         "type": "address"
       }
     ],
-    "name": "RedeemShortEUR",
+    "name": "RedeemShortQuote",
     "outputs": [
       {
         "internalType": "uint256",
@@ -507,19 +487,6 @@ module.exports = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getEUROracle",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -546,12 +513,12 @@ module.exports = [
         "components": [
           {
             "internalType": "uint256",
-            "name": "vEUR",
+            "name": "vQuote",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "vUSD",
+            "name": "vBase",
             "type": "uint256"
           },
           {
@@ -587,6 +554,19 @@ module.exports = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getQuoteAssetOracle",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -740,22 +720,27 @@ module.exports = [
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "_assets",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
       },
       {
-        "internalType": "address[]",
-        "name": "_oracles",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "_priceOracle",
+        "type": "address"
       },
       {
-        "internalType": "bool[]",
-        "name": "_isAaveToken",
-        "type": "bool[]"
+        "internalType": "bool",
+        "name": "_isAToken",
+        "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "_aaveReserve",
+        "type": "address"
       }
     ],
-    "name": "setReserveTokens",
+    "name": "setReserveToken",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
