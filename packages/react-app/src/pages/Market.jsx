@@ -78,7 +78,9 @@ export default function Market({
         {provider ? (
           <>
             <div>
-              <p>Market Details</p>
+              <p>
+                Market Details <b>(JPY/USD)</b>
+              </p>
             </div>
             <List
               bordered
