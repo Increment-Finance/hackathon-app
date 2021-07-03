@@ -13,42 +13,46 @@ export default function useChainlinkPrice(symbol, provider) {
     if (provider && symbol && network && network.name) {
       let contract;
 
-      if (symbol === "EUR") {
-        contract = new Contract(
-          addresses[network.name].oracles.EUR_USD,
-          AggregatorV3Interface,
-          provider
-        );
-      } else if (symbol === "USDC") {
-        contract = new Contract(
-          addresses[network.name].oracles.USDC_USD,
-          AggregatorV3Interface,
-          provider
-        );
-      } else if (symbol === "ETH") {
-        contract = new Contract(
-          addresses[network.name].oracles.ETH_USD,
-          AggregatorV3Interface,
-          provider
-        );
-      } else if (symbol === "JPY") {
-        contract = new Contract(
-          addresses[network.name].oracles.JPY_USD,
-          AggregatorV3Interface,
-          provider
-        );
-      }
+      try {
+        if (symbol === "EUR") {
+          contract = new Contract(
+            addresses[network.name].oracles.EUR_USD,
+            AggregatorV3Interface,
+            provider
+          );
+        } else if (symbol === "USDC") {
+          contract = new Contract(
+            addresses[network.name].oracles.USDC_USD,
+            AggregatorV3Interface,
+            provider
+          );
+        } else if (symbol === "ETH") {
+          contract = new Contract(
+            addresses[network.name].oracles.ETH_USD,
+            AggregatorV3Interface,
+            provider
+          );
+        } else if (symbol === "JPY") {
+          contract = new Contract(
+            addresses[network.name].oracles.JPY_USD,
+            AggregatorV3Interface,
+            provider
+          );
+        }
 
-      contract
-        .latestRoundData()
-        .then(result => {
-          if (subscribed) {
-            setPrice(result.answer.toNumber() / 100000000);
-          }
-        })
-        .catch(err => {
-          console.error(err);
-        });
+        contract
+          .latestRoundData()
+          .then(result => {
+            if (subscribed) {
+              setPrice(result.answer.toNumber() / 100000000);
+            }
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } catch (err) {
+        console.error("Couldn't get Chainlink Price", err);
+      }
     }
     return () => {
       subscribed = false;
