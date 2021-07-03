@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { parseUnits } from "@ethersproject/units";
+import { parseUnits, parseEther } from "@ethersproject/units";
 import useTokenBalances from "../hooks/useTokenBalances";
 import useContractBalances from "../hooks/useContractBalances";
 import approve from "../utils/approve";
@@ -23,7 +23,21 @@ export default function TransferWidget({
   const [depositCoin, setDepositCoin] = useState();
   const [depositing, setDepositing] = useState(false);
 
-  const withdraw = () => {};
+  const withdraw = () => {
+    if (
+      withdrawalCoin.value <= withdrawalCoin.balance &&
+      withdrawalCoin.value > 0
+    ) {
+      perpetualContract
+        .withdraw(parseEther(withdrawalCoin.value), withdrawalCoin.address)
+        .then(result => {
+          console.log("Withdrawal Successful!", result);
+        })
+        .catch(err => {
+          console.error("Withdrawal Failed!", err);
+        });
+    }
+  };
 
   const deposit = () => {
     if (depositCoin.value <= depositCoin.balance && depositCoin.value > 0) {
@@ -31,17 +45,15 @@ export default function TransferWidget({
       let amount = parseUnits(depositCoin.value, 6);
       approve(provider, depositCoin.address, amount, userAddress)
         .then(info => {
-          setTimeout(() => {
-            perpetualContract
-              .deposit(amount, depositCoin.address)
-              .then(result => {
-                setDepositing(false);
-                console.log("Deposit Success!");
-              })
-              .catch(err => {
-                console.error("Deposit Error!", err);
-              });
-          }, 1000);
+          perpetualContract
+            .deposit(amount, depositCoin.address)
+            .then(result => {
+              setDepositing(false);
+              console.log("Deposit Success!");
+            })
+            .catch(err => {
+              console.error("Deposit Error!", err);
+            });
         })
         .catch(err => {
           console.error("Approval Error!", err);
@@ -67,10 +79,11 @@ export default function TransferWidget({
       <div className=" row">
         {shorts && longs && coins && (
           <CoinInput
-            fixedValue={Number(shorts) > 0 || Number(longs) > 0 ? 0 : false}
+            fixedValue={Number(shorts) > 0 || Number(longs) > 0 ? 0 : null}
+            disabled={Number(shorts) > 0 || Number(longs) > 0}
             coins={coins}
             title="Withdraw"
-            onChange={() => {}}
+            onChange={setWithdrawalCoin}
           />
         )}
         <button onClick={withdraw} className="red">
