@@ -51,7 +51,7 @@ contract MinterRedeemer is Getter, vAMM {
     /************************* functions *************************/
 
     /// @notice Check if user leverage allows operation
-    function leverageIsFine(address account, uint256 _amount)
+    function _leverageIsFine(address account, uint256 _amount)
         internal
         view
         returns (bool)
@@ -64,6 +64,18 @@ contract MinterRedeemer is Getter, vAMM {
         //console.log("newMarginRatio is: ", newMarginRatio);
         uint256 maxInitialMargin = 10**17; // 10 %
         return newMarginRatio >= maxInitialMargin;
+    }
+
+    /// @notice Check if user leverage allows operation
+    function _convertDollarToAssets(uint256 _amount, address _redeemAsset)
+        internal
+        view
+        returns (uint256)
+    {
+        if (isAaveToken[_redeemAsset]) {
+            _amount = balanceToScaledBalance(_amount, _redeemAsset);
+        }
+        return (_amount * getAssetPriceByTokenAddress(_redeemAsset)) / 10**8;
     }
 
     /* go long Quote */
@@ -84,7 +96,7 @@ contract MinterRedeemer is Getter, vAMM {
             "User can not go long w/ an open short position"
         );
         require(
-            leverageIsFine(msg.sender, _amount),
+            _leverageIsFine(msg.sender, _amount),
             "Leverage factor is too high"
         );
 
@@ -117,11 +129,15 @@ contract MinterRedeemer is Getter, vAMM {
         //console.log("QuoteLongSold is", QuoteLongSold);
 
         if (QuoteLongSold >= QuoteLongBought) {
-            uint256 amountOwed = (QuoteLongSold - QuoteLongBought);
-            balances[msg.sender].userReserve[_redeemAsset] += amountOwed;
+            uint256 dollarAmountOwed = (QuoteLongSold - QuoteLongBought);
+            balances[msg.sender].userReserve[
+                _redeemAsset
+            ] += _convertDollarToAssets(dollarAmountOwed, _redeemAsset);
         } else if (QuoteLongSold < QuoteLongBought) {
-            uint256 amountPayed = QuoteLongBought - QuoteLongSold;
-            balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
+            uint256 dollarAmountPayed = QuoteLongBought - QuoteLongSold;
+            balances[msg.sender].userReserve[
+                _redeemAsset
+            ] -= _convertDollarToAssets(dollarAmountPayed, _redeemAsset);
         }
         balances[msg.sender].usdNotional = 0;
         emit sellQuoteLong(_amount, msg.sender, _redeemAsset);
@@ -145,7 +161,7 @@ contract MinterRedeemer is Getter, vAMM {
             "User can not go long w/ an open short position"
         );
         require(
-            leverageIsFine(msg.sender, _amount),
+            _leverageIsFine(msg.sender, _amount),
             "Leverage factor is too high"
         );
         uint256 QuoteShortBought = _burnVBase(_amount);
@@ -174,11 +190,15 @@ contract MinterRedeemer is Getter, vAMM {
         uint256 QuoteShortBought = balances[msg.sender].usdNotional;
 
         if (QuoteShortSold >= QuoteShortBought) {
-            uint256 amountOwed = (QuoteShortSold - QuoteShortBought);
-            balances[msg.sender].userReserve[_redeemAsset] += amountOwed;
+            uint256 dollarAmountOwed = (QuoteShortSold - QuoteShortBought);
+            balances[msg.sender].userReserve[
+                _redeemAsset
+            ] += _convertDollarToAssets(dollarAmountOwed, _redeemAsset);
         } else if (QuoteShortSold < QuoteShortBought) {
-            uint256 amountPayed = (QuoteShortBought - QuoteShortSold);
-            balances[msg.sender].userReserve[_redeemAsset] -= amountPayed;
+            uint256 dollarAmountPayed = (QuoteShortBought - QuoteShortSold);
+            balances[msg.sender].userReserve[
+                _redeemAsset
+            ] -= _convertDollarToAssets(dollarAmountPayed, _redeemAsset);
         }
         balances[msg.sender].usdNotional = 0;
         emit sellQuoteShort(_amount, msg.sender, _redeemAsset);
