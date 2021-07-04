@@ -23,6 +23,7 @@
     "fork": "yarn workspace @project/hardhat fork",
     "node": "yarn workspace @project/hardhat chain",
     "test": "yarn workspace @project/hardhat test",
+    "verify": "yarn workspace @project/hardhat verify",
     "compile": "yarn workspace @project/hardhat compile",
     "deploy": "yarn workspace @project/hardhat deploy",
     "watch": "yarn workspace @project/hardhat watch",

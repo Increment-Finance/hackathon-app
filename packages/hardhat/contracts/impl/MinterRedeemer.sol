@@ -184,4 +184,10 @@ contract MinterRedeemer is Getter, vAMM {
         emit sellQuoteShort(_amount, msg.sender, _redeemAsset);
         return QuoteShortSold;
     }
+
+    function settlePosition(
+        address account,
+        uint256 amountBought,
+        uint256 amountSold
+    ) internal {}
 }
