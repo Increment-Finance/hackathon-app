@@ -6,7 +6,7 @@ import useWeb3Modal from "./hooks/useWeb3Modal";
 import abi from "./contracts/Perpetual.abi";
 import contractAddress from "./contracts/Perpetual.address";
 import { Header } from "./components";
-import { Market, Dashboard } from "./pages";
+import { Market, Dashboard, LandingPage } from "./pages";
 
 import "./App.scss";
 import "antd/dist/antd.css";
@@ -28,12 +28,12 @@ function App() {
       );
       provider
         .getNetwork()
-        .then(result => {
+        .then((result) => {
           if (subscribed) {
             setNetwork(result);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     }
@@ -52,10 +52,10 @@ function App() {
 
       signer
         .getAddress()
-        .then(address => {
+        .then((address) => {
           setUserAddress(address);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Couldn't get signer", err);
         });
     }
@@ -64,13 +64,16 @@ function App() {
   return (
     <div className="app">
       <Router>
-        <Header
-          address={userAddress}
-          provider={provider}
-          loadWeb3Modal={loadWeb3Modal}
-          logoutOfWeb3Modal={logoutOfWeb3Modal}
-        />
         <Route path="/" exact>
+          <LandingPage />
+        </Route>
+        <Route path="/market" exact>
+          <Header
+            address={userAddress}
+            provider={provider}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+          />
           <Market
             provider={provider}
             loadWeb3Modal={loadWeb3Modal}
@@ -81,6 +84,12 @@ function App() {
           />
         </Route>
         <Route path="/dashboard">
+          <Header
+            address={userAddress}
+            provider={provider}
+            loadWeb3Modal={loadWeb3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
+          />
           <Dashboard
             provider={provider}
             loadWeb3Modal={loadWeb3Modal}

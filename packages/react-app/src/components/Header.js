@@ -8,7 +8,7 @@ export default function Header({
   address,
   provider,
   loadWeb3Modal,
-  logoutOfWeb3Modal
+  logoutOfWeb3Modal,
 }) {
   const { pathname } = useLocation();
   const history = useHistory();
@@ -17,7 +17,7 @@ export default function Header({
     ? `${address.slice(0, 6)}...${address.slice(37, 41)}`
     : "";
 
-  const goTo = href => {
+  const goTo = (href) => {
     history.push(href);
   };
 
@@ -26,12 +26,12 @@ export default function Header({
     if (provider && address) {
       provider
         .lookupAddress(address)
-        .then(result => {
+        .then((result) => {
           if (subscribed) {
             setEns(result);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     }
@@ -47,9 +47,9 @@ export default function Header({
       </h2>
 
       <h2
-        className={`link ${pathname === "/" ? "selected" : ""}`}
+        className={`link ${pathname === "/market" ? "selected" : ""}`}
         onClick={() => {
-          goTo("/");
+          goTo("/market");
         }}
       >
         Market
