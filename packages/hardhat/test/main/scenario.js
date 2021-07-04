@@ -11,7 +11,7 @@ describe("Increment App: Scenario", function () {
   });
 
   describe("Can handle multiple trader on vAMM", function () {
-    it("Bob should go long EURUSD and Alice should go long EURUSD", async function () {
+    it("Bob should go long JPYUSD and Alice should go long JPYUSD", async function () {
       /********** mint assets *************/
       // Bob
       await contracts.usdc

@@ -11,16 +11,17 @@ library PerpetualTypes {
         uint256 usdNotional;
     }
 
-    struct UserIndex {
+    struct Index {
         uint256 blockNumber;
-        uint256 amount;
+        uint256 value;
         bool isPositive;
     }
 
-    struct UnrealizedPnL {
-        uint256 amount;
+    struct Int {
+        uint256 value;
         bool isPositive;
     }
+
     struct Pool {
         uint256 vQuote;
         uint256 vBase;

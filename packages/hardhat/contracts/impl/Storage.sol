@@ -12,10 +12,14 @@ import "hardhat/console.sol";
 
 contract Storage {
     // vAMM trading pool
-    PerpetualTypes.Pool pool;
+    PerpetualTypes.Pool public pool;
+
+    // global index
+    PerpetualTypes.Index public global_index;
 
     // user position
-    mapping(address => PerpetualTypes.UserPosition) balances;
+    mapping(address => PerpetualTypes.UserPosition) public balances;
+    mapping(address => PerpetualTypes.Index) public index;
 
     // reserve assets
     address[] public _TOKENS_;

@@ -133,20 +133,20 @@ contract Getter is Storage {
     function getUnrealizedPnL(address account)
         public
         view
-        returns (PerpetualTypes.UnrealizedPnL memory)
+        returns (PerpetualTypes.Int memory)
     {
         uint256 notionalAmount = getUserNotional(account);
         uint256 boughtAmount = getLongBalance(account) +
             getShortBalance(account);
         uint256 simplifiedSellAmount = (boughtAmount * pool.price) / 10**18;
 
-        PerpetualTypes.UnrealizedPnL memory unrealizedPnL;
+        PerpetualTypes.Int memory unrealizedPnL;
         if (simplifiedSellAmount >= notionalAmount) {
             unrealizedPnL.isPositive = true;
-            unrealizedPnL.amount = simplifiedSellAmount - notionalAmount;
+            unrealizedPnL.value = simplifiedSellAmount - notionalAmount;
         } else {
             unrealizedPnL.isPositive = false;
-            unrealizedPnL.amount = notionalAmount - simplifiedSellAmount;
+            unrealizedPnL.value = notionalAmount - simplifiedSellAmount;
         }
         return unrealizedPnL;
     }
@@ -165,7 +165,7 @@ contract Getter is Storage {
 
     function _marginRatio(
         uint256 margin,
-        PerpetualTypes.UnrealizedPnL memory unrealizedPnL,
+        PerpetualTypes.Int memory unrealizedPnL,
         uint256 notionalValue
     ) internal pure returns (uint256) {
         //console.log("Margin is", margin);
@@ -175,11 +175,11 @@ contract Getter is Storage {
         if (notionalValue > 0) {
             if (unrealizedPnL.isPositive) {
                 marginRatio =
-                    ((margin + unrealizedPnL.amount) * 10**18) /
+                    ((margin + unrealizedPnL.value) * 10**18) /
                     notionalValue;
             } else {
                 marginRatio =
-                    ((margin + unrealizedPnL.amount) * 10**18) /
+                    ((margin + unrealizedPnL.value) * 10**18) /
                     notionalValue;
             }
         }
