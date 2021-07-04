@@ -1,6 +1,7 @@
 {
   "name": "incrementapp",
   "license": "UNLICENSED",
+  "version": "1.0.0",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
