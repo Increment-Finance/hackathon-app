@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { parseUnits } from "@ethersproject/units";
+import { parseUnits, parseEther } from "@ethersproject/units";
 import useTokenBalances from "../hooks/useTokenBalances";
+import useContractBalances from "../hooks/useContractBalances";
 import approve from "../utils/approve";
 import { Container, CoinInput } from "./";
 import "./TransferWidget.scss";
@@ -13,28 +14,46 @@ export default function TransferWidget({
   network
 }) {
   const balances = useTokenBalances(provider, network, userAddress);
-  const [widthdrawalCoin, setWithdrawalCoin] = useState();
+  const { coins, shorts, longs } = useContractBalances(
+    perpetualContract,
+    userAddress,
+    network
+  );
+  const [withdrawalCoin, setWithdrawalCoin] = useState();
   const [depositCoin, setDepositCoin] = useState();
   const [depositing, setDepositing] = useState(false);
 
-  const withdraw = () => {};
+  const withdraw = () => {
+    if (
+      withdrawalCoin.value <= withdrawalCoin.balance &&
+      withdrawalCoin.value > 0
+    ) {
+      perpetualContract
+        .withdraw(parseEther(withdrawalCoin.value), withdrawalCoin.address)
+        .then(result => {
+          console.log("Withdrawal Successful!", result);
+        })
+        .catch(err => {
+          console.error("Withdrawal Failed!", err);
+        });
+    }
+  };
+
   const deposit = () => {
     if (depositCoin.value <= depositCoin.balance && depositCoin.value > 0) {
       setDepositing(true);
       let amount = parseUnits(depositCoin.value, 6);
       approve(provider, depositCoin.address, amount, userAddress)
         .then(info => {
-          setTimeout(() => {
-            perpetualContract
-              .deposit(amount, depositCoin.address)
-              .then(result => {
-                setDepositing(false);
-                console.log("Deposit Success!");
-              })
-              .catch(err => {
-                console.error("Deposit Error!", err);
-              });
-          }, 1000);
+          perpetualContract
+            .deposit(amount, depositCoin.address)
+            .then(result => {
+              setDepositing(false);
+              console.log("Deposit Success!");
+            })
+            .catch(err => {
+              console.error("Deposit Error!", err);
+            });
         })
         .catch(err => {
           console.error("Approval Error!", err);
@@ -58,11 +77,15 @@ export default function TransferWidget({
         <button onClick={deposit}>Deposit</button>
       </div>
       <div className=" row">
-        {/* <CoinInput */}
-        {/*   coins={} */}
-        {/*   title="Widthdraw" */}
-        {/*   onChange={() => {}} */}
-        {/* /> */}
+        {shorts && longs && coins && (
+          <CoinInput
+            fixedValue={Number(shorts) > 0 || Number(longs) > 0 ? 0 : null}
+            disabled={Number(shorts) > 0 || Number(longs) > 0}
+            coins={coins}
+            title="Withdraw"
+            onChange={setWithdrawalCoin}
+          />
+        )}
         <button onClick={withdraw} className="red">
           Widthraw
         </button>

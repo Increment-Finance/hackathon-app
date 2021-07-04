@@ -36,7 +36,7 @@ export default function useContractBalances(
       let coin = addresses[network.name].supportedCollateral[i];
       coins.push({
         ...coin,
-        inContract: formatEther(
+        balance: formatEther(
           await perpetualContract.getReserveBalance(userAddress, coin.address)
         )
       });

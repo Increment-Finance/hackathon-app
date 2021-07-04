@@ -11,6 +11,8 @@ import { Market, Dashboard } from "./pages";
 import "./App.scss";
 import "antd/dist/antd.css";
 
+const targetNetwork = "kovan";
+
 function App() {
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
   const [userAddress, setUserAddress] = useState(null);
@@ -89,6 +91,13 @@ function App() {
           />
         </Route>
       </Router>
+      {network && network.name !== targetNetwork && (
+        <div className="modal-container">
+          <div className="network-modal">
+            <p>Please switch network to {targetNetwork}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

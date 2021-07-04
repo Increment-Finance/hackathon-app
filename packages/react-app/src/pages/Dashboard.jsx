@@ -21,10 +21,7 @@ export default function Dashboard({
 
   const redeemLong = () => {
     perpetualContract
-      .RedeemLongEUR(
-        parseEther(longs),
-        addresses[network.name].supportedCollateral[0].address
-      )
+      .RedeemLongQuote(addresses[network.name].supportedCollateral[0].address)
       .then(result => {
         console.log("Closed Position Successfully", result);
       })
@@ -34,10 +31,7 @@ export default function Dashboard({
   };
   const redeemShort = () => {
     perpetualContract
-      .RedeemShortEUR(
-        parseEther(shorts),
-        addresses[network.name].supportedCollateral[0].address
-      )
+      .RedeemShortQuote(addresses[network.name].supportedCollateral[0].address)
       .then(result => {
         console.log("Closed Position Successfully", result);
       })
@@ -89,7 +83,7 @@ export default function Dashboard({
                 <tbody>
                   {(Number(shorts) > 0 || Number(longs) > 0) && (
                     <tr>
-                      <td>EUR/USD</td>
+                      <td>JPY/USD</td>
                       <td>{Number(shorts) > 0 ? shorts : longs}</td>
                       <td>???</td>
                       <td>???</td>

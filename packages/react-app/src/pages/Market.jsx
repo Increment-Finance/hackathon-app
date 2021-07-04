@@ -18,21 +18,21 @@ export default function Market({
 }) {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
-  const [symbol, setSymbol] = useState("FX:EURUSD");
+  const [symbol, setSymbol] = useState("JPYUSD");
   const [poolPrice, setPoolPrice] = useState();
-  const price = useChainlinkPrice("EUR", provider);
+  const price = useChainlinkPrice("JPY", provider);
   const { shorts, longs, portfolio } = useContractBalances(
     perpetualContract,
     userAddress,
     network
   );
 
-  const Symbols = { "EUR/USDC": "FX:EURUSD" };
+  const Symbols = { "JPY/USDC": "JPYUSD" };
   const formatPoolPrice = price => {
     if (price) {
       let etherBalance = formatEther(price.toString());
       let floatBalance = parseFloat(etherBalance);
-      return floatBalance.toFixed(4);
+      return floatBalance.toFixed(8);
     }
   };
   useEffect(() => {
@@ -77,23 +77,25 @@ export default function Market({
       <div className="sidebar">
         {provider ? (
           <>
-            <div className="symbol-select-container">
-              <h1 style={{ marginBottom: 0 }}>{price}</h1>
-              <select
-                className="symbol-select"
-                id="symbol-select"
-                onChange={e => {
-                  setSymbol(e.nativeEvent.target.value);
-                }}
-              >
-                {Object.entries(Symbols).map(([key, value]) => (
-                  <option value={value} key={key}>
-                    {key}
-                  </option>
-                ))}
-              </select>
+            <div>
+              <p>
+                Market Details <b>(JPY/USD)</b>
+              </p>
             </div>
-            <hr style={{ marginBottom: "30px", backgroundColor: "#E5E5E5" }} />
+            <List
+              bordered
+              size="small"
+              style={{ borderRadius: "10px", marginBottom: "30px" }}
+            >
+              <List.Item>
+                <List.Item.Meta title={"Chainlink Price"}></List.Item.Meta>
+                <div>{price || "-"}</div>
+              </List.Item>
+              <List.Item>
+                <List.Item.Meta title={"Contract Price"}></List.Item.Meta>
+                <div>{formatPoolPrice(poolPrice) || "-"}</div>
+              </List.Item>
+            </List>
             <div className="long-short-box">
               <Button
                 type="text"
@@ -169,27 +171,6 @@ export default function Market({
                   isLong={isLong}
                 />
               </Form.Item>
-              <div>
-                <p>Details</p>
-              </div>
-              <List
-                bordered
-                size="small"
-                style={{ borderRadius: "10px", marginBottom: "30px" }}
-              >
-                <List.Item>
-                  <List.Item.Meta title={"Entry Price"}></List.Item.Meta>
-                  <div>{formatPoolPrice(poolPrice) || "-"}</div>
-                </List.Item>
-                {/* <List.Item> */}
-                {/*   <List.Item.Meta title={"Transaction Fee"}></List.Item.Meta> */}
-                {/*   <div>-</div> */}
-                {/* </List.Item> */}
-                {/* <List.Item> */}
-                {/*   <List.Item.Meta title={"Total Cost"}></List.Item.Meta> */}
-                {/*   <div>-</div> */}
-                {/* </List.Item> */}
-              </List>
               <Form.Item>
                 <div className="submit-box">
                   {Number(shorts) === 0 && Number(longs) === 0 ? (
