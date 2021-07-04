@@ -21,6 +21,7 @@
     "react-app:deploy": "aws s3 sync packages/react-app/build/ s3://increment.finance && aws cloudfront create-invalidation --distribution-id E1FCCYAXAMLN36 --paths '/*'",
     "chain": "yarn workspace @project/hardhat chain",
     "fork": "yarn workspace @project/hardhat fork",
+    "interface": "yarn workspace @project/hardhat gen-interface",
     "node": "yarn workspace @project/hardhat chain",
     "test": "yarn workspace @project/hardhat test",
     "verify": "yarn workspace @project/hardhat verify",

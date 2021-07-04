@@ -20,11 +20,13 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.3.1",
     "hardhat": "^2.4.0",
+    "hardhat-interface-generator": "^0.0.6",
     "solidity-coverage": "^0.7.14"
   },
   "scripts": {
     "chain": "hardhat node",
     "fork": "hardhat node --fork https://mainnet.infura.io/v3/460f40a260564ac4a4f4b3fffb032dad",
+    "interface": "hardhat gen-interface",
     "test": "hardhat test --network hardhat",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy.js",
