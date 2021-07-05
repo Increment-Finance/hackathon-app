@@ -116,12 +116,12 @@ contract Getter is Storage {
                     getReserveBalance(account, token),
                     token
                 ) * getAssetPrice(oracleAddress)) /
-                10**8;
+                (10**8);
         } else {
             tokenValue =
                 (getReserveBalance(account, token) *
                     getAssetPrice(oracleAddress)) /
-                10**8;
+                (10**8);
         }
 
         return tokenValue;
