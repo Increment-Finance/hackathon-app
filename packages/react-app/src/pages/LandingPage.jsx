@@ -17,8 +17,9 @@ export default function Market({}) {
       <div className="topbar">
 
         <img className="topbar-img" src={logo} alt="Logo" />{" "}
-        <button class="Docs">Docs</button>
-
+        <button className="Docs" onClick={event =>  window.location.href='https://www.notion.so/Increment-Docs-576e18ba90c24fc38a9909f2e5589a9c'}
+         >Docs
+        </button>
         <img className="topbar-img"
           src={button}
           alt="button"
