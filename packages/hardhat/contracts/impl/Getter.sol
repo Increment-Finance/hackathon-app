@@ -61,6 +61,14 @@ contract Getter is Storage {
 
     /************************* USER VIEWS *************************/
 
+    /// @notice Returns user entry price
+    /// @param account user address
+    function getEntryPrice(address account) public view returns (uint256) {
+        return
+            (getUserNotional(account) * (10**18)) /
+            ((getLongBalance(account) + getShortBalance(account)));
+    }
+
     /// @notice Returns user balance of a given reserve tokens
     /// @param account user address
     /// @param _token token address
