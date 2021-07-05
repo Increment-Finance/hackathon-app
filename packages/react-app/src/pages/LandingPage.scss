@@ -11,6 +11,15 @@
     display: flex;
     justify-content: space-between;
     padding: 40px;
+
+    .topbar-img {
+      flex-shrink: 1;
+      height: auto;
+      max-height: 75px;
+      max-width: 50%;
+      margin-left: 10px;
+      margin-right: 10px;
+    }
   }
 
   .img-button {
@@ -26,14 +35,14 @@
     flex-direction: column;
     align-content: center;
     justify-content: center;
-    width: 40%;
 
     .title {
       font-family: "Helvetica Neue";
       color: white;
-      font-size: 80px;
+      font-size: 70px;
       align-self: center;
       text-align: center;
+      margin: auto;
       margin-bottom: 10px;
     }
 
@@ -43,6 +52,7 @@
       font-size: 20px;
       align-self: center;
       text-align: center;
+      margin: auto;
       margin-bottom: 30px;
     }
 

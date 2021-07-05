@@ -14,11 +14,10 @@ export default function Market({}) {
   return (
     <div className="landing">
       <div className="topbar">
-        <img src={logo} height={80} alt="Logo" />{" "}
+        <img className="topbar-img" src={logo} alt="Logo" />{" "}
         <img
-          className="img-button"
+          className="img-button topbar-img"
           src={button}
-          height={80}
           alt="button"
           onClick={() => {
             goTo("/market");
