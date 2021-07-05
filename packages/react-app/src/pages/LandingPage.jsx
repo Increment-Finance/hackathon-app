@@ -43,9 +43,8 @@ export default function Market({}) {
           src={button2}
           width={300}
           alt="button"
-          onClick={() => {
-            goTo("/market");
-          }}
+          onClick={event =>  window.location.href='https://www.notion.so/Increment-Docs-576e18ba90c24fc38a9909f2e5589a9c'}
+
         />
       </div>
     </div>
