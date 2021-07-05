@@ -42,8 +42,14 @@ export default function Header({
 
   return (
     <div id="header">
-      <h2 className="box">
-        <img src={logo} height={40} width={40} alt="Logo" />
+      <h2
+        className={`link ${pathname === "/" ? "selected" : ""}`}
+        onClick={() => {
+          goTo("/");
+        }}
+      >
+      <img src={logo} height={40} width={40} alt="Logo" />
+
       </h2>
 
       <h2
