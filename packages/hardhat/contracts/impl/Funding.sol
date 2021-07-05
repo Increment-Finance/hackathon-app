@@ -16,6 +16,8 @@ contract Funding is Getter {
     using SignedMath for SignedMath.Int;
 
     // events
+    event LogSnapshot(uint256 indexed blockNumber, uint256 price, uint80 id);
+
     event LogFundingPayment(
         uint256 indexed blockNumber,
         uint256 value,
@@ -192,12 +194,21 @@ contract Funding is Getter {
     /****************************** Helper ******************************/
 
     function pushSnapshot() public {
-        prices.push(
-            PerpetualTypes.Price({
+        PerpetualTypes.Price memory newPrice;
+        if (prices.length > 0) {
+            newPrice = PerpetualTypes.Price({
                 price: pool.price,
                 time: block.timestamp,
                 id: prices[prices.length].id + 1
-            })
-        );
+            });
+        } else {
+            newPrice = PerpetualTypes.Price({
+                price: pool.price,
+                time: block.timestamp,
+                id: 0
+            });
+        }
+        prices.push(newPrice);
+        emit LogSnapshot(newPrice.time, newPrice.price, newPrice.id);
     }
 }
