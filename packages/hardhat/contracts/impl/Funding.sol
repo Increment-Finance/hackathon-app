@@ -29,10 +29,10 @@ contract Funding is Getter {
     function getPoolTWAP(uint256 _delta) internal view returns (uint256) {
         // find length of periods with price snapshots
         uint256 numTotalPeriod = prices.length;
-
+        //console.log("numTotalPeriod is", numTotalPeriod);
         // get last price
-        PerpetualTypes.Price memory poolPrice = prices[numTotalPeriod];
-
+        PerpetualTypes.Price memory poolPrice = prices[numTotalPeriod - 1];
+        //console.log("poolPrice is", poolPrice);
         // derive TWAP
         return
             calcTWAP(
@@ -89,8 +89,12 @@ contract Funding is Getter {
         if (timeStamp < earliestDate) {
             return price;
         }
+
         // go from latest date to earliest
         while (timeStamp >= earliestDate) {
+            if (roundId == 0) {
+                return price;
+            }
             // get id of price call before
             newRoundId = roundId - 1;
             (roundId, price, timeStamp) = getNextPrice(newRoundId);

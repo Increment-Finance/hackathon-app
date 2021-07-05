@@ -35,4 +35,5 @@ contract Storage {
 
     // TWAP prices
     PerpetualTypes.Price[] internal prices;
+    mapping(address => bool) internal isSettledAccount;
 }

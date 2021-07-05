@@ -7,13 +7,13 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {vAMM} from "./vAMM.sol";
 import {Storage} from "./Storage.sol";
-import {Getter} from "./Getter.sol";
+import {Settlement} from "./Settlement.sol";
 
 import "hardhat/console.sol";
 
 /// @notice Mints and redeems perpetual tokens
 
-contract MinterRedeemer is Getter, vAMM {
+contract MinterRedeemer is Settlement, vAMM {
     using SafeERC20 for IERC20;
 
     constructor(uint256 _quoteAssetReserve, uint256 _baseAssetReserve) {
@@ -66,18 +66,6 @@ contract MinterRedeemer is Getter, vAMM {
         return newMarginRatio >= maxInitialMargin;
     }
 
-    /// @notice Check if user leverage allows operation
-    function _convertDollarToAssets(uint256 _amount, address _redeemAsset)
-        internal
-        view
-        returns (uint256)
-    {
-        if (isAaveToken[_redeemAsset]) {
-            _amount = balanceToScaledBalance(_amount, _redeemAsset);
-        }
-        return (_amount * getAssetPriceByTokenAddress(_redeemAsset)) / 10**8;
-    }
-
     /* go long Quote */
     /// @notice Wrapper around MintLongQuote to simplifiy interaction with front-end
     /// @param _leverage Initial Leverage factor of position
@@ -96,6 +84,10 @@ contract MinterRedeemer is Getter, vAMM {
             "User can not go long w/ an open short position"
         );
         require(
+            balances[msg.sender].QuoteLong == 0,
+            "User can not go long w/ an open long position"
+        ); // since index would be recalculated
+        require(
             _leverageIsFine(msg.sender, _amount),
             "Leverage factor is too high"
         );
@@ -106,6 +98,8 @@ contract MinterRedeemer is Getter, vAMM {
         balances[msg.sender].QuoteLong += QuoteLongBought;
 
         emit buyQuoteLong(_amount, msg.sender, QuoteLongBought);
+
+        index[msg.sender] = global_index;
         return QuoteLongBought;
     }
 
@@ -139,6 +133,7 @@ contract MinterRedeemer is Getter, vAMM {
                 _redeemAsset
             ] -= _convertDollarToAssets(dollarAmountPayed, _redeemAsset);
         }
+        settleAccount(msg.sender, _redeemAsset);
         balances[msg.sender].usdNotional = 0;
         emit sellQuoteLong(_amount, msg.sender, _redeemAsset);
         return QuoteLongSold;
@@ -161,6 +156,10 @@ contract MinterRedeemer is Getter, vAMM {
             "User can not go long w/ an open short position"
         );
         require(
+            balances[msg.sender].QuoteShort == 0,
+            "User can not go long w/ an open short position"
+        ); // since index would be recalculated
+        require(
             _leverageIsFine(msg.sender, _amount),
             "Leverage factor is too high"
         );
@@ -170,6 +169,7 @@ contract MinterRedeemer is Getter, vAMM {
         balances[msg.sender].QuoteShort += QuoteShortBought;
         //console.log("QuoteShortBought is", QuoteShortBought);
         emit buyQuoteShort(_amount, msg.sender, QuoteShortBought);
+        index[msg.sender] = global_index;
         return QuoteShortBought;
     }
 
@@ -200,6 +200,7 @@ contract MinterRedeemer is Getter, vAMM {
                 _redeemAsset
             ] -= _convertDollarToAssets(dollarAmountPayed, _redeemAsset);
         }
+        settleAccount(msg.sender, _redeemAsset);
         balances[msg.sender].usdNotional = 0;
         emit sellQuoteShort(_amount, msg.sender, _redeemAsset);
         return QuoteShortSold;

@@ -214,4 +214,33 @@ contract Getter is Storage {
         );
         return (amount * (10**27)) / currentIndex;
     }
+
+    /// @notice Check if user leverage allows operation
+    function _convertDollarToAssets(uint256 _amount, address _redeemAsset)
+        internal
+        view
+        returns (uint256)
+    {
+        if (isAaveToken[_redeemAsset]) {
+            _amount = balanceToScaledBalance(_amount, _redeemAsset);
+        }
+        return (_amount * getAssetPriceByTokenAddress(_redeemAsset)) / 10**8;
+    }
+
+    /************************* Funding grate *************************/
+    function getVAMMsnapshots(uint256 _id)
+        public
+        view
+        returns (PerpetualTypes.Price memory)
+    {
+        return prices[_id];
+    }
+
+    function getFundingRate()
+        public
+        view
+        returns (PerpetualTypes.Index memory)
+    {
+        return global_index;
+    }
 }
