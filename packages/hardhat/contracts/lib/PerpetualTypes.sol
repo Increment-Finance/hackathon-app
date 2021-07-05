@@ -28,4 +28,10 @@ library PerpetualTypes {
         uint256 totalAssetReserve;
         uint256 price; // 10 ** 18
     }
+
+    struct Price {
+        uint256 price;
+        uint256 time;
+        uint80 id;
+    }
 }

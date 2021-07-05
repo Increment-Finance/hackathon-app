@@ -9,12 +9,13 @@ import {MinterRedeemer} from "./impl/MinterRedeemer.sol";
 import {Storage} from "./impl/Storage.sol";
 import {vAMM} from "./impl/vAMM.sol";
 import {Getter} from "./impl/Getter.sol";
+import {Funding} from "./impl/Funding.sol";
 
 /// @title A perpetual contract w/ aTokens as collateral
 /// @author Markus Schick
 /// @notice You can only buy one type of perpetual and only use USDC as reserve
 
-contract Perpetual is Reserve, Oracle, MinterRedeemer {
+contract Perpetual is Reserve, Oracle, MinterRedeemer, Funding {
     /************************* constructor *************************/
 
     constructor(

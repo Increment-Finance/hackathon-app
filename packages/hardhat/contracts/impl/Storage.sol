@@ -32,4 +32,7 @@ contract Storage {
     // oracles
     address internal quoteAssetOracle;
     mapping(address => address) internal assetOracles;
+
+    // TWAP prices
+    PerpetualTypes.Price[] internal prices;
 }
