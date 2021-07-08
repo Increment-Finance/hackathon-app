@@ -72,7 +72,7 @@ export default function Dashboard({
                 <thead>
                   <tr>
                     <th>Market</th>
-                    <th>Size</th>
+                    <th>Size (JPY)</th>
                     <th>Entry Price</th>
                     <th>Market Price</th>
                     <th>Margin</th>
@@ -112,6 +112,4 @@ export default function Dashboard({
           logoutOfWeb3Modal={logoutOfWeb3Modal}
         />
       )}
-    </div>
-  );
-}
+  
