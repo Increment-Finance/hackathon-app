@@ -27,6 +27,7 @@ export default function useContractBalances(
     const marginRatio = formatEther(
       await perpetualContract.getUserMarginRatio(userAddress)
     );
+
     const [pnlAmount, isPositive] = await perpetualContract.getUnrealizedPnL(
       userAddress
     );
@@ -38,7 +39,7 @@ export default function useContractBalances(
         ...coin,
         balance: formatEther(
           await perpetualContract.getReserveBalance(userAddress, coin.address)
-        )
+        ),
       });
     }
 
@@ -47,7 +48,7 @@ export default function useContractBalances(
       longs,
       portfolio,
       coins,
-      marginRatio
+      marginRatio,
       // pnl: isPositive ? pnlAmount.toNumber() : -pnlAmount.toNumber()
     };
   };
@@ -62,7 +63,7 @@ export default function useContractBalances(
       addresses[network.name].supportedCollateral
     ) {
       getContractInfo()
-        .then(result => {
+        .then((result) => {
           if (subscribed) {
             setShorts(result.shorts);
             setLongs(result.longs);
@@ -72,7 +73,7 @@ export default function useContractBalances(
             setPnl(result.pnl);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Couldn't Read Contract Data", err);
         });
     }

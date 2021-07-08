@@ -11,7 +11,7 @@ export default function Dashboard({
   logoutOfWeb3Modal,
   perpetualContract,
   userAddress,
-  network
+  network,
 }) {
   const { shorts, longs, pnl, marginRatio, portfolio } = useContractBalances(
     perpetualContract,
@@ -22,22 +22,29 @@ export default function Dashboard({
   const redeemLong = () => {
     perpetualContract
       .RedeemLongQuote(addresses[network.name].supportedCollateral[0].address)
-      .then(result => {
+      .then((result) => {
         console.log("Closed Position Successfully", result);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Couldn't Close Position", err);
       });
   };
   const redeemShort = () => {
     perpetualContract
       .RedeemShortQuote(addresses[network.name].supportedCollateral[0].address)
-      .then(result => {
+      .then((result) => {
         console.log("Closed Position Successfully", result);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Couldn't Close Position", err);
       });
+  };
+
+  const formatShares = (shares) => {
+    return Number(shares)
+      .toFixed(2)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   return (
@@ -84,7 +91,11 @@ export default function Dashboard({
                   {(Number(shorts) > 0 || Number(longs) > 0) && (
                     <tr>
                       <td>JPY/USD</td>
-                      <td>{Number(shorts) > 0 ? shorts : longs}</td>
+                      <td>
+                        {Number(shorts) > 0
+                          ? formatShares(shorts)
+                          : formatShares(longs)}
+                      </td>
                       <td>???</td>
                       <td>???</td>
                       <td>{marginRatio}</td>
