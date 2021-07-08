@@ -180,7 +180,9 @@ export default function useContractBalances(
       const [pnlAmount, isPositive] = await perpetualContract.getUnrealizedPnL(
         userAddress
       );
-      result.pnl = isPositive ? pnlAmount.toNumber() : -pnlAmount.toNumber();
+      result.pnl = isPositive
+        ? formatEther(pnlAmount)
+        : -formatEther(pnlAmount);
     } catch (err) {
       console.error(err);
     }

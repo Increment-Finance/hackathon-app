@@ -19,9 +19,10 @@ export default function Dashboard({
     entryPrice,
     shorts,
     longs,
+    portfolio,
+    coins,
     pnl,
-    marginRatio,
-    portfolio
+    marginRatio
   } = contractBalances;
 
   const redeemLong = () => {
@@ -102,10 +103,10 @@ export default function Dashboard({
                           ? formatShares(shorts)
                           : formatShares(longs)}
                       </td>
-                      <td>{entryPrice}</td>
-                      <td>{poolPrice}</td>
+                      <td>{parseFloat(entryPrice).toFixed(8)}</td>
+                      <td>{parseFloat(poolPrice).toFixed(8)}</td>
                       <td>{marginRatio}</td>
-                      <td>{pnl}</td>
+                      <td>{parseFloat(pnl).toFixed(2)}</td>
                       <td>
                         <button
                           onClick={
