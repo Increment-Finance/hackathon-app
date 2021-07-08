@@ -11,7 +11,8 @@ export default function Dashboard({
   logoutOfWeb3Modal,
   perpetualContract,
   userAddress,
-  network
+  network,
+  contractBalances
 }) {
   const {
     poolPrice,
@@ -21,7 +22,7 @@ export default function Dashboard({
     pnl,
     marginRatio,
     portfolio
-  } = useContractBalances(perpetualContract, userAddress, network);
+  } = contractBalances;
 
   const redeemLong = () => {
     perpetualContract
@@ -75,6 +76,7 @@ export default function Dashboard({
               addresses={addresses}
               userAddress={userAddress}
               network={network}
+              contractBalances={contractBalances}
             />
           </div>
           <div className="row">
