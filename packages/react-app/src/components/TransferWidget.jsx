@@ -82,7 +82,7 @@ export default function TransferWidget({
             fixedValue={Number(shorts) > 0 || Number(longs) > 0 ? 0 : null}
             disabled={Number(shorts) > 0 || Number(longs) > 0}
             coins={coins}
-            title="Withdraw"
+          Withdraw
             onChange={setWithdrawalCoin}
           />
         )}
