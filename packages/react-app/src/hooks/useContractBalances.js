@@ -51,7 +51,9 @@ export default function useContractBalances(
       const [pnlAmount, isPositive] = await perpetualContract.getUnrealizedPnL(
         userAddress
       );
-      result.pnl = isPositive ? pnlAmount.toNumber() : -pnlAmount.toNumber();
+      result.pnl = isPositive
+        ? formatEther(pnlAmount)
+        : -formatEther(pnlAmount);
     } catch (err) {
       console.error(err);
     }
@@ -75,7 +77,7 @@ export default function useContractBalances(
           ...coin,
           balance: formatEther(
             await perpetualContract.getReserveBalance(userAddress, coin.address)
-          )
+          ),
         });
       }
       result.coins = coins;
@@ -96,7 +98,7 @@ export default function useContractBalances(
       addresses[network.name].supportedCollateral
     ) {
       getContractInfo()
-        .then(result => {
+        .then((result) => {
           if (subscribed) {
             setShorts(result.shorts);
             setLongs(result.longs);
@@ -108,7 +110,7 @@ export default function useContractBalances(
             setPoolPrice(result.poolPrice);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Couldn't Read Contract Data", err);
         });
     }
@@ -126,6 +128,6 @@ export default function useContractBalances(
     portfolio,
     coins,
     pnl,
-    marginRatio
+    marginRatio,
   };
 }
