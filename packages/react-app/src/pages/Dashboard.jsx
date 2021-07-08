@@ -13,7 +13,7 @@ export default function Dashboard({
   userAddress,
   network
 }) {
-  const {   shorts, longs, portfolio, price,  marginRatio, entryPrice, pnl} = useContractBalances(
+  const { shorts, longs, pnl, marginRatio, portfolio } = useContractBalances(
     perpetualContract,
     userAddress,
     network
@@ -84,10 +84,10 @@ export default function Dashboard({
                   {(Number(shorts) > 0 || Number(longs) > 0) && (
                     <tr>
                       <td>JPY/USD</td>
-                      <td>{Number(shorts) > 0 ? Number(shorts).toFixed(5) : Number(longs).toFixed(5)}</td>
-                      <td>{entryPrice}</td>
-                      <td>{Number(price).toFixed(6)}</td>
-                      <td>{Number(marginRatio).toFixed(6)}</td>
+                      <td>{Number(shorts) > 0 ? shorts : longs}</td>
+                      <td>???</td>
+                      <td>???</td>
+                      <td>{marginRatio}</td>
                       <td>{pnl}</td>
                       <td>
                         <button
