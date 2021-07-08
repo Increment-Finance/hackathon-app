@@ -112,4 +112,6 @@ export default function Dashboard({
           logoutOfWeb3Modal={logoutOfWeb3Modal}
         />
       )}
-  
+    </div>
+  );
+}
