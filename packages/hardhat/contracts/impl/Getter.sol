@@ -2,7 +2,6 @@
 pragma solidity 0.8.4;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Storage} from "./Storage.sol";
 import {ILendingPool} from "../interfaces/InterfaceAave/lendingPool/ILendingPool.sol";
@@ -163,6 +162,21 @@ contract Getter is Storage {
             unrealizedPnL.amount = notionalAmount - simplifiedSellAmount;
         }
         return unrealizedPnL;
+    }
+
+    function getPnl(address account) public view returns (uint256) {
+
+        uint256 notionalAmount = getUserNotional(account);
+        uint256 boughtAmount = getLongBalance(account) + getShortBalance(account);
+        uint256 simplifiedSellAmount = (boughtAmount * pool.price) / 10**18;
+        uint256 pnlAmount;
+
+        if (simplifiedSellAmount >= notionalAmount) {
+            pnlAmount = simplifiedSellAmount - notionalAmount;
+        } else {
+            pnlAmount = notionalAmount - simplifiedSellAmount;
+        }
+        return pnlAmount;
     }
 
     /// @notice Returns information about the margin ratio of a account
