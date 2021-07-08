@@ -13,6 +13,8 @@ export default function useContractBalances(
   const [coins, setCoins] = useState();
   const [marginRatio, setMarginRatio] = useState();
   const [pnl, setPnl] = useState();
+  const [entryPrice, setEntryPrice] = useState();
+  const [poolPrice, setPoolPrice] = useState();
 
   const getContractInfo = async () => {
     const result = {};
@@ -54,6 +56,18 @@ export default function useContractBalances(
       console.error(err);
     }
     try {
+      result.entryPrice = formatEther(
+        await perpetualContract.getEntryPrice(userAddress)
+      );
+    } catch (err) {
+      console.error(err);
+    }
+    try {
+      result.poolPrice = formatEther(await perpetualContract.getPoolPrice());
+    } catch (err) {
+      console.error(err);
+    }
+    try {
       let coins = [];
       for (let i in addresses[network.name].supportedCollateral) {
         let coin = addresses[network.name].supportedCollateral[i];
@@ -90,6 +104,8 @@ export default function useContractBalances(
             setCoins(result.coins);
             setMarginRatio(result.marginRatio);
             setPnl(result.pnl);
+            setEntryPrice(result.entryPrice);
+            setPoolPrice(result.poolPrice);
           }
         })
         .catch(err => {
@@ -102,5 +118,14 @@ export default function useContractBalances(
     };
   }, [perpetualContract, userAddress, network]);
 
-  return { shorts, longs, portfolio, coins, pnl, marginRatio };
+  return {
+    poolPrice,
+    entryPrice,
+    shorts,
+    longs,
+    portfolio,
+    coins,
+    pnl,
+    marginRatio
+  };
 }

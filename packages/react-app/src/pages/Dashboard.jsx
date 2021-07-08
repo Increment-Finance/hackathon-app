@@ -11,36 +11,40 @@ export default function Dashboard({
   logoutOfWeb3Modal,
   perpetualContract,
   userAddress,
-  network,
+  network
 }) {
-  const { shorts, longs, pnl, marginRatio, portfolio } = useContractBalances(
-    perpetualContract,
-    userAddress,
-    network
-  );
+  const {
+    poolPrice,
+    entryPrice,
+    shorts,
+    longs,
+    pnl,
+    marginRatio,
+    portfolio
+  } = useContractBalances(perpetualContract, userAddress, network);
 
   const redeemLong = () => {
     perpetualContract
       .RedeemLongQuote(addresses[network.name].supportedCollateral[0].address)
-      .then((result) => {
+      .then(result => {
         console.log("Closed Position Successfully", result);
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("Couldn't Close Position", err);
       });
   };
   const redeemShort = () => {
     perpetualContract
       .RedeemShortQuote(addresses[network.name].supportedCollateral[0].address)
-      .then((result) => {
+      .then(result => {
         console.log("Closed Position Successfully", result);
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("Couldn't Close Position", err);
       });
   };
 
-  const formatShares = (shares) => {
+  const formatShares = shares => {
     return Number(shares)
       .toFixed(2)
       .toString()
@@ -96,8 +100,8 @@ export default function Dashboard({
                           ? formatShares(shorts)
                           : formatShares(longs)}
                       </td>
-                      <td>???</td>
-                      <td>{}</td>
+                      <td>{entryPrice}</td>
+                      <td>{poolPrice}</td>
                       <td>{marginRatio}</td>
                       <td>{pnl}</td>
                       <td>
