@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";import { useState, useEffect } from "react";
 import { formatUnits, formatEther } from "@ethersproject/units";
 import addresses from "../utils/addresses";
 
@@ -10,11 +10,9 @@ export default function useContractBalances(
   const [shorts, setShorts] = useState();
   const [longs, setLongs] = useState();
   const [portfolio, setPortfolio] = useState();
-  const [price, setPoolPrice] = useState();
+  const [coins, setCoins] = useState();
   const [marginRatio, setMarginRatio] = useState();
-  const [entryPrice, setEntryPrice] = useState();
   const [pnl, setPnl] = useState();
-
 
   const getContractInfo = async () => {
     const shorts = formatEther(
@@ -29,35 +27,27 @@ export default function useContractBalances(
     const marginRatio = formatEther(
       await perpetualContract.getUserMarginRatio(userAddress)
     );
-    const price = formatEther(
-      await perpetualContract.getPoolPrice()
+    const [pnlAmount, isPositive] = await perpetualContract.getUnrealizedPnL(
+      userAddress
     );
-    try {
-    const entryPrice = formatEther(
-      await perpetualContract.getEntryPrice(userAddress)
-    );
+
+    let coins = [];
+    for (let i in addresses[network.name].supportedCollateral) {
+      let coin = addresses[network.name].supportedCollateral[i];
+      coins.push({
+        ...coin,
+        balance: formatEther(
+          await perpetualContract.getReserveBalance(userAddress, coin.address)
+        )
+      });
     }
-   catch(err) {
-    console.log("wewe");
-   }
-
-try{
-
-const pnl = formatEther(
-  await perpetualContract.getPnl(userAddress)
-);
-}catch(err) {
-  console.log("weewoo");
-}
 
     return {
       shorts,
       longs,
       portfolio,
-      price,
-      marginRatio,
-      entryPrice,
-      pnl
+      coins,
+      marginRatio
       // pnl: isPositive ? pnlAmount.toNumber() : -pnlAmount.toNumber()
     };
   };
@@ -77,9 +67,8 @@ const pnl = formatEther(
             setShorts(result.shorts);
             setLongs(result.longs);
             setPortfolio(result.portfolio);
-            setPoolPrice(result.price);
+            setCoins(result.coins);
             setMarginRatio(result.marginRatio);
-            setEntryPrice(result.entryPrice);
             setPnl(result.pnl);
           }
         })
@@ -93,5 +82,5 @@ const pnl = formatEther(
     };
   }, [perpetualContract, userAddress, network]);
 
-  return { shorts, longs, portfolio, price,  marginRatio, entryPrice, pnl };
+  return { shorts, longs, portfolio, coins, pnl, marginRatio };
 }
