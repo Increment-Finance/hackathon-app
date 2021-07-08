@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { formatUnits, formatEther } from "@ethersproject/units";
 import addresses from "../utils/addresses";
 
