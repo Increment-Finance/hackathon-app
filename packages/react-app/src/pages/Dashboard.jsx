@@ -12,6 +12,7 @@ export default function Dashboard({
   perpetualContract,
   userAddress,
   network,
+  contractBalances
 }) {
   const {
     poolPrice,
@@ -21,31 +22,31 @@ export default function Dashboard({
     portfolio,
     coins,
     pnl,
-    marginRatio,
-  } = useContractBalances(perpetualContract, userAddress, network);
+    marginRatio
+  } = contractBalances;
 
   const redeemLong = () => {
     perpetualContract
       .RedeemLongQuote(addresses[network.name].supportedCollateral[0].address)
-      .then((result) => {
+      .then(result => {
         console.log("Closed Position Successfully", result);
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("Couldn't Close Position", err);
       });
   };
   const redeemShort = () => {
     perpetualContract
       .RedeemShortQuote(addresses[network.name].supportedCollateral[0].address)
-      .then((result) => {
+      .then(result => {
         console.log("Closed Position Successfully", result);
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("Couldn't Close Position", err);
       });
   };
 
-  const formatShares = (shares) => {
+  const formatShares = shares => {
     return Number(shares)
       .toFixed(2)
       .toString()
@@ -76,6 +77,7 @@ export default function Dashboard({
               addresses={addresses}
               userAddress={userAddress}
               network={network}
+              contractBalances={contractBalances}
             />
           </div>
           <div className="row">

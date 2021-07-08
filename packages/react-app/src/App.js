@@ -7,6 +7,7 @@ import abi from "./contracts/Perpetual.abi";
 import contractAddress from "./contracts/Perpetual.address";
 import { Header } from "./components";
 import { Market, Dashboard, LandingPage } from "./pages";
+import useContractBalances from "./hooks/useContractBalances";
 
 import "./App.scss";
 import "antd/dist/antd.css";
@@ -18,6 +19,11 @@ function App() {
   const [userAddress, setUserAddress] = useState(null);
   const [network, setNetwork] = useState(null);
   const [perpetualContract, setPerpetualContract] = useState();
+  const contractBalances = useContractBalances(
+    perpetualContract,
+    userAddress,
+    network
+  );
 
   useEffect(() => {
     let subscribed = true;
@@ -28,12 +34,12 @@ function App() {
       );
       provider
         .getNetwork()
-        .then((result) => {
+        .then(result => {
           if (subscribed) {
             setNetwork(result);
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     }
@@ -52,10 +58,10 @@ function App() {
 
       signer
         .getAddress()
-        .then((address) => {
+        .then(address => {
           setUserAddress(address);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log("Couldn't get signer", err);
         });
     }
@@ -81,6 +87,7 @@ function App() {
             perpetualContract={perpetualContract}
             userAddress={userAddress}
             network={network}
+            contractBalances={contractBalances}
           />
         </Route>
         <Route path="/dashboard">
@@ -97,6 +104,7 @@ function App() {
             perpetualContract={perpetualContract}
             userAddress={userAddress}
             network={network}
+            contractBalances={contractBalances}
           />
         </Route>
       </Router>

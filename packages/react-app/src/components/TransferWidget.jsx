@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { parseUnits, parseEther } from "@ethersproject/units";
 import useTokenBalances from "../hooks/useTokenBalances";
 import useContractBalances from "../hooks/useContractBalances";
@@ -11,14 +11,11 @@ export default function TransferWidget({
   addresses,
   perpetualContract,
   userAddress,
-  network
+  network,
+  contractBalances
 }) {
   const balances = useTokenBalances(provider, network, userAddress);
-  const { coins, shorts, longs } = useContractBalances(
-    perpetualContract,
-    userAddress,
-    network
-  );
+  const { coins, shorts, longs } = contractBalances;
   const [withdrawalCoin, setWithdrawalCoin] = useState();
   const [depositCoin, setDepositCoin] = useState();
   const [depositing, setDepositing] = useState(false);

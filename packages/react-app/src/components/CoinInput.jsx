@@ -29,7 +29,7 @@ export default function CoinInput({
   // Reset value on coin change
   useEffect(() => {
     setValue("");
-  }, [coin]);
+  }, [coin, coins]);
 
   return (
     <div className="coin-input">
