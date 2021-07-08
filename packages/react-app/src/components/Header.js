@@ -40,7 +40,7 @@ export default function Header({
     };
   }, [provider, address]);
 
-  return (
+    return (
     <div id="header">
       <h2
         className={`link ${pathname === "/" ? "selected" : ""}`}
@@ -52,22 +52,22 @@ export default function Header({
 
       </h2>
 
-      <h2
+      <button
         className={`link ${pathname === "/market" ? "selected" : ""}`}
         onClick={() => {
           goTo("/market");
         }}
       >
         Market
-      </h2>
-      <h2
+      </button>
+      <button
         className={`link ${pathname === "/dashboard" ? "selected" : ""}`}
         onClick={() => {
           goTo("/dashboard");
         }}
       >
         Dashboard
-      </h2>
+      </button>
       <p className="address">{ens || displayAddress}</p>
       <WalletButton
         provider={provider}
