@@ -82,12 +82,12 @@ export default function TransferWidget({
             fixedValue={Number(shorts) > 0 || Number(longs) > 0 ? 0 : null}
             disabled={Number(shorts) > 0 || Number(longs) > 0}
             coins={coins}
-          Withdraw
+            title="Withdraw"
             onChange={setWithdrawalCoin}
           />
         )}
         <button onClick={withdraw} className="red">
-          Widthraw
+          Withdraw
         </button>
       </div>
     </Container>
