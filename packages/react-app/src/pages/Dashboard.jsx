@@ -97,7 +97,7 @@ export default function Dashboard({
                           : formatShares(longs)}
                       </td>
                       <td>???</td>
-                      <td>???</td>
+                      <td>{}</td>
                       <td>{marginRatio}</td>
                       <td>{pnl}</td>
                       <td>
