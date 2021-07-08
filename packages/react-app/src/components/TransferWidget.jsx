@@ -87,7 +87,7 @@ export default function TransferWidget({
           />
         )}
         <button onClick={withdraw} className="red">
-          Widthraw
+          Withdraw
         </button>
       </div>
     </Container>

@@ -2,7 +2,6 @@
 pragma solidity 0.8.4;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-
 import {PerpetualTypes} from "../lib/PerpetualTypes.sol";
 import {Storage} from "./Storage.sol";
 import {ILendingPool} from "../interfaces/InterfaceAave/lendingPool/ILendingPool.sol";
@@ -22,6 +21,12 @@ contract Getter is Storage {
     /// @return pool struct has properties vEUR, vUSD, totalAssetReserve (x*y=k) and price
     function getPoolInfo() public view returns (PerpetualTypes.Pool memory) {
         return pool;
+    }
+
+    /// @notice Returns the price on the virtual Automated Market Maker (vAMM)
+    /// @return price with 18 decimals
+    function getPoolPrice() public view returns (uint256) {
+        return pool.price;
     }
 
     function getQuoteAssetOracle() public view returns (address) {
@@ -60,6 +65,14 @@ contract Getter is Storage {
     }
 
     /************************* USER VIEWS *************************/
+
+    /// @notice Returns user entry price
+    /// @param account user address
+    function getEntryPrice(address account) public view returns (uint256) {
+        return
+            (getUserNotional(account) * (10**18)) /
+            ((getLongBalance(account) + getShortBalance(account)));
+    }
 
     /// @notice Returns user balance of a given reserve tokens
     /// @param account user address
@@ -116,12 +129,12 @@ contract Getter is Storage {
                     getReserveBalance(account, token),
                     token
                 ) * getAssetPrice(oracleAddress)) /
-                10**8;
+                (10**8);
         } else {
             tokenValue =
                 (getReserveBalance(account, token) *
                     getAssetPrice(oracleAddress)) /
-                10**8;
+                (10**8);
         }
 
         return tokenValue;
@@ -149,6 +162,21 @@ contract Getter is Storage {
             unrealizedPnL.value = notionalAmount - simplifiedSellAmount;
         }
         return unrealizedPnL;
+    }
+
+    function getPnl(address account) public view returns (uint256) {
+        uint256 notionalAmount = getUserNotional(account);
+        uint256 boughtAmount = getLongBalance(account) +
+            getShortBalance(account);
+        uint256 simplifiedSellAmount = (boughtAmount * pool.price) / 10**18;
+        uint256 pnlAmount;
+
+        if (simplifiedSellAmount >= notionalAmount) {
+            pnlAmount = simplifiedSellAmount - notionalAmount;
+        } else {
+            pnlAmount = notionalAmount - simplifiedSellAmount;
+        }
+        return pnlAmount;
     }
 
     /// @notice Returns information about the margin ratio of a account

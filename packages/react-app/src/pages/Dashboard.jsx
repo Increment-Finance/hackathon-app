@@ -11,33 +11,45 @@ export default function Dashboard({
   logoutOfWeb3Modal,
   perpetualContract,
   userAddress,
-  network
+  network,
 }) {
-  const { shorts, longs, pnl, marginRatio, portfolio } = useContractBalances(
-    perpetualContract,
-    userAddress,
-    network
-  );
+  const {
+    poolPrice,
+    entryPrice,
+    shorts,
+    longs,
+    portfolio,
+    coins,
+    pnl,
+    marginRatio,
+  } = useContractBalances(perpetualContract, userAddress, network);
 
   const redeemLong = () => {
     perpetualContract
       .RedeemLongQuote(addresses[network.name].supportedCollateral[0].address)
-      .then(result => {
+      .then((result) => {
         console.log("Closed Position Successfully", result);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Couldn't Close Position", err);
       });
   };
   const redeemShort = () => {
     perpetualContract
       .RedeemShortQuote(addresses[network.name].supportedCollateral[0].address)
-      .then(result => {
+      .then((result) => {
         console.log("Closed Position Successfully", result);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Couldn't Close Position", err);
       });
+  };
+
+  const formatShares = (shares) => {
+    return Number(shares)
+      .toFixed(2)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   return (
@@ -72,7 +84,7 @@ export default function Dashboard({
                 <thead>
                   <tr>
                     <th>Market</th>
-                    <th>Size</th>
+                    <th>Size (JPY)</th>
                     <th>Entry Price</th>
                     <th>Market Price</th>
                     <th>Margin</th>
@@ -84,11 +96,15 @@ export default function Dashboard({
                   {(Number(shorts) > 0 || Number(longs) > 0) && (
                     <tr>
                       <td>JPY/USD</td>
-                      <td>{Number(shorts) > 0 ? shorts : longs}</td>
-                      <td>???</td>
-                      <td>???</td>
+                      <td>
+                        {Number(shorts) > 0
+                          ? formatShares(shorts)
+                          : formatShares(longs)}
+                      </td>
+                      <td>{parseFloat(entryPrice).toFixed(8)}</td>
+                      <td>{parseFloat(poolPrice).toFixed(8)}</td>
                       <td>{marginRatio}</td>
-                      <td>{pnl}</td>
+                      <td>{parseFloat(pnl).toFixed(2)}</td>
                       <td>
                         <button
                           onClick={

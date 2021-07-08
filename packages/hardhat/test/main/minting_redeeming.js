@@ -32,6 +32,21 @@ describe("Increment App: Minting / Redeeming", function () {
       expect(
         await contracts.perpetual.getPortfolioValue(owner.address)
       ).to.be.equal(convertUSDCtoEther(data.depositAmount));
+
+      console.log(
+        "Entry price is",
+        utils.formatEther(
+          await contracts.perpetual.getEntryPrice(owner.address)
+        )
+      );
+      console.log(
+        "Current price is",
+        utils.formatEther((await contracts.perpetual.getPoolInfo()).price)
+      );
+      console.log(
+        "pool info is",
+        (await contracts.perpetual.getPoolInfo()).toString()
+      );
     });
     it("Can go short Quote ", async function () {
       await contracts.usdc

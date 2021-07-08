@@ -58,6 +58,8 @@ describe("Increment App: Scenario", function () {
           utils.parseEther("110864.642586250382252049")
         );
 
+      const bobPnL = await contracts.perpetual.getUnrealizedPnL(bob.address);
+      console.log("Bob has so much PnL", utils.formatEther(bobPnL.amount));
       /********** redeem assets *************/
       // Bob
       await expect(

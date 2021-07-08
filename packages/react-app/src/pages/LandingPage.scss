@@ -1,0 +1,95 @@
+@import "../var.scss";
+
+.landing {
+  flex: 1;
+  display: flex;
+  background-color: black;
+  background-image: url(../assets/logo.png);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: 700px 300px;
+  flex-direction: column;
+
+  .topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+
+
+    .topbar-img {
+      flex-shrink: 1;
+      height: 40;
+      width: 300;
+      max-height: 40px;
+      max-width: 20%;
+      margin-left: 10px;
+      margin-right: 10px;
+      margin: 2px;
+    }
+    .Docs {
+      background-color: #000000;
+      color: white;
+      border: none;
+      font-size: 20px;
+      font-weight: 1000;
+      cursor: pointer;
+      margin-left: 700px;
+      margin-right: 0px;
+
+    }
+
+  }
+
+  .img-button {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .content {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    font-family: "Helvetica";
+    white-space: pre-wrap;
+
+
+    .title {
+      color: white;
+      font-size: 60px;
+      align-self: center;
+      text-align: center;
+      margin: 55px;
+      margin-bottom: 40px;
+      white-space: pre-wrap;
+      line-Height: 70px;
+      font-family: "Helvetica";
+    }
+
+    .description {
+      color: white;
+      font-size: 18px;
+      align-self: center;
+      text-align: center;
+      margin: 5px;
+      margin-bottom: 40px;
+      font-family: "Helvetica";
+
+    }
+
+
+
+    .img-button {
+      text-align: center;
+      align-self: center;
+      height: 40;
+      width: 300;
+      max-height: 45px;
+      max-width: 30%;
+    }
+  }
+}
