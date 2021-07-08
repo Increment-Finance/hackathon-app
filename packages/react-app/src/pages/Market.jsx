@@ -14,7 +14,7 @@ export default function Market({
   logoutOfWeb3Modal,
   perpetualContract,
   userAddress,
-  network
+  network,
 }) {
   const [isLong, setIsLong] = useState(true);
   const [leverage, setLeverage] = useState(5);
@@ -28,21 +28,22 @@ export default function Market({
   );
 
   const Symbols = { "JPY/USDC": "JPYUSD" };
-  const formatPoolPrice = price => {
+  const formatPoolPrice = (price) => {
     if (price) {
       let etherBalance = formatEther(price.toString());
       let floatBalance = parseFloat(etherBalance);
       return floatBalance.toFixed(8);
     }
   };
+
   useEffect(() => {
     if (perpetualContract) {
       perpetualContract
-        .getPoolInfo()
-        .then(result => {
-          setPoolPrice(result.price.toNumber());
+        .getPoolPrice()
+        .then((result) => {
+          setPoolPrice(result.toString());
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
     }
@@ -56,7 +57,7 @@ export default function Market({
           .then(() => {
             console.log("Successfully Minted Long!");
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err);
           });
       } else {
@@ -65,7 +66,7 @@ export default function Market({
           .then(() => {
             console.log("Successfully Minted Short!");
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err);
           });
       }
@@ -89,7 +90,7 @@ export default function Market({
             >
               <List.Item>
                 <List.Item.Meta title={"Chainlink Price"}></List.Item.Meta>
-                <div>{price || "-"}</div>
+                <div>{parseFloat(price).toFixed(8) || "-"}</div>
               </List.Item>
               <List.Item>
                 <List.Item.Meta title={"Contract Price"}></List.Item.Meta>
@@ -107,7 +108,7 @@ export default function Market({
                   border: "1px solid #E5E5E5",
                   borderRight: "none",
                   boxShadow: "none",
-                  flexGrow: 1
+                  flexGrow: 1,
                 }}
                 onClick={() => setIsLong(true)}
               >
@@ -123,7 +124,7 @@ export default function Market({
                   border: "1px solid #E5E5E5",
                   borderLeft: "none",
                   boxShadow: "none",
-                  flexGrow: 1
+                  flexGrow: 1,
                 }}
                 onClick={() => setIsLong(false)}
               >
@@ -146,8 +147,8 @@ export default function Market({
                   coins={[
                     {
                       name: "USD",
-                      balance: 0
-                    }
+                      balance: 0,
+                    },
                   ]}
                   disabled
                   title="Collateral"
@@ -167,7 +168,7 @@ export default function Market({
                   min={1}
                   max={10}
                   defaultValue={leverage}
-                  onSlide={value => setLeverage(value)}
+                  onSlide={(value) => setLeverage(value)}
                   isLong={isLong}
                 />
               </Form.Item>
@@ -183,7 +184,7 @@ export default function Market({
                         border: "1px solid #E5E5E5",
                         boxShadow: "none",
                         flexGrow: 1,
-                        borderRadius: "10px"
+                        borderRadius: "10px",
                       }}
                       onClick={openPosition}
                     >

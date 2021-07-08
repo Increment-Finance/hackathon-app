@@ -24,6 +24,12 @@ contract Getter is Storage {
         return pool;
     }
 
+    /// @notice Returns the price on the virtual Automated Market Maker (vAMM)
+    /// @return price with 18 decimals
+    function getPoolPrice() public view returns (uint256) {
+        return pool.price;
+    }
+
     function getQuoteAssetOracle() public view returns (address) {
         return quoteAssetOracle;
     }
@@ -182,13 +188,9 @@ contract Getter is Storage {
         uint256 marginRatio;
         if (notionalValue > 0) {
             if (unrealizedPnL.isPositive) {
-                marginRatio =
-                    ((margin + unrealizedPnL.amount) * 10**18) /
-                    notionalValue;
+                marginRatio = ((margin) * 10**18) / notionalValue;
             } else {
-                marginRatio =
-                    ((margin + unrealizedPnL.amount) * 10**18) /
-                    notionalValue;
+                marginRatio = ((margin) * 10**18) / notionalValue;
             }
         }
         return marginRatio;

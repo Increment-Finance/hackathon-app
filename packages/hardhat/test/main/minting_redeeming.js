@@ -43,6 +43,10 @@ describe("Increment App: Minting / Redeeming", function () {
         "Current price is",
         utils.formatEther((await contracts.perpetual.getPoolInfo()).price)
       );
+      console.log(
+        "pool info is",
+        (await contracts.perpetual.getPoolInfo()).toString()
+      );
     });
     it("Can go short Quote ", async function () {
       await contracts.usdc
