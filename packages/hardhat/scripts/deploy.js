@@ -46,6 +46,10 @@ const main = async () => {
     reserveAssets.USDC
   );
 
+  // set funding rates
+  await perpetual.pushSnapshot();
+  await perpetual.updateFundingRate();
+
   console.log(
     " 💾  Artifacts (address, abi, and args) saved to: ",
     chalk.blue("packages/hardhat/artifacts/"),

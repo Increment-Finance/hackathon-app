@@ -1,7 +1,40 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import {PerpetualTypes} from "./lib/PerpetualTypes.sol";
+/// @notice Describes all complex types
+
+library PerpetualTypes {
+    struct UserPosition {
+        mapping(address => uint256) userReserve;
+        uint256 QuoteLong;
+        uint256 QuoteShort;
+        uint256 usdNotional;
+    }
+
+    struct Index {
+        uint256 blockNumber;
+        uint256 value;
+        bool isPositive;
+    }
+
+    struct Int {
+        uint256 value;
+        bool isPositive;
+    }
+
+    struct Pool {
+        uint256 vQuote;
+        uint256 vBase;
+        uint256 totalAssetReserve;
+        uint256 price; // 10 ** 18
+    }
+
+    struct Price {
+        uint256 price;
+        uint256 time;
+        uint80 id;
+    }
+}
 
 interface IPerpetual {
     function MintLongQuote(uint256 _amount) external returns (uint256);
@@ -18,25 +51,25 @@ interface IPerpetual {
 
     function _TOKENS_(uint256) external view returns (address);
 
+    function _getFundingRate()
+        external
+        view
+        returns (PerpetualTypes.Index memory);
+
     function allowWithdrawal(
         address account,
         address _token,
         uint256 _amount
     ) external view returns (bool);
 
-    function c_0x1cbcf40b(bytes32 c__0x1cbcf40b) external pure;
-
-    function c_0x5d2a36c2(bytes32 c__0x5d2a36c2) external pure;
-
-    function c_0x8115ecdc(bytes32 c__0x8115ecdc) external pure;
-
-    function c_0x9f9d8e17(bytes32 c__0x9f9d8e17) external pure;
-
-    function c_0xdec12f0d(bytes32 c__0xdec12f0d) external pure;
-
-    function c_0xe6142b1d(bytes32 c__0xe6142b1d) external pure;
-
-    function c_0xf288155d(bytes32 c__0xf288155d) external pure;
+    function balances(address)
+        external
+        view
+        returns (
+            uint256 QuoteLong,
+            uint256 QuoteShort,
+            uint256 usdNotional
+        );
 
     function deposit(uint256 _amount, address _token) external;
 
@@ -57,9 +90,20 @@ interface IPerpetual {
         view
         returns (uint256);
 
+    function getEntryPrice(address account) external view returns (uint256);
+
+    function getFundingRate()
+        external
+        view
+        returns (PerpetualTypes.Index memory);
+
     function getLongBalance(address account) external view returns (uint256);
 
+    function getPnl(address account) external view returns (uint256);
+
     function getPoolInfo() external view returns (PerpetualTypes.Pool memory);
+
+    function getPoolPrice() external view returns (uint256);
 
     function getPortfolioValue(address account) external view returns (uint256);
 
@@ -77,7 +121,7 @@ interface IPerpetual {
     function getUnrealizedPnL(address account)
         external
         view
-        returns (PerpetualTypes.Pool memory);
+        returns (PerpetualTypes.Int memory);
 
     function getUserMarginRatio(address account)
         external
@@ -86,7 +130,42 @@ interface IPerpetual {
 
     function getUserNotional(address account) external view returns (uint256);
 
+    function getVAMMsnapshots(uint256 _id)
+        external
+        view
+        returns (PerpetualTypes.Price memory);
+
+    function global_index()
+        external
+        view
+        returns (
+            uint256 blockNumber,
+            uint256 value,
+            bool isPositive
+        );
+
+    function index(address)
+        external
+        view
+        returns (
+            uint256 blockNumber,
+            uint256 value,
+            bool isPositive
+        );
+
     function owner() external view returns (address);
+
+    function pool()
+        external
+        view
+        returns (
+            uint256 vQuote,
+            uint256 vBase,
+            uint256 totalAssetReserve,
+            uint256 price
+        );
+
+    function pushSnapshot() external;
 
     function renounceOwnership() external;
 
@@ -97,7 +176,11 @@ interface IPerpetual {
         address _aaveReserve
     ) external;
 
+    function settleAccount(address user, address _redeemAsset) external;
+
     function transferOwnership(address newOwner) external;
+
+    function updateFundingRate() external;
 
     function withdraw(uint256 _amount, address _token) external;
 }
