@@ -24,7 +24,7 @@ export default function useContractBalances(
         ...coin,
         balance: formatEther(
           await perpetualContract.getReserveBalance(userAddress, coin.address)
-        )
+        ),
       });
     }
     return coins;
@@ -35,14 +35,14 @@ export default function useContractBalances(
       if (user === userAddress) {
         perpetualContract
           .getPortfolioValue(userAddress)
-          .then(result => formatEther(result))
-          .then(result => {
+          .then((result) => formatEther(result))
+          .then((result) => {
             setPortfolio(result);
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err);
           });
-        getCoins().then(result => {
+        getCoins().then((result) => {
           setCoins(result);
         });
       }
@@ -51,95 +51,95 @@ export default function useContractBalances(
       if (user === userAddress) {
         perpetualContract
           .getPortfolioValue(userAddress)
-          .then(result => formatEther(result))
-          .then(result => {
+          .then((result) => formatEther(result))
+          .then((result) => {
             setPortfolio(result);
           })
-          .catch(err => {
+          .catch((err) => {
             console.error(err);
           });
-        getCoins().then(result => {
+        getCoins().then((result) => {
           setCoins(result);
         });
       }
     });
-    perpetualContract.on(["sellQuoteLong", "buyQuoteLong"], result => {
+    perpetualContract.on(["sellQuoteLong", "buyQuoteLong"], (result) => {
       perpetualContract
         .getLongBalance(userAddress)
-        .then(result => formatEther(result))
-        .then(result => {
+        .then((result) => formatEther(result))
+        .then((result) => {
           setLongs(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
       perpetualContract
         .getUserMarginRatio(userAddress)
-        .then(result => formatEther(result))
-        .then(result => {
+        .then((result) => formatEther(result))
+        .then((result) => {
           setMarginRatio(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
       perpetualContract
         .getUnrealizedPnL(userAddress)
         .then(([amount, isPositive]) =>
-          isPositive ? amount.toNumber() : -amount.toNumber()
+          isPositive ? formatEther(amount) : -formatEther(amount)
         )
-        .then(result => {
+        .then((result) => {
           setPnl(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
       perpetualContract
         .getEntryPrice(userAddress)
-        .then(result => formatEther(result))
-        .then(result => {
+        .then((result) => formatEther(result))
+        .then((result) => {
           setEntryPrice(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
     });
-    perpetualContract.on(["sellQuoteShort", "buyQuoteShort"], result => {
+    perpetualContract.on(["sellQuoteShort", "buyQuoteShort"], (result) => {
       perpetualContract
         .getShortBalance(userAddress)
-        .then(result => formatEther(result))
-        .then(result => {
+        .then((result) => formatEther(result))
+        .then((result) => {
           setShorts(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
       perpetualContract
         .getUserMarginRatio(userAddress)
-        .then(result => formatEther(result))
-        .then(result => {
+        .then((result) => formatEther(result))
+        .then((result) => {
           setMarginRatio(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
       perpetualContract
         .getUnrealizedPnL(userAddress)
         .then(([amount, isPositive]) =>
-          isPositive ? amount.toNumber() : -amount.toNumber()
+          isPositive ? formatEther(amount) : -formatEther(amount)
         )
-        .then(result => {
+        .then((result) => {
           setPnl(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
       perpetualContract
         .getEntryPrice(userAddress)
-        .then(result => formatEther(result))
-        .then(result => {
+        .then((result) => formatEther(result))
+        .then((result) => {
           setEntryPrice(result);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
     });
@@ -218,7 +218,7 @@ export default function useContractBalances(
     ) {
       initListeners();
       getContractInfo()
-        .then(result => {
+        .then((result) => {
           if (subscribed) {
             setShorts(result.shorts);
             setLongs(result.longs);
@@ -230,7 +230,7 @@ export default function useContractBalances(
             setPoolPrice(result.poolPrice);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Couldn't Read Contract Data", err);
         });
     }
@@ -251,6 +251,6 @@ export default function useContractBalances(
     portfolio,
     coins,
     pnl,
-    marginRatio
+    marginRatio,
   };
 }
