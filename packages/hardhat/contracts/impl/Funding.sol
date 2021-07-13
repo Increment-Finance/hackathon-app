@@ -148,7 +148,7 @@ contract Funding is Getter {
         );
     }
 
-    function _getFundingRate() public view returns (SignedMath.Int memory) {
+    function _getFundingRate() internal view returns (SignedMath.Int memory) {
         uint256 decimals = 10**8;
         uint256 priceIndex = getChainlinkTWAP(28800); // every 8 hours: 60x60x8=28800
         uint256 pricePerpetual = getPoolTWAP(28800);

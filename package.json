@@ -26,6 +26,7 @@
     "test": "yarn workspace @project/hardhat test",
     "verify": "yarn workspace @project/hardhat verify",
     "compile": "yarn workspace @project/hardhat compile",
+    "check": "yarn workspace @project/hardhat check",
     "deploy": "yarn workspace @project/hardhat deploy",
     "watch": "yarn workspace @project/hardhat watch",
     "accounts": "yarn workspace @project/hardhat accounts",
