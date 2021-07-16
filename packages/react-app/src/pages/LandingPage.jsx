@@ -7,33 +7,38 @@ import button2 from "../assets/button2.png";
 
 export default function Market({}) {
   const history = useHistory();
-  const goTo = (href) => {
+  const goTo = href => {
     history.push(href);
   };
 
   return (
-
     <div className="landing">
       <div className="topbar">
-
         <img className="topbar-img" src={logo} alt="Logo" />{" "}
-        <button className="Docs" onClick={event =>  window.location.href='https://www.notion.so/Increment-Docs-576e18ba90c24fc38a9909f2e5589a9c'}
-         >Docs
+        <button
+          className="Docs"
+          onClick={event =>
+            (window.location.href =
+              "https://www.notion.so/Increment-Docs-576e18ba90c24fc38a9909f2e5589a9c")
+          }
+        >
+          Docs
         </button>
-        <img className="topbar-img"
+        <img
+          className="topbar-img"
           src={button}
           alt="button"
           onClick={() => {
-            goTo("/market");
+            goTo("/");
           }}
         />
-
-
       </div>
 
       <div className="content">
-
-        <div className="title"> On-Chain Forex {"\n"} Derivatives Protocol </div>
+        <div className="title">
+          {" "}
+          On-Chain Forex {"\n"} Derivatives Protocol{" "}
+        </div>
 
         <p className="description">
           Empowering retail and institutional crypto holders including suppliers
@@ -44,8 +49,10 @@ export default function Market({}) {
           src={button2}
           width={300}
           alt="button"
-          onClick={event =>  window.location.href='https://www.notion.so/Increment-Docs-576e18ba90c24fc38a9909f2e5589a9c'}
-
+          onClick={event =>
+            (window.location.href =
+              "https://www.notion.so/Increment-Docs-576e18ba90c24fc38a9909f2e5589a9c")
+          }
         />
       </div>
     </div>

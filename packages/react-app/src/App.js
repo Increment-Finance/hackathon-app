@@ -70,10 +70,7 @@ function App() {
   return (
     <div className="app">
       <Router>
-        <Route path="/" exact>
-          <LandingPage />
-        </Route>
-        <Route path="/market" exact>
+        <Route path="/">
           <Header
             address={userAddress}
             provider={provider}
@@ -90,7 +87,7 @@ function App() {
             contractBalances={contractBalances}
           />
         </Route>
-        <Route path="/dashboard">
+        <Route path="/dashboard" exact>
           <Header
             address={userAddress}
             provider={provider}
