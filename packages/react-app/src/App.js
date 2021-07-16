@@ -70,7 +70,7 @@ function App() {
   return (
     <div className="app">
       <Router>
-        <Route path="/">
+        <Route path="/" exact>
           <Header
             address={userAddress}
             provider={provider}
